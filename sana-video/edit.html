@@ -104,6 +104,20 @@ html,body{margin:0;width:1080px;height:1920px;overflow:hidden;background:#000}
 #vsMark{font-family:"MadaLatin";font-size:140px;background:linear-gradient(180deg,#fff,var(--gold));-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 0 30px rgba(255,207,90,.7)) drop-shadow(0 6px 10px rgba(0,0,0,.6))}
 #bigQ{left:50%;top:40%;font-size:760px;line-height:1;color:rgba(255,255,255,.10);transform:translate(-50%,-50%)}
 
+/* question card (hides the camera during the question shot) */
+#qcard{position:absolute;inset:0;opacity:0;overflow:hidden;
+  background:radial-gradient(1300px 1000px at 50% 45%,#13294d 0%,#070d1f 60%,#03060f 100%)}
+#qrays{position:absolute;left:50%;top:42%;width:1800px;height:1800px;margin:-900px 0 0 -900px;border-radius:50%;
+  background:repeating-conic-gradient(from 0deg,rgba(53,240,220,.10) 0deg 5deg,rgba(53,240,220,0) 5deg 15deg);
+  -webkit-mask:radial-gradient(circle,#000 10%,transparent 60%);mask:radial-gradient(circle,#000 10%,transparent 60%)}
+#qgrid{position:absolute;left:-200px;right:-200px;bottom:-40px;height:640px;transform:perspective(600px) rotateX(62deg);transform-origin:50% 100%;
+  background-image:linear-gradient(rgba(53,240,220,.22) 2px,transparent 2px),linear-gradient(90deg,rgba(53,240,220,.22) 2px,transparent 2px);background-size:90px 90px;
+  -webkit-mask:linear-gradient(0deg,#000,transparent);mask:linear-gradient(0deg,#000,transparent)}
+.qglow{position:absolute;width:900px;height:900px;border-radius:50%}
+#qg1{left:-300px;top:200px;background:radial-gradient(circle,rgba(138,92,255,.35),transparent 62%)}
+#qg2{right:-300px;top:900px;background:radial-gradient(circle,rgba(255,207,90,.22),transparent 62%)}
+#qTitle{left:0;right:0;top:420px;text-align:center}
+#qHead{left:40px;right:40px;top:560px;text-align:center;font-size:120px;line-height:1.2;text-shadow:0 10px 40px rgba(0,0,0,.6)}
 /* cta */
 .btn{display:inline-flex;align-items:center;gap:20px;font-size:60px;padding:26px 60px;border-radius:999px;background:linear-gradient(100deg,var(--red),#ff5a3d);box-shadow:0 20px 60px rgba(224,35,46,.55);white-space:nowrap}
 .btn svg{width:64px;height:64px}
@@ -133,6 +147,7 @@ html,body{margin:0;width:1080px;height:1920px;overflow:hidden;background:#000}
   <div class="layer" id="botShade"></div>
   <div class="layer" id="scrim"></div>
   <div class="layer" id="leak"></div>
+  <div id="qcard"><div class="qglow" id="qg1"></div><div class="qglow" id="qg2"></div><div id="qrays"></div><div id="qgrid"></div></div>
 
   <!-- ===== overlays (absolute times) ===== -->
   <!-- hook -->
@@ -236,7 +251,9 @@ html,body{margin:0;width:1080px;height:1920px;overflow:hidden;background:#000}
   <div class="ov" style="right:60px;top:1060px" data-in="37.2" data-out="38.05" data-fx="left"><span class="chip">✦ التجربة</span></div>
 
   <!-- question -->
-  <div class="ov" id="bigQ" data-in="38.8" data-out="42.95" data-fx="fade">؟</div>
+  <div class="ov" id="bigQ" data-in="38.3" data-out="42.95" data-fx="fade">؟</div>
+  <div class="ov" id="qTitle" data-in="38.25" data-out="42.95" data-fx="up"><span class="chip g">الحين السؤال…</span></div>
+  <div class="ov" id="qHead" data-in="39.4" data-out="42.95" data-fx="pop">هل <span class="gradT">سنا</span> بيكون<br><span class="goldT">منافس قوي؟</span></div>
   <div class="ov" id="vs" data-in="39.45" data-out="42.95" data-fx="fade">
     <div class="stack" id="vsL"><div class="tile"><svg viewBox="0 0 24 24"><use href="#i-spark" fill="url(#gs)"/></svg></div><div class="lbl">سنا</div></div>
     <div id="vsMark">VS</div>
@@ -371,7 +388,7 @@ cue(20.6,'click');cue(20.65,'send',{vol:.8});cue(20.9,'success',{vol:.7});
 cue(25.4,'thud',{vol:.7});cue(25.45,'magic',{vol:.8});
 for(let k=0;k<6;k++)cue(30.7+k*.12,'coin',{pitch:1+k*.06,vol:.8});cue(31.3,'cash',{vol:.8});
 cue(35.2,'heart',{vol:.7});
-cue(38.8,'tension',{dur:2.2,vol:.8});cue(39.9,'boom',{vol:.75});
+cue(38.17,'impact',{vol:.6});cue(39.4,'pop',{pitch:1.1});cue(38.8,'tension',{dur:2.2,vol:.8});cue(39.9,'boom',{vol:.75});
 cue(43.3,'sparkle',{vol:.7});cue(45.3,'bell',{vol:.8});cue(46.9,'outro',{vol:.6});
 CUES.sort((a,b)=>a.t-b.t);window.CUES=CUES;window.DURATION=DURATION;window.NFRAMES=NFRAMES;
 
@@ -395,7 +412,7 @@ function custom(t){
   $('#rays').style.transform=`rotate(${t*14}deg)`;$('#ring2').style.transform=`rotate(${-t*20}deg)`;
   $('#ring1').style.transform=`scale(${1+Math.sin(t*2.4)*.03})`;$('#logoStar').style.transform=`rotate(${t*40}deg)`;
   // scrim for logo + VS moments
-  const sc=Math.max(clamp((t-8.6)/.25)*(1-clamp((t-10.45)/.3)), .55*clamp((t-39.3)/.3)*(1-clamp((t-42.9)/.3)));
+  const sc=Math.max(clamp((t-8.6)/.25)*(1-clamp((t-10.45)/.3)));
   $('#scrim').style.opacity=sc;
   // chat typing
   const n=clamp(Math.floor((t-TYPE_T0)/TYPE_STEP)+1,0,TYPE_TEXT.length);
@@ -421,6 +438,9 @@ function custom(t){
   const vm=clamp((t-39.9)/.6);$('#vsMark').style.opacity=vm>0?1:0;$('#vsMark').style.transform=`scale(${3-2*eOutBounce(vm)})`;
   $('#bigQ').style.transform=`translate(-50%,-50%) rotate(${Math.sin(t*1.2)*8}deg)`;
   // cta
+  const Q0=38.1667,Q1=43.0667;const qc=$('#qcard');qc.style.opacity=(t>=Q0-0.001&&t<Q1)?1:0;
+  $('#qrays').style.transform=`rotate(${t*10}deg)`;$('#qgrid').style.backgroundPosition=`0 ${(t*60)%90}px`;
+  $('#qg1').style.transform=`translate(${Math.sin(t*.6)*120}px,${Math.cos(t*.5)*90}px)`;$('#qg2').style.transform=`translate(${Math.cos(t*.5)*120}px,${Math.sin(t*.4)*90}px)`;
   $('#ctaStar').style.transform=`rotate(${t*30}deg)`;
   const bl=t-45.3;$('#bell').style.transformOrigin='50% 10%';$('#bell').style.transform=bl>0?`rotate(${Math.sin(bl*22)*28*Math.exp(-bl*2.2)}deg)`:'';
   const pp=((t-45.6)%1.2)/1.2;$('#pulse').style.opacity=t>45.6?(1-pp):0;$('#pulse').style.transform=`scale(${1+pp*.18},${1+pp*.5})`;
