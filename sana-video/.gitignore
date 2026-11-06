@@ -1,2 +1,4 @@
 build/
+build_edit/
+build_edit.log
 node_modules/

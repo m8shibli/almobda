@@ -6,3 +6,9 @@
 - `render.js` — يصوّر الإطارات عبر Playwright ويرمّزها بـ ffmpeg.
 - `sfx.py` — يولّد المؤثرات (whoosh / pop / impact / boom / typing / coins / bell …) وموسيقى خلفية خفيفة.
 - `build.sh` — يبني كل شيء ويخرج `output/sana-promo.mp4`.
+
+## مونتاج فيديو التصوير (`sana-edit.mp4`)
+
+- `edit.html`: طبقة الأيقونات والترجمة والمؤثرات فوق الفيديو، متزامنة مع الكلام (`edit_transcript.json`)، مع زوم عند كل قطع.
+- `edit_audio.py`: يمزج الصوت المنقّى مع المؤثرات والموسيقى، والموسيقى تنخفض تلقائياً وقت الكلام.
+- `build_edit.sh <source.mov>`: تصحيح الألوان ثم التركيب ثم الصوت ثم `output/sana-edit.mp4`.
