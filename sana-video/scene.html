@@ -1,0 +1,578 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<title>Sana Promo</title>
+<style>
+@font-face{font-family:"MadaLatin";src:url("assets/Inter-Bold.otf") format("opentype");unicode-range:U+0021-007E}
+@font-face{font-family:"Mada";src:url("assets/sf-mada-bold.ttf") format("truetype");font-weight:normal}
+:root{
+  --bg1:#050a18;--bg2:#0a1b2e;
+  --cyan:#35f0dc;--blue:#4f8bff;--gold:#ffcf5a;--orange:#ff8a3d;
+  --red:#e0232e;--green:#12a150;--white:#ffffff;
+}
+*{box-sizing:border-box}
+html,body{margin:0;width:1080px;height:1920px;overflow:hidden;background:var(--bg1)}
+#stage{position:relative;width:1080px;height:1920px;overflow:hidden;font-family:"MadaLatin","Mada",sans-serif;direction:rtl;color:#fff;
+  background:radial-gradient(1400px 1100px at 50% 40%,#0d2340 0%,var(--bg1) 70%)}
+#bgc{position:absolute;inset:0}
+.blob{position:absolute;width:1100px;height:1100px;border-radius:50%;opacity:.55;pointer-events:none}
+#b1{background:radial-gradient(circle,rgba(53,240,220,.32),rgba(53,240,220,0) 62%)}
+#b2{background:radial-gradient(circle,rgba(79,139,255,.30),rgba(79,139,255,0) 62%)}
+#b3{background:radial-gradient(circle,rgba(224,35,46,.22),rgba(224,35,46,0) 62%)}
+#vignette{position:absolute;inset:0;background:radial-gradient(ellipse at center,rgba(0,0,0,0) 55%,rgba(0,0,0,.65) 100%);pointer-events:none}
+#flash{position:absolute;inset:0;background:radial-gradient(circle at 50% 45%,rgba(255,255,255,.9),rgba(140,240,255,.25) 40%,rgba(0,0,0,0) 75%);opacity:0;pointer-events:none;mix-blend-mode:screen}
+
+/* HUD */
+#hud-top{position:absolute;top:110px;left:0;right:0;display:flex;justify-content:space-between;align-items:center;padding:0 70px;z-index:5}
+.brand{display:flex;align-items:center;gap:16px;font-size:40px;padding:14px 30px;border-radius:999px;background:rgba(255,255,255,.07);border:2px solid rgba(255,255,255,.12)}
+.brand .dot{width:18px;height:18px;border-radius:50%;background:var(--cyan);box-shadow:0 0 18px var(--cyan)}
+.tagline{font-size:34px;color:rgba(255,255,255,.7);display:flex;align-items:center;gap:12px}
+.flagmini{width:54px;height:30px;border-radius:5px;overflow:hidden;position:relative;background:var(--red)}
+.flagmini i{position:absolute;right:0;width:68%;height:33.4%}
+#progress{position:absolute;top:60px;left:70px;right:70px;height:8px;border-radius:8px;background:rgba(255,255,255,.1);overflow:hidden;z-index:5}
+#progress b{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--gold),var(--cyan));border-radius:8px}
+
+/* Scenes */
+.scene{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:46px;text-align:center;padding:0 70px;visibility:hidden}
+[data-in]{opacity:0}
+.w{display:inline-block;white-space:nowrap}
+h1,h2,h3,p{margin:0;font-weight:normal}
+.t-xl{font-size:150px;line-height:1.15}
+.t-l{font-size:112px;line-height:1.2}
+.t-m{font-size:84px;line-height:1.3}
+.t-s{font-size:60px;line-height:1.35;color:rgba(255,255,255,.82)}
+.t-xs{font-size:46px;color:rgba(255,255,255,.7)}
+.grad{background:linear-gradient(100deg,var(--cyan),var(--blue) 55%,#b48cff);-webkit-background-clip:text;background-clip:text;color:transparent;padding:0 8px}
+.gold{background:linear-gradient(100deg,#fff1b8,var(--gold) 45%,var(--orange));-webkit-background-clip:text;background-clip:text;color:transparent;padding:0 8px}
+.red{color:#ff4a55}
+.green{color:#2fdc7c}
+.glowtext{text-shadow:0 0 40px rgba(53,240,220,.35)}
+
+.tile{position:relative;width:230px;height:230px;border-radius:62px;display:grid;place-items:center;
+  background:linear-gradient(150deg,rgba(255,255,255,.16),rgba(255,255,255,.03));
+  border:2px solid rgba(255,255,255,.16);
+  box-shadow:0 34px 70px rgba(0,0,0,.5),inset 0 2px 0 rgba(255,255,255,.25),0 0 90px var(--glow,rgba(53,240,220,.28))}
+.tile svg{width:58%;height:58%;overflow:visible}
+.tile.sm{width:150px;height:150px;border-radius:42px}
+.tile.lg{width:300px;height:300px;border-radius:80px}
+.ic{fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+
+.row{display:flex;align-items:center;justify-content:center;gap:40px}
+.cap{font-size:48px;margin-top:18px;color:rgba(255,255,255,.85)}
+
+/* S2 flow */
+#flow{display:flex;align-items:center;gap:30px;direction:ltr}
+#flow .node{display:flex;flex-direction:column;align-items:center}
+#arrowsvg{width:260px;height:120px;overflow:visible}
+
+/* S3 flag */
+#flag{position:relative;width:720px;height:420px;border-radius:36px;overflow:hidden;box-shadow:0 40px 90px rgba(0,0,0,.55),0 0 120px rgba(224,35,46,.35)}
+#flag .r{position:absolute;inset:0;background:var(--red)}
+#flag .wh{position:absolute;right:0;top:0;width:66%;height:33.4%;background:#fff}
+#flag .gr{position:absolute;right:0;bottom:0;width:66%;height:33.4%;background:#0b8a3c}
+#flag .rb{position:absolute;left:0;top:0;bottom:0;width:34%;background:var(--red)}
+#flag .sheen{position:absolute;inset:-20%;background:repeating-linear-gradient(100deg,rgba(0,0,0,.0) 0px,rgba(0,0,0,.16) 90px,rgba(255,255,255,.14) 180px,rgba(0,0,0,0) 270px)}
+.stamp{font-size:66px;padding:18px 46px;border:7px solid var(--gold);color:var(--gold);border-radius:24px;letter-spacing:1px;background:rgba(255,207,90,.08)}
+
+/* S4 logo */
+#logoWrap{position:relative;width:860px;height:860px;display:grid;place-items:center}
+#rays{position:absolute;inset:0;border-radius:50%;
+  background:repeating-conic-gradient(from 0deg,rgba(53,240,220,.20) 0deg 6deg,rgba(53,240,220,0) 6deg 18deg);
+  -webkit-mask:radial-gradient(circle,#000 20%,transparent 68%);mask:radial-gradient(circle,#000 20%,transparent 68%)}
+.ring{position:absolute;border-radius:50%;border:4px solid rgba(53,240,220,.55)}
+#ring1{width:620px;height:620px}
+#ring2{width:760px;height:760px;border-color:rgba(255,207,90,.35);border-style:dashed}
+#logoCore{position:relative;display:flex;flex-direction:column;align-items:center}
+#logoStar{width:150px;height:150px;margin-bottom:-20px}
+#sanaWord{font-size:330px;line-height:1;background:linear-gradient(180deg,#ffffff 15%,#9ff7ee 55%,var(--cyan));-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 0 40px rgba(53,240,220,.55))}
+.chip{display:inline-flex;align-items:center;gap:14px;font-size:44px;padding:14px 34px;border-radius:999px;background:rgba(53,240,220,.12);border:2px solid rgba(53,240,220,.45)}
+.chip.gold{background:rgba(255,207,90,.12);border-color:rgba(255,207,90,.5);-webkit-background-clip:border-box;background-clip:border-box;color:var(--gold)}
+
+/* S5 cards */
+#cards{display:flex;flex-direction:column;gap:30px;width:100%}
+.card{display:flex;align-items:center;gap:40px;padding:26px 36px;border-radius:44px;text-align:right;
+  background:linear-gradient(100deg,rgba(255,255,255,.10),rgba(255,255,255,.03));border:2px solid rgba(255,255,255,.12);
+  box-shadow:0 24px 50px rgba(0,0,0,.35)}
+.card .tile{width:150px;height:150px;border-radius:40px;flex:none}
+.card h3{font-size:64px;line-height:1.2}
+.card p{font-size:40px;color:rgba(255,255,255,.66)}
+.card .num{margin-right:auto;font-size:54px;color:rgba(255,255,255,.18);direction:ltr}
+
+/* S6 chat */
+#chat{width:100%;border-radius:50px;padding:40px;text-align:right;
+  background:linear-gradient(160deg,rgba(255,255,255,.12),rgba(255,255,255,.04));border:2px solid rgba(255,255,255,.15);
+  box-shadow:0 40px 90px rgba(0,0,0,.5)}
+#chat .head{display:flex;align-items:center;gap:20px;font-size:46px;padding-bottom:28px;border-bottom:2px solid rgba(255,255,255,.1)}
+#chat .head .tile{width:96px;height:96px;border-radius:28px}
+.online{font-size:32px;color:#2fdc7c}
+#inputRow{display:flex;align-items:center;gap:24px;margin-top:34px}
+#inputBox{flex:1;min-height:150px;border-radius:34px;background:rgba(0,0,0,.35);border:2px solid rgba(53,240,220,.35);padding:30px 36px;font-size:56px;line-height:1.35}
+#caret{display:inline-block;width:6px;height:60px;background:var(--cyan);vertical-align:middle;margin-right:4px}
+#sendBtn{width:150px;height:150px;border-radius:40px;display:grid;place-items:center;background:linear-gradient(140deg,var(--cyan),var(--blue));box-shadow:0 0 50px rgba(53,240,220,.5)}
+#sendBtn svg{width:46%;height:46%}
+#work{margin-top:36px;font-size:44px;color:rgba(255,255,255,.8)}
+#bar{height:22px;border-radius:22px;background:rgba(255,255,255,.1);overflow:hidden;margin-top:18px}
+#bar b{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--cyan),var(--gold));border-radius:22px}
+#outs{display:flex;gap:22px;justify-content:center;margin-top:36px;flex-wrap:wrap}
+.out{display:flex;align-items:center;gap:14px;font-size:40px;padding:16px 28px;border-radius:26px;background:rgba(255,255,255,.08);border:2px solid rgba(255,255,255,.14);direction:ltr}
+.out svg{width:52px;height:52px}
+
+/* S7 gift */
+#giftWrap{position:relative;width:460px;height:460px;margin-top:60px}
+#giftWrap svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+#giftBurst{position:absolute;left:50%;top:40%;width:900px;height:900px;margin:-450px 0 0 -450px;border-radius:50%;
+  background:repeating-conic-gradient(from 0deg,rgba(255,207,90,.32) 0deg 5deg,rgba(255,207,90,0) 5deg 15deg);
+  -webkit-mask:radial-gradient(circle,#000 10%,transparent 62%);mask:radial-gradient(circle,#000 10%,transparent 62%);opacity:0}
+.spark{position:absolute;width:40px;height:40px;opacity:0}
+.badge{font-size:46px;padding:16px 40px;border-radius:999px;background:linear-gradient(90deg,rgba(47,220,124,.2),rgba(53,240,220,.2));border:2px solid rgba(47,220,124,.6);color:#bfffdc}
+
+/* S8 price */
+#priceCard{position:relative;z-index:2;width:820px;padding:56px 50px;border-radius:60px;
+  background:linear-gradient(160deg,rgba(255,207,90,.18),rgba(255,138,61,.05));border:3px solid rgba(255,207,90,.45);
+  box-shadow:0 40px 100px rgba(0,0,0,.5),0 0 120px rgba(255,207,90,.2)}
+#priceNum{font-size:300px;line-height:1;direction:ltr;display:flex;justify-content:center;align-items:flex-start;gap:10px}
+#priceNum .cur{font-size:150px;margin-top:30px}
+#approx{display:flex;flex-direction:column;align-items:center;gap:14px;margin-top:20px}
+.rial{font-size:96px;line-height:1.2}
+.eq{font-size:56px;padding:8px 24px;border-radius:20px;background:rgba(255,255,255,.1);color:rgba(255,255,255,.75)}
+.coin{position:absolute;width:110px;height:110px}
+
+/* S10 vs */
+#vs{display:flex;align-items:center;justify-content:center;gap:50px;direction:ltr}
+.side{display:flex;flex-direction:column;align-items:center;gap:20px}
+.side .lbl{font-size:50px}
+#vsMark{font-family:"MadaLatin";font-size:150px;direction:ltr;background:linear-gradient(180deg,#fff,var(--gold));-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 0 30px rgba(255,207,90,.6))}
+#bigQ{position:absolute;font-size:900px;color:rgba(255,255,255,.04);top:50%;left:50%;transform:translate(-50%,-50%);line-height:1;pointer-events:none}
+
+/* S11 CTA */
+.btn{display:inline-flex;align-items:center;gap:22px;font-size:66px;padding:30px 70px;border-radius:999px;background:linear-gradient(100deg,var(--red),#ff5a3d);box-shadow:0 20px 60px rgba(224,35,46,.5)}
+.btn svg{width:70px;height:70px}
+#pulse{position:absolute;inset:-14px;border-radius:999px;border:5px solid rgba(255,90,61,.7)}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute">
+  <defs>
+    <linearGradient id="g1" gradientUnits="userSpaceOnUse" x1="2" y1="2" x2="22" y2="22"><stop offset="0" stop-color="#7ffbef"/><stop offset=".5" stop-color="#35f0dc"/><stop offset="1" stop-color="#4f8bff"/></linearGradient>
+    <linearGradient id="g2" gradientUnits="userSpaceOnUse" x1="2" y1="2" x2="22" y2="22"><stop offset="0" stop-color="#fff1b8"/><stop offset=".5" stop-color="#ffcf5a"/><stop offset="1" stop-color="#ff8a3d"/></linearGradient>
+    <linearGradient id="g3" gradientUnits="userSpaceOnUse" x1="2" y1="2" x2="22" y2="22"><stop offset="0" stop-color="#ff9aa0"/><stop offset="1" stop-color="#e0232e"/></linearGradient>
+    <linearGradient id="g4" gradientUnits="userSpaceOnUse" x1="2" y1="2" x2="22" y2="22"><stop offset="0" stop-color="#a6ffcb"/><stop offset="1" stop-color="#12a150"/></linearGradient>
+    <linearGradient id="g5" gradientUnits="userSpaceOnUse" x1="2" y1="2" x2="22" y2="22"><stop offset="0" stop-color="#d9c2ff"/><stop offset="1" stop-color="#8a5cff"/></linearGradient>
+    <linearGradient id="gs" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffffff"/><stop offset=".45" stop-color="#7ffbef"/><stop offset="1" stop-color="#35f0dc"/></linearGradient>
+    <linearGradient id="giftBody" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ff5d68"/><stop offset="1" stop-color="#b3121c"/></linearGradient>
+    <linearGradient id="giftLid" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ff7a83"/><stop offset="1" stop-color="#d01a25"/></linearGradient>
+    <linearGradient id="ribbon" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff1b8"/><stop offset="1" stop-color="#ffb43d"/></linearGradient>
+    <radialGradient id="coinG" cx=".35" cy=".3" r=".8"><stop offset="0" stop-color="#fff3c4"/><stop offset=".5" stop-color="#ffcf5a"/><stop offset="1" stop-color="#d98a1c"/></radialGradient>
+    <symbol id="i-spark" viewBox="0 0 24 24"><path d="M12 1.5l2.6 7.9L22.5 12l-7.9 2.6L12 22.5l-2.6-7.9L1.5 12l7.9-2.6z"/></symbol>
+  </defs>
+</svg>
+
+<div id="stage">
+  <canvas id="bgc" width="1080" height="1920"></canvas>
+  <div class="blob" id="b1"></div><div class="blob" id="b2"></div><div class="blob" id="b3"></div>
+
+  <div id="progress"><b></b></div>
+  <div id="hud-top">
+    <div class="brand"><span class="dot"></span>سنا AI</div>
+    <div class="tagline">صناعة عُمانية <span class="flagmini"><i style="top:0;background:#fff"></i><i style="bottom:0;background:#0b8a3c"></i></span></div>
+  </div>
+
+  <!-- S1: hook -->
+  <section class="scene" id="s1" data-start="0" data-end="3.4">
+    <div class="tile lg" data-in="0.15" data-fx="pop" id="aiTile">
+      <svg viewBox="0 0 24 24" class="ic" stroke="url(#g1)">
+        <rect x="5" y="5" width="14" height="14" rx="3"/>
+        <path d="M9 2v3M15 2v3M9 19v3M15 19v3M2 9h3M2 15h3M19 9h3M19 15h3"/>
+        <path d="M12 8.2l1.1 2.7 2.7 1.1-2.7 1.1L12 15.8l-1.1-2.7L8.2 12l2.7-1.1z" fill="url(#g1)" stroke="none"/>
+      </svg>
+    </div>
+    <h2 class="t-m split" data-in="0.55" data-fx="up">تخيّل يكون عندك</h2>
+    <h1 class="t-xl grad glowtext" data-in="1.15" data-fx="zoom">مساعد ذكي</h1>
+  </section>
+
+  <!-- S2: idea -> project -->
+  <section class="scene" id="s2" data-start="3.4" data-end="7.8">
+    <h2 class="t-m split" data-in="0.1" data-fx="up">تعطيه <span class="gold">فكرة</span></h2>
+    <div id="flow">
+      <div class="node" data-in="0.35" data-fx="pop">
+        <div class="tile" style="--glow:rgba(255,207,90,.35)">
+          <svg viewBox="0 0 24 24" class="ic" stroke="url(#g2)"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.9 10.6c.8.8 1.1 1.5 1.1 2.4h5.6c0-.9.3-1.6 1.1-2.4A6 6 0 0 0 12 3z"/><path d="M12 6.5v2M9.5 9h1M13.5 9h1" stroke-width="1.4"/></svg>
+        </div>
+        <div class="cap">فكرة</div>
+      </div>
+      <svg id="arrowsvg" viewBox="0 0 260 120">
+        <path id="arrowPath" d="M10 60 C 80 0, 180 120, 240 60" fill="none" stroke="url(#gs)" stroke-width="8" stroke-linecap="round" stroke-dasharray="320" stroke-dashoffset="320"/>
+        <path id="arrowHead" d="M222 44 L246 60 L222 78" fill="none" stroke="#35f0dc" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" opacity="0"/>
+        <circle id="arrowDot" r="10" fill="#fff" opacity="0" style="filter:drop-shadow(0 0 10px #35f0dc)"/>
+      </svg>
+      <div class="node" data-in="1.45" data-fx="pop">
+        <div class="tile">
+          <svg viewBox="0 0 24 24" class="ic" stroke="url(#g1)"><path d="M12 2.5l8.5 4.8v9.4L12 21.5l-8.5-4.8V7.3z"/><path d="M3.5 7.3L12 12l8.5-4.7M12 12v9.5"/><path d="M7.7 4.9l8.5 4.8" stroke-width="1.2" opacity=".6"/></svg>
+        </div>
+        <div class="cap">مشروع</div>
+      </div>
+    </div>
+    <h2 class="t-m split" data-in="1.9" data-fx="up">ويحوّلها إلى</h2>
+    <h1 class="t-l grad glowtext" data-in="2.4" data-fx="zoom">مشروع متكامل!</h1>
+  </section>
+
+  <!-- S3: Omani made -->
+  <section class="scene" id="s3" data-start="7.8" data-end="11.8">
+    <h2 class="t-m split" data-in="0.1" data-fx="up">والأجمل إن هالمساعد</h2>
+    <div id="flag" data-in="0.6" data-fx="flip"><div class="r"></div><div class="wh"></div><div class="gr"></div><div class="rb"></div><div class="sheen"></div></div>
+    <h1 class="t-xl" data-in="1.2" data-fx="zoom"><span class="red">صناعة</span> <span class="green">عُمانية</span></h1>
+    <div class="stamp" data-in="2.1" data-fx="stamp" data-base="rotate(-6deg)">صُنع في عُمان</div>
+  </section>
+
+  <!-- S4: logo reveal -->
+  <section class="scene" id="s4" data-start="11.8" data-end="16.4" style="gap:10px">
+    <h2 class="t-m split" data-in="0.05" data-fx="up">نتكلم عن</h2>
+    <div id="logoWrap" data-in="0.6" data-fx="zoomin">
+      <div id="rays"></div>
+      <div class="ring" id="ring1"></div>
+      <div class="ring" id="ring2"></div>
+      <div id="logoCore">
+        <svg id="logoStar" viewBox="0 0 24 24"><use href="#i-spark" fill="url(#gs)"/></svg>
+        <div id="sanaWord">سنا</div>
+      </div>
+    </div>
+    <h2 class="t-m" data-in="1.5" data-fx="up">وكيل <span class="grad">ذكاء اصطناعي</span></h2>
+    <div class="row" style="margin-top:20px">
+      <span class="chip" data-in="2.0" data-fx="pop">AI Agent</span>
+      <span class="chip gold" data-in="2.25" data-fx="pop">تطوير عُماني</span>
+    </div>
+  </section>
+
+  <!-- S5: capabilities -->
+  <section class="scene" id="s5" data-start="16.4" data-end="24.6" style="gap:44px">
+    <h2 class="t-l split" data-in="0.05" data-fx="up">وش <span class="gold">يقدر</span> يسوي؟</h2>
+    <div id="cards">
+      <div class="card" data-in="0.6" data-fx="right">
+        <div class="tile"><svg viewBox="0 0 24 24" class="ic" stroke="url(#g1)"><rect x="2" y="3.5" width="20" height="17" rx="2.5"/><path d="M2 8.5h20"/><circle cx="5" cy="6" r=".5" fill="#35f0dc"/><circle cx="7" cy="6" r=".5" fill="#35f0dc"/><rect x="5" y="11.5" width="6" height="6" rx="1"/><path d="M13.5 12.5h5M13.5 15h5M13.5 17.5h3"/></svg></div>
+        <div><h3>تصميم المواقع</h3><p>مواقع جاهزة واحترافية</p></div><span class="num">01</span>
+      </div>
+      <div class="card" data-in="1.6" data-fx="right">
+        <div class="tile" style="--glow:rgba(138,92,255,.35)"><svg viewBox="0 0 24 24" class="ic" stroke="url(#g5)"><rect x="6" y="1.8" width="12" height="20.4" rx="3"/><path d="M10.5 18.8h3"/><rect x="8.6" y="5.5" width="2.8" height="2.8" rx=".7"/><rect x="12.6" y="5.5" width="2.8" height="2.8" rx=".7"/><rect x="8.6" y="9.7" width="2.8" height="2.8" rx=".7"/><rect x="12.6" y="9.7" width="2.8" height="2.8" rx=".7"/></svg></div>
+        <div><h3>إنشاء التطبيقات</h3><p>من الفكرة إلى تطبيق شغّال</p></div><span class="num">02</span>
+      </div>
+      <div class="card" data-in="2.6" data-fx="right">
+        <div class="tile" style="--glow:rgba(224,35,46,.35)"><svg viewBox="0 0 24 24" class="ic" stroke="url(#g3)"><path d="M14 2H6.5A2.5 2.5 0 0 0 4 4.5v15A2.5 2.5 0 0 0 6.5 22h11a2.5 2.5 0 0 0 2.5-2.5V8z"/><path d="M14 2v6h6"/><text x="12" y="17.3" text-anchor="middle" font-size="5.4" font-family="MadaLatin" fill="#ff6b74" stroke="none">PDF</text></svg></div>
+        <div><h3>ملفات PDF</h3><p>تقارير ومستندات جاهزة</p></div><span class="num">03</span>
+      </div>
+      <div class="card" data-in="3.6" data-fx="right">
+        <div class="tile" style="--glow:rgba(79,139,255,.4)"><svg viewBox="0 0 24 24" class="ic" stroke="url(#g1)"><path d="M14 2H6.5A2.5 2.5 0 0 0 4 4.5v15A2.5 2.5 0 0 0 6.5 22h11a2.5 2.5 0 0 0 2.5-2.5V8z"/><path d="M14 2v6h6"/><path d="M7.4 11.2l1.5 6 1.8-4.4 1.8 4.4 1.5-6" stroke="#7fb0ff" stroke-width="1.6"/></svg></div>
+        <div><h3>ملفات Word</h3><p>مستندات قابلة للتعديل</p></div><span class="num">04</span>
+      </div>
+      <div class="card" data-in="4.6" data-fx="right">
+        <div class="tile" style="--glow:rgba(255,207,90,.35)"><svg viewBox="0 0 24 24" class="ic" stroke="url(#g2)"><path d="M5 15.5c-1.5 1.3-2 5-2 5s3.7-.5 5-2c.7-.8.7-2.1-.1-2.9a2.2 2.2 0 0 0-2.9-.1z"/><path d="M12 15l-3-3a22 22 0 0 1 2-3.9A12.9 12.9 0 0 1 22 2c0 2.7-.8 7.5-6 11a22.4 22.4 0 0 1-4 2z"/><path d="M9 12H4s.6-3 2-4c1.6-1.1 5 0 5 0M12 15v5s3-.6 4-2c1.1-1.6 0-5 0-5"/></svg></div>
+        <div><h3>تنفيذ المهام والمشاريع</h3><p>مهام متعددة بخطوة وحدة</p></div><span class="num">05</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- S6: just give instructions -->
+  <section class="scene" id="s6" data-start="24.6" data-end="30.4" style="gap:50px">
+    <h2 class="t-m split" data-in="0.05" data-fx="up">بمجرد ما تعطيه <span class="grad">التعليمات</span></h2>
+    <div id="chat" data-in="0.35" data-fx="up">
+      <div class="head">
+        <div class="tile"><svg viewBox="0 0 24 24"><use href="#i-spark" fill="url(#gs)"/></svg></div>
+        <div><div>سنا</div><div class="online">● متصل الآن</div></div>
+      </div>
+      <div id="inputRow">
+        <div id="inputBox"><span id="typed"></span><span id="caret"></span></div>
+        <div id="sendBtn"><svg viewBox="0 0 24 24" fill="none" stroke="#04131f" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12H5M11 5l-7 7 7 7"/></svg></div>
+      </div>
+      <div id="workWrap" style="opacity:0">
+        <div id="work">سنا يشتغل على طلبك… <span id="pct">0%</span></div>
+        <div id="bar"><b></b></div>
+      </div>
+      <div id="outs">
+        <div class="out" data-in="4.35" data-fx="pop"><svg viewBox="0 0 24 24" class="ic" stroke="url(#g1)"><rect x="2" y="3.5" width="20" height="17" rx="2.5"/><path d="M2 8.5h20"/></svg>website.html</div>
+        <div class="out" data-in="4.55" data-fx="pop"><svg viewBox="0 0 24 24" class="ic" stroke="url(#g3)"><path d="M14 2H6.5A2.5 2.5 0 0 0 4 4.5v15A2.5 2.5 0 0 0 6.5 22h11a2.5 2.5 0 0 0 2.5-2.5V8z"/><path d="M14 2v6h6"/></svg>menu.pdf</div>
+        <div class="out" data-in="4.75" data-fx="pop"><svg viewBox="0 0 24 24" class="ic" stroke="url(#g4)"><path d="M20 6L9 17l-5-5"/></svg>تم بنجاح</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- S7: free credit -->
+  <section class="scene" id="s7" data-start="30.4" data-end="35.6">
+    <h2 class="t-m split" data-in="0.05" data-fx="up">ما تحتاج <span class="gold">تدفع</span> من البداية</h2>
+    <div id="giftWrap" data-in="0.4" data-fx="drop">
+      <div id="giftBurst"></div>
+      <svg viewBox="0 0 200 200">
+        <g id="giftBox">
+          <rect x="30" y="92" width="140" height="96" rx="12" fill="url(#giftBody)"/>
+          <rect x="88" y="92" width="24" height="96" fill="url(#ribbon)"/>
+          <rect x="30" y="92" width="140" height="10" fill="rgba(0,0,0,.18)"/>
+        </g>
+        <g id="giftLidG">
+          <rect x="22" y="66" width="156" height="32" rx="10" fill="url(#giftLid)"/>
+          <rect x="86" y="66" width="28" height="32" fill="url(#ribbon)"/>
+          <path d="M100 66 C 80 30, 48 40, 62 60 C 70 70, 92 68, 100 66 Z" fill="url(#ribbon)"/>
+          <path d="M100 66 C 120 30, 152 40, 138 60 C 130 70, 108 68, 100 66 Z" fill="url(#ribbon)"/>
+        </g>
+      </svg>
+    </div>
+    <h1 class="t-xl" data-in="1.5" data-fx="zoom"><span class="green">رصيد</span> <span class="gold">مجاني</span></h1>
+    <div class="badge" data-in="2.3" data-fx="pop">ابدأ وجرّب واكتشف إمكانياته</div>
+  </section>
+
+  <!-- S8: price -->
+  <section class="scene" id="s8" data-start="35.6" data-end="41.6">
+    <h2 class="t-m split" data-in="0.05" data-fx="up">تحتاج رصيد <span class="gold">إضافي؟</span></h2>
+    <div id="priceCard" data-in="0.4" data-fx="pop">
+      <div class="t-s">الأسعار تبدأ تقريباً من</div>
+      <div id="priceNum" class="gold"><span class="cur">$</span><span id="pnum">0</span></div>
+      <div id="approx" data-in="2.6" data-fx="up"><span class="eq">يعني حوالي</span><div class="rial"><span class="gold">2</span> ريال عُماني</div></div>
+    </div>
+    <div id="coins"></div>
+  </section>
+
+  <!-- S9: support -->
+  <section class="scene" id="s9" data-start="41.6" data-end="46.6">
+    <h2 class="t-m split" data-in="0.05" data-fx="up">أدوات تقنية بهالمستوى</h2>
+    <div class="row">
+      <div class="tile lg" data-in="0.5" data-fx="pop" style="--glow:rgba(224,35,46,.4)" id="heartTile">
+        <svg viewBox="0 0 24 24"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1.1L12 21l7.8-7.6 1-1.1a5.5 5.5 0 0 0 0-7.7z" fill="url(#g3)"/></svg>
+      </div>
+    </div>
+    <h1 class="t-l" data-in="1.1" data-fx="zoom">بتطوير <span class="red">عُ</span><span class="green">ماني</span></h1>
+    <h2 class="t-m split" data-in="1.8" data-fx="up">يستحق <span class="grad">التجربة</span> <span class="gold">والدعم</span></h2>
+  </section>
+
+  <!-- S10: question -->
+  <section class="scene" id="s10" data-start="46.6" data-end="52.4">
+    <div id="bigQ" data-in="0.0" data-fx="fade">؟</div>
+    <h2 class="t-m split" data-in="0.05" data-fx="up">الحين السؤال…</h2>
+    <h1 class="t-l split" data-in="0.6" data-fx="up">هل <span class="grad">سنا</span> بيكون <span class="gold">منافس قوي</span></h1>
+    <div id="vs">
+      <div class="side" data-in="1.6" data-fx="left">
+        <div class="tile lg"><svg viewBox="0 0 24 24"><use href="#i-spark" fill="url(#gs)"/></svg></div>
+        <div class="lbl">سنا</div>
+      </div>
+      <div id="vsMark" data-in="2.2" data-fx="slam">VS</div>
+      <div class="side" data-in="1.6" data-fx="right2">
+        <div class="tile lg" style="--glow:rgba(138,92,255,.35)"><svg viewBox="0 0 24 24" class="ic" stroke="url(#g5)"><rect x="4" y="8" width="16" height="12" rx="3.5"/><path d="M12 4.5V8"/><circle cx="12" cy="3.3" r="1.2"/><circle cx="9" cy="13.5" r="1.3" fill="url(#g5)"/><circle cx="15" cy="13.5" r="1.3" fill="url(#g5)"/><path d="M9.5 17h5M2 13v3M22 13v3"/></svg></div>
+        <div class="lbl">الوكلاء الحاليين</div>
+      </div>
+    </div>
+    <h2 class="t-s" data-in="2.8" data-fx="up">لوكلاء الذكاء الاصطناعي الموجودين حالياً؟</h2>
+  </section>
+
+  <!-- S11: CTA -->
+  <section class="scene" id="s11" data-start="52.4" data-end="58.5">
+    <svg viewBox="0 0 24 24" style="width:200px;height:200px" data-in="0.1" data-fx="pop"><use href="#i-spark" fill="url(#gs)"/></svg>
+    <h1 class="t-l split" data-in="0.35" data-fx="up">خلونا <span class="grad">نجرّبه</span></h1>
+    <h2 class="t-m split" data-in="0.9" data-fx="up">ونكتشف إمكانياته!</h2>
+    <p class="t-s" data-in="1.6" data-fx="up">وأعطيكم رأيي في <span class="gold">فيديو قادم</span></p>
+    <div style="position:relative" data-in="2.3" data-fx="pop">
+      <div id="pulse"></div>
+      <div class="btn"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" id="bell"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>تابعني عشان ما يفوتك</div>
+    </div>
+  </section>
+
+  <div id="vignette"></div>
+  <div id="flash"></div>
+</div>
+
+<script>
+const W=1080,H=1920,DURATION=58.5;
+const clamp=(x,a=0,b=1)=>Math.max(a,Math.min(b,x));
+const lerp=(a,b,p)=>a+(b-a)*p;
+const eOutCubic=p=>1-Math.pow(1-p,3);
+const eInOut=p=>p<.5?4*p*p*p:1-Math.pow(-2*p+2,3)/2;
+const eOutBack=p=>{const c1=1.70158,c3=c1+1;return 1+c3*Math.pow(p-1,3)+c1*Math.pow(p-1,2)};
+const eOutElastic=p=>p===0?0:p===1?1:Math.pow(2,-10*p)*Math.sin((p*10-.75)*(2*Math.PI)/3)+1;
+const eOutBounce=x=>{const n1=7.5625,d1=2.75;if(x<1/d1)return n1*x*x;else if(x<2/d1)return n1*(x-=1.5/d1)*x+.75;else if(x<2.5/d1)return n1*(x-=2.25/d1)*x+.9375;return n1*(x-=2.625/d1)*x+.984375};
+const $=s=>document.querySelector(s);
+
+// split headings into staggered words
+document.querySelectorAll('.split').forEach(el=>{
+  const base=parseFloat(el.dataset.in), fx=el.dataset.fx||'up';
+  let words=[];
+  if(el.children.length){
+    // wrap loose text nodes
+    [...el.childNodes].forEach(n=>{
+      if(n.nodeType===3){n.textContent.split(/\s+/).filter(Boolean).forEach(w=>{const s=document.createElement('span');s.textContent=w;words.push(s)})}
+      else words.push(n);
+    });
+  } else el.textContent.trim().split(/\s+/).forEach(w=>{const s=document.createElement('span');s.textContent=w;words.push(s)});
+  el.innerHTML='';
+  words.forEach((s,i)=>{s.classList.add('w');s.dataset.in=(base+i*0.13).toFixed(3);s.dataset.fx=fx;el.appendChild(s);if(i<words.length-1)el.appendChild(document.createTextNode(' '))});
+  delete el.dataset.in; el.style.opacity=1;
+});
+
+const scenes=[...document.querySelectorAll('.scene')].map(s=>({el:s,start:+s.dataset.start,end:+s.dataset.end,items:[...s.querySelectorAll('[data-in]')]}));
+
+function fx(el,p,kind){
+  const base=el.dataset.base||'';
+  let o=1,tr='',bl=0;
+  if(p<=0){el.style.opacity=0;return}
+  p=Math.min(1,p);
+  switch(kind){
+    case 'up':{const e=eOutCubic(p);o=clamp(p*1.8);tr=`translateY(${(1-e)*70}px)`;bl=(1-e)*12;break}
+    case 'pop':{const e=eOutBack(p);o=clamp(p*2.5);tr=`scale(${.2+.8*e})`;break}
+    case 'zoom':{const e=eOutCubic(p);o=clamp(p*2);tr=`scale(${1.7-.7*e})`;bl=(1-e)*22;break}
+    case 'zoomin':{const e=eOutElastic(clamp(p));o=clamp(p*3);tr=`scale(${.1+.9*e})`;break}
+    case 'right':{const e=eOutCubic(p);o=clamp(p*2);tr=`translateX(${-(1-e)*260}px)`;bl=(1-e)*10;break}
+    case 'left':{const e=eOutBack(p);o=clamp(p*2);tr=`translateX(${-(1-e)*500}px)`;break}
+    case 'right2':{const e=eOutBack(p);o=clamp(p*2);tr=`translateX(${(1-e)*500}px)`;break}
+    case 'flip':{const e=eOutBack(p);o=clamp(p*2);tr=`perspective(1400px) rotateY(${(1-e)*-90}deg) scale(${.7+.3*e})`;break}
+    case 'stamp':{const e=eOutCubic(clamp(p*1.6));o=clamp(p*4);tr=`scale(${2.6-1.6*e})`;break}
+    case 'slam':{const e=eOutBounce(clamp(p));o=clamp(p*4);tr=`scale(${3-2*e})`;break}
+    case 'drop':{const e=eOutBounce(clamp(p));o=clamp(p*4);tr=`translateY(${-(1-e)*700}px)`;break}
+    case 'fade':{o=eOutCubic(p);break}
+  }
+  el.style.opacity=o;el.style.transform=base+' '+tr;el.style.filter=bl>.2?`blur(${bl}px)`:'';
+}
+const DUR={up:.6,pop:.55,zoom:.7,zoomin:1.1,right:.65,left:.7,right2:.7,flip:.8,stamp:.5,slam:.7,drop:.9,fade:.8};
+
+// ---- background particles ----
+const ctx=$('#bgc').getContext('2d');
+let seed=7;const rnd=()=>(seed=(seed*16807)%2147483647)/2147483647;
+const parts=[...Array(90)].map(()=>({x:rnd()*W,y:rnd()*H,r:1+rnd()*3.2,vy:12+rnd()*40,vx:(rnd()-.5)*14,f:.6+rnd()*2,ph:rnd()*6.28,c:rnd()<.75?'53,240,220':(rnd()<.5?'255,207,90':'255,255,255')}));
+function drawBg(t){
+  ctx.clearRect(0,0,W,H);
+  // perspective grid floor
+  ctx.save();ctx.globalAlpha=.2;const vg=ctx.createLinearGradient(0,1300,0,H);vg.addColorStop(0,'rgba(53,240,220,0)');vg.addColorStop(1,'rgba(53,240,220,1)');ctx.strokeStyle=vg;ctx.lineWidth=2;
+  const hy=1300,cx=W/2;
+  for(let i=-14;i<=14;i++){ctx.beginPath();ctx.moveTo(cx+i*24,hy);ctx.lineTo(cx+i*260,H);ctx.stroke();}
+  for(let k=0;k<14;k++){const z=((k+(t*0.6)%1)/14);const y=hy+Math.pow(z,2.2)*(H-hy);ctx.globalAlpha=.18*z;ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
+  ctx.restore();
+  for(const p of parts){
+    const x=((p.x+p.vx*t)%W+W)%W, y=((p.y-p.vy*t)%H+H)%H;
+    const a=.25+.35*(.5+.5*Math.sin(t*p.f+p.ph));
+    ctx.beginPath();ctx.fillStyle=`rgba(${p.c},${a})`;ctx.shadowColor=`rgba(${p.c},1)`;ctx.shadowBlur=12;ctx.arc(x,y,p.r,0,6.283);ctx.fill();
+  }
+  ctx.shadowBlur=0;
+}
+
+// ---- sound cue sheet (single source of truth for audio) ----
+const CUES=[];
+const cue=(t,type,o={})=>CUES.push({t:+t.toFixed(3),type,...o});
+scenes.forEach((s,i)=>{ if(i>0) cue(s.start-0.18,'whoosh',{dur:.7}); });
+
+function setSceneTimes(){
+  const S=Object.fromEntries(scenes.map(s=>[s.el.id,s.start]));
+  // S1
+  cue(0,'riser',{dur:1.2,vol:.5}); cue(.15,'pop'); cue(1.15,'impact',{vol:.7}); cue(.55,'tick');cue(.68,'tick');cue(.81,'tick');
+  // S2
+  cue(S.s2+.35,'pop'); cue(S.s2+.9,'swoosh',{dur:.6}); cue(S.s2+1.45,'pop',{pitch:1.3}); cue(S.s2+2.4,'impact',{vol:.6}); cue(S.s2+2.4,'sparkle');
+  // S3
+  cue(S.s3+.6,'swoosh',{dur:.5}); cue(S.s3+1.2,'impact',{vol:.7}); cue(S.s3+2.1,'stamp');
+  // S4
+  cue(S.s4-0.9,'riser',{dur:1.5,vol:.8}); cue(S.s4+.6,'boom'); cue(S.s4+.6,'sparkle'); cue(S.s4+2.0,'pop'); cue(S.s4+2.25,'pop',{pitch:1.25});
+  // S5
+  [.6,1.6,2.6,3.6,4.6].forEach((d,i)=>{cue(S.s5+d,'swoosh',{dur:.35,vol:.5});cue(S.s5+d+.12,'pop',{pitch:1+i*.12})});
+  // S6 typing
+  cue(S.s6+.35,'swoosh',{dur:.5});
+  for(let k=0;k<TYPE_TEXT.length;k++){ if(TYPE_TEXT[k]!==' ') cue(S.s6+TYPE_T0+k*TYPE_STEP,'key',{seed:k}); }
+  cue(S.s6+3.05,'click'); cue(S.s6+3.1,'send'); cue(S.s6+4.35,'success');
+  // S7
+  cue(S.s7+.4,'swoosh',{dur:.5}); cue(S.s7+1.1,'thud'); cue(S.s7+1.3,'magic'); cue(S.s7+1.5,'impact',{vol:.5}); cue(S.s7+2.3,'pop');
+  // S8
+  cue(S.s8+.4,'pop'); for(let k=0;k<6;k++) cue(S.s8+.9+k*.17,'coin',{pitch:1+k*.06}); cue(S.s8+1.95,'cash'); cue(S.s8+2.6,'swoosh',{dur:.4});
+  // S9
+  cue(S.s9+.5,'pop'); cue(S.s9+1.0,'heart'); cue(S.s9+1.1,'impact',{vol:.55}); cue(S.s9+2.0,'sparkle');
+  // S10
+  cue(S.s10+.6,'tension',{dur:2.4}); cue(S.s10+1.6,'swoosh',{dur:.5}); cue(S.s10+2.2,'boom');
+  // S11
+  cue(S.s11+.1,'sparkle'); cue(S.s11+.35,'impact',{vol:.5}); cue(S.s11+2.3,'pop'); cue(S.s11+2.5,'bell'); cue(S.s11+4.8,'outro',{dur:1.6});
+}
+const TYPE_TEXT='صمّم لي موقع لمطعمي في مسقط مع منيو PDF';
+const TYPE_T0=0.95, TYPE_STEP=0.05;
+setSceneTimes();
+CUES.sort((a,b)=>a.t-b.t);
+window.CUES=CUES; window.DURATION=DURATION;
+
+// ---- per-scene custom animation ----
+function custom(id,l,t){
+  if(id==='s1'){const a=$('#aiTile');if(l>.7)a.style.transform=`translateY(${Math.sin(l*2.2)*10}px)`;}
+  if(id==='s2'){
+    const p=eInOut(clamp((l-.85)/.6));
+    const path=$('#arrowPath');path.style.strokeDashoffset=320*(1-p);
+    $('#arrowHead').setAttribute('opacity',clamp((p-.85)/.15));
+    const dot=$('#arrowDot');
+    if(l<.85)dot.setAttribute('opacity',0);
+    else{const lp=l<1.45?(l-.85)/.6:((l-1.45)/1.0)%1;const len=path.getTotalLength();const pt=path.getPointAtLength(len*lp);
+      dot.setAttribute('cx',pt.x);dot.setAttribute('cy',pt.y);dot.setAttribute('opacity',Math.sin(Math.PI*lp)*.9+.1)}
+  }
+  if(id==='s3'){$('#flag .sheen').style.transform=`translateX(${(l*160)%270-135}px)`;
+    const f=$('#flag');if(l>1.5)f.style.transform=`perspective(1400px) rotateY(${Math.sin(l*1.6)*7}deg) rotateX(${Math.cos(l*1.3)*3}deg)`;}
+  if(id==='s4'){
+    $('#rays').style.transform=`rotate(${l*14}deg)`;
+    $('#ring1').style.transform=`scale(${1+Math.sin(l*2.4)*.03})`;
+    $('#ring2').style.transform=`rotate(${-l*20}deg)`;
+    $('#logoStar').style.transform=`rotate(${l*40}deg) scale(${1+.08*Math.sin(l*4)})`;
+  }
+  if(id==='s6'){
+    const n=clamp(Math.floor((l-TYPE_T0)/TYPE_STEP)+1,0,TYPE_TEXT.length);
+    $('#typed').textContent=TYPE_TEXT.slice(0,l<TYPE_T0?0:n);
+    $('#caret').style.opacity=(l>3.05)?0:(Math.floor(l*2.4)%2?0:1);
+    const sb=$('#sendBtn');const bp=clamp((l-3.0)/.25);sb.style.transform=`scale(${1-.18*Math.sin(bp*Math.PI)})`;
+    const wp=clamp((l-3.15)/.25);$('#workWrap').style.opacity=wp;
+    const pr=eInOut(clamp((l-3.2)/1.1));$('#bar b').style.width=(pr*100)+'%';$('#pct').textContent=Math.round(pr*100)+'%';
+  }
+  if(id==='s7'){
+    const op=eOutBack(clamp((l-1.1)/.5));
+    $('#giftLidG').setAttribute('transform',`translate(${op*14} ${-op*38}) rotate(${op*-14} 100 80)`);
+    const shake=l>.9&&l<1.1?Math.sin(l*90)*4:0;$('#giftBox').setAttribute('transform',`rotate(${shake} 100 140)`);
+    const gb=$('#giftBurst');gb.style.opacity=clamp((l-1.1)/.3)*.9;gb.style.transform=`rotate(${l*18}deg) scale(${.6+.4*eOutCubic(clamp((l-1.1)/.6))})`;
+    document.querySelectorAll('#s7 .spark').forEach((s,i)=>{const sp=clamp((l-1.15-i*.04)/.9);const ang=i/SPARKS*6.283;const d=eOutCubic(sp)*(240+(i%3)*60);
+      s.style.opacity=sp>0?(1-sp):0;s.style.transform=`translate(${Math.cos(ang)*d}px,${Math.sin(ang)*d-60}px) scale(${.6+.6*(1-sp)}) rotate(${sp*180}deg)`});
+  }
+  if(id==='s8'){
+    const cp=eOutCubic(clamp((l-.9)/1.0));$('#pnum').textContent=Math.round(cp*5);
+    document.querySelectorAll('#coins .coin').forEach((c,i)=>{const st=.9+i*.17;const cpp=clamp((l-st)/1.2);
+      const x=COINX[i];const y=-300+eOutBounce(cpp)*(1980+((i*137)%160));c.style.opacity=cpp>0?1:0;
+      c.style.transform=`translate(${x}px,${y}px) rotate(${cpp*(i%2?220:-220)}deg)`});
+    $('#priceCard').style.boxShadow=`0 40px 100px rgba(0,0,0,.5),0 0 ${120+60*Math.sin(l*4)}px rgba(255,207,90,${.2+.15*clamp((l-1.9)/.3)})`;
+  }
+  if(id==='s9'){const h=$('#heartTile svg');const beat=l>1?Math.pow(Math.max(0,Math.sin(l*7.5)),8):0;h.style.transform=`scale(${1+.14*beat})`;}
+  if(id==='s10'){$('#bigQ').style.transform=`translate(-50%,-50%) rotate(${Math.sin(l*1.2)*8}deg) scale(${1+l*.03})`;
+    const v=$('#vsMark');if(l>2.9)v.style.transform=`scale(${1+.05*Math.sin(l*9)})`;}
+  if(id==='s11'){const b=$('#bell');const bl=l-2.5;b.style.transformOrigin='50% 10%';b.style.transform=bl>0?`rotate(${Math.sin(bl*22)*28*Math.exp(-bl*2.2)}deg)`:'';
+    const pp=((l-2.6)%1.2)/1.2;const pu=$('#pulse');pu.style.opacity=l>2.6?(1-pp):0;pu.style.transform=`scale(${1+pp*.25},${1+pp*.6})`;}
+}
+const SPARKS=14;
+for(let i=0;i<SPARKS;i++){const s=document.createElementNS('http://www.w3.org/2000/svg','svg');s.setAttribute('viewBox','0 0 24 24');s.classList.add('spark');s.innerHTML=`<use href="#i-spark" fill="${i%2?'#ffcf5a':'#7ffbef'}"/>`;s.style.left='210px';s.style.top='200px';$('#giftWrap').appendChild(s)}
+const COINX=[-420,-260,-110,60,210,360,-340,290];
+COINX.forEach((x,i)=>{const c=document.createElementNS('http://www.w3.org/2000/svg','svg');c.setAttribute('viewBox','0 0 24 24');c.classList.add('coin');c.style.left='485px';c.style.top='0';
+  c.innerHTML='<circle cx="12" cy="12" r="10.5" fill="url(#coinG)" stroke="#b86e12" stroke-width=".8"/><circle cx="12" cy="12" r="7.6" fill="none" stroke="rgba(150,80,10,.5)" stroke-width=".8"/><text x="12" y="16.2" text-anchor="middle" font-size="11" font-family="MadaLatin" fill="#8a4b07">$</text>';$('#coins').appendChild(c)});
+$('#coins').style.cssText='position:absolute;inset:0;pointer-events:none';
+
+function render(t){
+  drawBg(t);
+  $('#b1').style.transform=`translate(${-300+Math.sin(t*.35)*220}px,${200+Math.cos(t*.27)*260}px)`;
+  $('#b2').style.transform=`translate(${300+Math.cos(t*.3)*220}px,${900+Math.sin(t*.22)*260}px)`;
+  $('#b3').style.transform=`translate(${-100+Math.sin(t*.18)*300}px,${1300+Math.cos(t*.25)*200}px)`;
+  $('#progress b').style.width=(clamp(t/(DURATION-1))*100)+'%';
+  let flash=0;
+  for(const s of scenes){
+    const vis=t>=s.start-0.001&&t<s.end;
+    s.el.style.visibility=vis?'visible':'hidden';
+    if(!vis)continue;
+    const l=t-s.start;
+    const ex=clamp((t-(s.end-.38))/.38);
+    const isLast=s===scenes[scenes.length-1];
+    if(!isLast){s.el.style.opacity=1-ex;s.el.style.transform=`scale(${1+ex*.08})`;s.el.style.filter=ex>0?`blur(${ex*14}px)`:'';}
+    else{const fo=clamp((t-(DURATION-.9))/.9);s.el.style.opacity=1-fo;}
+    for(const el of s.items){const d=+el.dataset.in;const k=el.dataset.fx||'up';fx(el,(l-d)/(DUR[k]||.6),k)}
+    custom(s.el.id,l,t);
+    if(s.start>0){flash=Math.max(flash,1-clamp(l/.35))}
+  }
+  // impact flashes
+  for(const c of CUES){if(c.type==='boom'||c.type==='impact'){const d=t-c.t;if(d>=0&&d<.4)flash=Math.max(flash,(1-d/.4)*(c.type==='boom'?.9:.4))}}
+  $('#flash').style.opacity=flash*.55;
+  // camera shake on boom
+  let sh=0;for(const c of CUES){if(c.type==='boom'||c.type==='stamp'){const d=t-c.t;if(d>=0&&d<.35)sh=Math.max(sh,(1-d/.35)*(c.type==='boom'?14:8))}}
+  $('#stage').style.transform=sh?`translate(${Math.sin(t*120)*sh}px,${Math.cos(t*97)*sh}px)`:'';
+  // final global fade
+  $('#stage').style.opacity=1-clamp((t-(DURATION-.6))/.6);
+}
+window.render=render;
+render(0);
+</script>
+</body>
+</html>
