@@ -1,0 +1,109 @@
+<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><title>iPad mini Specs</title>
+<link rel="stylesheet" href="common.css">
+<style>
+:root{--accent:#FF5A1F;--accent2:#FFB547;--tint:#FFF1EA}
+body::before{content:"";position:absolute;width:760px;height:760px;right:-200px;top:-300px;border-radius:50%;background:radial-gradient(circle,var(--tint) 0%,rgba(255,255,255,0) 68%)}
+.wrap{position:relative;padding:54px 56px 0}
+.head{display:flex;align-items:center;justify-content:space-between;height:430px}
+.title{flex:1}
+.pill{display:inline-block;font-family:'IBM Plex Sans Arabic';font-weight:600;font-size:22px;color:var(--accent);background:var(--tint);padding:8px 20px;border-radius:999px}
+h1{font-size:112px;font-weight:800;letter-spacing:-4px;line-height:1;margin-top:22px;direction:ltr;text-align:right}
+.chip{direction:ltr;text-align:right;font-size:48px;font-weight:700;color:var(--accent);letter-spacing:-1px;margin-top:6px}
+.stats{display:flex;gap:16px;margin-top:30px}
+.stat{border:1.5px solid #eceef3;border-radius:22px;padding:16px 22px;min-width:200px;background:#fff}
+.stat b{font-size:42px;font-weight:800;letter-spacing:-1px}
+.stat b small{font-family:'IBM Plex Sans Arabic';font-size:22px;font-weight:600;color:#6b7080;margin-inline-start:6px}
+.stat span{display:block;font-family:'IBM Plex Sans Arabic';font-size:20px;color:#6b7080;margin-top:2px}
+.device{overflow:visible;width:410px;height:450px;margin-left:-14px}
+.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;margin-top:8px}
+.card{background:#fff;border:1.5px solid #eceef3;border-radius:26px;padding:22px 22px 20px;height:232px;box-shadow:0 10px 30px rgba(17,19,24,.04)}
+.card .top{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.ic{width:46px;height:46px;border-radius:14px;background:var(--tint);display:grid;place-items:center;flex:none}
+.ic svg{width:26px;height:26px;stroke:var(--accent);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.card h3{font-family:'IBM Plex Sans Arabic';font-size:25px;font-weight:700}
+.card ul{list-style:none;font-family:'IBM Plex Sans Arabic';font-size:19.5px;line-height:1.6;color:#3c4150}
+.card li{display:flex;gap:8px;align-items:baseline}
+.card li::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--accent);flex:none;transform:translateY(-3px)}
+.card li b{color:#111318;font-weight:700}
+.bottom{display:flex;gap:18px;margin-top:18px}
+.extra{flex:1;border-radius:26px;background:#111318;color:#fff;padding:22px 28px;height:162px;display:flex;flex-direction:column;justify-content:center}
+.extra h3{font-family:'IBM Plex Sans Arabic';font-size:25px;font-weight:700;color:var(--accent2);margin-bottom:10px}
+.tags{display:flex;flex-wrap:wrap;gap:10px}
+.tag{font-family:'IBM Plex Sans Arabic';font-size:18.5px;padding:6px 14px;border-radius:999px;background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.14)}
+.price{width:290px;height:162px;border-radius:26px;background:linear-gradient(135deg,var(--accent2),var(--accent));color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:'IBM Plex Sans Arabic'}
+.price .s{font-size:20px;font-weight:600;opacity:.95}
+.price .n{font-family:Inter;font-size:66px;font-weight:900;line-height:1.05;letter-spacing:-2px}
+.price .c{font-size:20px;font-weight:600}
+.sw{display:inline-block;width:20px;height:20px;border-radius:50%;vertical-align:-3px;margin-inline-end:4px;border:1.5px solid #d7dae2}
+
+.stage{width:420px;height:450px;border-radius:34px;background:#000;position:relative;overflow:hidden;flex:none;
+ box-shadow:0 30px 60px rgba(11,16,32,.25);margin-left:-6px}
+.stage .glow{position:absolute;inset:0;background:radial-gradient(60% 45% at 50% 100%,var(--accent) 0%,rgba(0,0,0,0) 70%);opacity:.55}
+.stage .float{position:absolute;inset:0}
+.stage img{position:absolute;left:0;bottom:0;width:100%;height:100%;object-fit:cover;object-position:center top;mix-blend-mode:lighten}
+.stage .shine{position:absolute;top:-20%;bottom:-20%;width:30%;left:0;background:linear-gradient(90deg,rgba(255,255,255,0),rgba(255,255,255,.18),rgba(255,255,255,0))}
+@keyframes up{from{opacity:0;transform:translateY(40px)}to{opacity:1;transform:none}}
+@keyframes side{from{opacity:0;transform:translateX(50px)}to{opacity:1;transform:none}}
+@keyframes pop{0%{opacity:0;transform:scale(.4)}65%{opacity:1;transform:scale(1.12)}100%{opacity:1;transform:scale(1)}}
+@keyframes draw{from{stroke-dashoffset:1}to{stroke-dashoffset:0}}
+@keyframes stageIn{from{opacity:0;transform:translateX(-80px) scale(.88);filter:blur(8px)}to{opacity:1;transform:none;filter:none}}
+@keyframes zoom{from{transform:scale(1.18)}to{transform:scale(1)}}
+@keyframes float{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-12px) rotate(-.6deg)}}
+@keyframes shine{0%{transform:translateX(-150%) skewX(-20deg)}40%,100%{transform:translateX(420%) skewX(-20deg)}}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.12)}}
+@keyframes ring{0%{box-shadow:0 0 0 0 var(--ring)}100%{box-shadow:0 0 0 18px rgba(0,0,0,0)}}
+@keyframes glowp{0%,100%{opacity:.4}50%{opacity:.75}}
+.a{animation:up .8s cubic-bezier(.2,.8,.2,1) both;animation-delay:calc(var(--d)*1s)}
+.a.side{animation-name:side}
+.a.pop{animation-name:pop;animation-duration:.7s}
+.stage.a{animation-name:stageIn;animation-duration:1.2s}
+.stage img{animation:zoom 2.4s cubic-bezier(.2,.8,.2,1) both;animation-delay:.3s}
+.stage .float{animation:float 4s ease-in-out 1.5s infinite}
+.stage .shine{animation:shine 3s ease-in-out 1.6s infinite}
+.stage .glow{animation:glowp 3s ease-in-out 1s infinite}
+.ic{animation:pop .7s cubic-bezier(.2,.8,.2,1) both,pulse 2.4s ease-in-out infinite,ring 2.4s ease-out infinite;
+ animation-delay:calc(var(--d)*1s + .15s),calc(var(--d)*1s + 1.6s),calc(var(--d)*1s + 1.6s)}
+.ic svg *{stroke-dasharray:1;animation:draw 1s ease-out both;animation-delay:calc(var(--d)*1s + .35s)}
+.handle .ig{animation:pulse 2s ease-in-out infinite;animation-delay:4.5s}
+
+.ic{--ring:rgba(255,90,31,.35)}
+</style></head><body><div class="wrap">
+<div class="head">
+ <div class="title">
+  <span class="pill a side" style="--d:.2">تعرّف على الجديد</span>
+  <h1 class="a" style="--d:.4">iPad mini</h1>
+  <div class="chip a" style="--d:.6">A20 Pro</div>
+  <div class="stats">
+   <div class="stat a pop" style="--d:.9"><b>8.5<small>إنش</small></b><span>شاشة OLED</span></div>
+   <div class="stat a pop" style="--d:1.05"><b>5.4<small>ملم</small></b><span>تصميم نحيف</span></div>
+  </div>
+ </div>
+ <div class="stage a" style="--d:0.3"><div class="glow"></div><div class="float"><img src="ipad-orig.png" alt=""></div><div class="shine"></div></div></div>
+<div class="grid">
+ <div class="card a" style="--d:1.30"><div class="top"><div class="ic" style="--d:1.30"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="13" rx="2"/><path d="M8 21h8"/></svg></div><h3>الشاشة</h3></div>
+  <ul><li class="a side" style="--d:1.74"><b class="ltr">Super Retina XDR</b></li><li class="a side" style="--d:1.83"><span class="ltr">2316 × 1512</span></li><li class="a side" style="--d:1.92">سطوع HDR حتى <b class="ltr">1200 nits</b></li><li class="a side" style="--d:2.01"><span class="ltr">Nano-texture</span> اختياري</li></ul></div>
+ <div class="card a" style="--d:1.48"><div class="top"><div class="ic" style="--d:1.48"><svg viewBox="0 0 24 24"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg></div><h3>الكاميرات</h3></div>
+  <ul><li class="a side" style="--d:1.92">خلفية <b class="ltr">12MP · ƒ/1.8</b></li><li class="a side" style="--d:2.01">فيديو <b class="ltr">4K</b> بمعدل <span class="ltr">60fps</span></li><li class="a side" style="--d:2.10">أمامية <b class="ltr">12MP · ƒ/2.0</b></li><li class="a side" style="--d:2.19"><span class="ltr">Center Stage</span> بوضع أفقي</li></ul></div>
+ <div class="card a" style="--d:1.66"><div class="top"><div class="ic" style="--d:1.66"><svg viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="2"/><path d="M9 2v4M15 2v4M9 18v4M15 18v4M2 9h4M2 15h4M18 9h4M18 15h4"/></svg></div><h3>المعالج والتخزين</h3></div>
+  <ul><li class="a side" style="--d:2.10">معالج 5 أنوية <span class="ltr">(128/256GB)</span></li><li class="a side" style="--d:2.19">معالج 6 أنوية <span class="ltr">(512GB)</span></li><li class="a side" style="--d:2.28">رسوميات 7 أنوية</li><li class="a side" style="--d:2.37"><span class="ltr">Neural Engine</span> بـ16 نواة</li></ul></div>
+ <div class="card a" style="--d:1.84"><div class="top"><div class="ic" style="--d:1.84"><svg viewBox="0 0 24 24"><path d="M12 3c-3 3-7 4-7 9a7 7 0 0 0 14 0c0-5-4-6-7-9z"/></svg></div><h3>التصميم والألوان</h3></div>
+  <ul><li class="a side" style="--d:2.28"><span><span class="sw" style="background:#2c2f3a;border-color:#2c2f3a"></span><span class="ltr">Midnight</span></span>&nbsp;&nbsp;<span><span class="sw" style="background:#f1ebdd"></span><span class="ltr">Starlight</span></span></li><li class="a side" style="--d:2.37">الوزن <b>255غ</b> · <b>263غ</b> <span class="ltr">(Cellular)</span></li><li class="a side" style="--d:2.46">مقاومة <b class="ltr">IP67</b> للماء والغبار</li></ul></div>
+ <div class="card a" style="--d:2.02"><div class="top"><div class="ic" style="--d:2.02"><svg viewBox="0 0 24 24"><path d="M2 9a15 15 0 0 1 20 0M5 12.5a10 10 0 0 1 14 0M8.5 16a5 5 0 0 1 7 0"/><circle cx="12" cy="19.5" r="1"/></svg></div><h3>الاتصال</h3></div>
+  <ul><li class="a side" style="--d:2.46"><b class="ltr">Wi‑Fi 7</b> · <b class="ltr">Bluetooth 6</b></li><li class="a side" style="--d:2.55"><span class="ltr">5G</span> و<span class="ltr">eSIM</span> لنسخ <span class="ltr">Cellular</span></li><li class="a side" style="--d:2.64"><span class="ltr">USB‑C</span> بسرعة <b class="ltr">10Gb/s</b></li></ul></div>
+ <div class="card a" style="--d:2.20"><div class="top"><div class="ic" style="--d:2.20"><svg viewBox="0 0 24 24"><rect x="2" y="7" width="17" height="10" rx="2"/><path d="M22 11v2"/><path d="M11 8.5 8.5 12h4L10 15.5"/></svg></div><h3>البطارية والشحن</h3></div>
+  <ul><li class="a side" style="--d:2.64">حتى <b>10 ساعات</b> عبر <span class="ltr">Wi‑Fi</span></li><li class="a side" style="--d:2.73">شحن <b>50%</b> خلال ~30 دقيقة</li><li class="a side" style="--d:2.82">بشاحن <span class="ltr">35W</span> أو أعلى</li></ul></div>
+</div>
+<div class="bottom">
+ <div class="extra a" style="--d:2.5"><h3>مزايا إضافية</h3><div class="tags">
+  <span class="tag a pop" style="--d:2.80" ltr">iPadOS 27</span><span class="tag a pop" style="--d:2.90" ltr">Touch ID</span><span class="tag a pop" style="--d:3.00"">صوت ستيريو</span><span class="tag a pop" style="--d:3.10" ltr">Acoustic Display</span><span class="tag a pop" style="--d:3.20"">يدعم <span class="ltr">Apple Pencil Pro</span> و<span class="ltr">USB‑C</span></span></div></div>
+ <div class="price a pop" style="--d:2.6"><span class="s">السعر في عُمان يبدأ من</span><span class="n" data-to="319" data-s="2.75" data-dur="1.1">319</span><span class="c">ريال عُماني</span></div>
+</div>
+</div>
+<div class="footer a" style="--d:3.4"><div class="handle"><span class="ig"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4.2"/><circle cx="17.4" cy="6.6" r="1.1" fill="#fff" stroke="none"/></svg></span>@alshiblitech</div></div>
+<script>
+document.querySelectorAll('.ic svg *').forEach(e=>e.setAttribute('pathLength',1));
+const ease=x=>1-Math.pow(1-x,3);
+window.seek=t=>{document.querySelectorAll('[data-to]').forEach(e=>{const s=+e.dataset.s,d=+(e.dataset.dur||.8);
+ const p=Math.min(1,Math.max(0,(t-s)/d));e.textContent=Math.round(ease(p)*(+e.dataset.to));});};
+window.seek(0);
+</script></body></html>
