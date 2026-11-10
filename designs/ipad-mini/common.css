@@ -1,0 +1,10 @@
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800;900&display=block');
+*{margin:0;padding:0;box-sizing:border-box}
+html{overflow:hidden}
+html,body{width:1080px;height:1350px;background:#fff}
+body{font-family:'Inter','IBM Plex Sans Arabic',sans-serif;color:#111318;direction:rtl;position:relative;overflow:hidden}
+.ltr{direction:ltr;unicode-bidi:isolate;display:inline-block}
+.footer{position:absolute;bottom:34px;left:0;right:0;display:flex;justify-content:center}
+.handle{display:flex;align-items:center;gap:12px;direction:ltr;font-weight:700;font-size:26px;color:#111318;
+ padding:12px 26px;border-radius:999px;background:#fff;border:1.5px solid #e6e8ee;box-shadow:0 6px 20px rgba(17,19,24,.06)}
+.handle .ig{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;background:var(--accent)}
