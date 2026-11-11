@@ -1,0 +1,263 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<style>
+@font-face{font-family:Naskh;src:url(assets/ThickNaskhSwash.otf)}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:1080px;height:1920px;overflow:hidden;background:#000;font-family:Naskh,serif}
+#stage{position:absolute;inset:0;overflow:hidden}
+/* ---------- part 1: graded footage + subtitles ---------- */
+#main{position:absolute;inset:0;transform-origin:50% 45%}
+#vid{position:absolute;inset:0;width:1080px;height:1920px;object-fit:cover}
+#sub{position:absolute;left:70px;right:70px;bottom:330px;display:flex;justify-content:center}
+#subBox{position:relative;padding:22px 46px 30px;border-radius:30px;
+  background:linear-gradient(180deg,rgba(10,28,80,.72),rgba(6,18,56,.78));
+  box-shadow:0 18px 50px rgba(0,0,0,.35),inset 0 0 0 2px rgba(120,180,255,.25);
+  color:#fff;font-size:62px;line-height:1.55;text-align:center;
+  text-shadow:0 3px 8px rgba(0,0,0,.45)}
+#subBox::before{content:"";position:absolute;top:-4px;right:50%;width:var(--bar,0px);height:8px;
+  transform:translateX(50%);border-radius:8px;background:linear-gradient(90deg,#2f7bff,#6fd0ff)}
+#subBox b{font-weight:normal;color:#8fd3ff}
+#tag{position:absolute;top:250px;right:0;display:flex;align-items:center;gap:0;flex-direction:row}
+#tagBar{width:14px;height:150px;background:linear-gradient(#2f7bff,#6fd0ff)}
+#tagBody{background:rgba(255,255,255,.93);padding:14px 40px 18px 46px;border-radius:0 0 0 28px;
+  box-shadow:0 14px 40px rgba(0,0,0,.25)}
+#tagBody .n{font-size:58px;color:#0b2a8a;line-height:1.3}
+#tagBody .r{font-size:38px;color:#2a5bd7;line-height:1.3;direction:rtl}
+#flash{position:absolute;inset:0;background:#fff;opacity:0;pointer-events:none}
+/* ---------- part 2: end card ---------- */
+#end{position:absolute;inset:0;opacity:0;
+  background:radial-gradient(1200px 900px at 80% 10%,#ffffff 0%,#e3f0ff 40%,#c3dcff 100%)}
+.blob{position:absolute;border-radius:50%;filter:blur(70px);opacity:.55}
+#grid{position:absolute;inset:-200px;background-image:
+  linear-gradient(rgba(47,123,255,.08) 2px,transparent 2px),linear-gradient(90deg,rgba(47,123,255,.08) 2px,transparent 2px);
+  background-size:90px 90px}
+#rings{position:absolute;left:540px;top:1020px;width:0;height:0}
+#rings i{position:absolute;border:3px solid rgba(47,123,255,.18);border-radius:50%;transform:translate(-50%,-50%)}
+.dot{position:absolute;width:10px;height:10px;border-radius:50%;background:#5aa9ff;opacity:.5}
+.slide{position:absolute;inset:0;perspective:1800px}
+.head{position:absolute;top:150px;left:60px;right:60px;text-align:center}
+.head .k{display:inline-block;font-size:40px;color:#fff;background:linear-gradient(90deg,#2f7bff,#1747c9);
+  padding:6px 34px 12px;border-radius:40px;box-shadow:0 10px 26px rgba(23,71,201,.35)}
+.head h1{font-weight:normal;font-size:96px;white-space:nowrap;line-height:1.35;color:#0b2a8a;margin-top:12px;
+  text-shadow:0 6px 18px rgba(23,71,201,.18)}
+.card{position:absolute;left:50%;top:1060px;transform-style:preserve-3d}
+.card .frame{position:absolute;left:0;top:0;border-radius:38px;overflow:hidden;
+  box-shadow:0 50px 90px rgba(10,40,120,.35),0 0 0 6px rgba(255,255,255,.9)}
+.card .frame img{display:block;width:100%;height:100%;object-fit:cover;transform-origin:50% 40%}
+.card .shine{position:absolute;inset:0;background:linear-gradient(105deg,transparent 30%,rgba(255,255,255,.55) 45%,transparent 60%);
+  mix-blend-mode:screen}
+.foot{position:absolute;bottom:120px;left:70px;right:70px;text-align:center}
+.foot span{display:inline-block;font-size:50px;color:#0b2a8a;background:rgba(255,255,255,.88);
+  padding:10px 44px 18px;border-radius:44px;box-shadow:0 12px 34px rgba(10,40,120,.18)}
+#final{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+#final .brand{font-family:Naskh;font-size:150px;color:#0b2a8a;line-height:1.1;direction:ltr;letter-spacing:2px}
+#final .brand em{font-style:normal;color:#2f7bff}
+#final .x{font-size:58px;color:#2a5bd7;direction:ltr;margin-top:6px;letter-spacing:8px}
+#final .line{width:0;height:8px;border-radius:8px;background:linear-gradient(90deg,#2f7bff,#6fd0ff);margin:40px auto}
+#final .ar{font-size:84px;color:#0b2a8a;line-height:1.4}
+#final .where{font-size:48px;color:#2a5bd7;margin-top:10px}
+#final .date{display:inline-block;margin-top:34px;font-size:50px;color:#fff;padding:10px 46px 18px;border-radius:50px;
+  background:linear-gradient(90deg,#2f7bff,#1747c9);box-shadow:0 14px 30px rgba(23,71,201,.35)}
+.wa{display:flex;align-items:center;justify-content:center;gap:26px;margin-top:30px;direction:ltr;
+  background:#fff;border-radius:70px;padding:18px 54px 18px 22px;box-shadow:0 16px 40px rgba(10,40,120,.2)}
+.wa .ic{width:86px;height:86px;border-radius:50%;background:#25d366;display:flex;align-items:center;justify-content:center}
+.wa .num{font-size:70px;color:#0b2a8a;letter-spacing:2px}
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="main">
+    <img id="vid">
+    <div id="tag"><div id="tagBody"><div class="n">سلام مينا</div><div class="r">الموزّع المعتمد لـ Creality في عُمان</div></div><div id="tagBar"></div></div>
+    <div id="sub"><div id="subBox"></div></div>
+  </div>
+
+  <div id="end">
+    <div id="grid"></div>
+    <div class="blob" style="width:700px;height:700px;background:#7cc0ff;left:-200px;top:200px" id="b1"></div>
+    <div class="blob" style="width:600px;height:600px;background:#a9d8ff;right:-180px;top:1100px" id="b2"></div>
+    <div class="blob" style="width:500px;height:500px;background:#4f8dff;left:300px;top:1600px;opacity:.3" id="b3"></div>
+    <div id="rings"></div>
+    <div id="dots"></div>
+
+    <div class="slide" id="s0">
+      <div class="head"><span class="k">مول عُمان · الطابق الثاني</span><h1>إطلاق Creality في عُمان</h1></div>
+      <div class="card"><div class="frame"><img src="assets/poster1-launch.jpg"><div class="shine"></div></div></div>
+      <div class="foot"><span>من 20 نوفمبر إلى 3 ديسمبر</span></div>
+    </div>
+    <div class="slide" id="s1">
+      <div class="head"><span class="k">حصرياً في الجناح</span><h1>عروض وسحوبات قيّمة</h1></div>
+      <div class="card"><div class="frame"><img src="assets/poster2-offers.jpg"><div class="shine"></div></div></div>
+      <div class="foot"><span>ترقيات مجانية وجوائز عند الشراء</span></div>
+    </div>
+    <div class="slide" id="s2">
+      <div class="head"><span class="k">فرصة شراكة</span><h1>انضم كموزّع معتمد</h1></div>
+      <div class="card"><div class="frame"><img src="assets/poster3-reseller.jpg"><div class="shine"></div></div></div>
+      <div class="foot"><span>بدون مخزون · توصيل مجاني · ضمان سنة</span></div>
+    </div>
+
+    <div id="final">
+      <div class="brand">Salem <em>MENA</em></div>
+      <div class="x">× CREALITY</div>
+      <div class="line"></div>
+      <div class="ar">زورونا وتواصلوا معنا</div>
+      <div class="where">مول عُمان · الطابق الثاني · بجوار عمانتل</div>
+      <div class="wa" id="wa1"><div class="ic"><svg width="52" height="52" viewBox="0 0 24 24" fill="#fff"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8s-.4-.1-.6.1-.7.8-.8 1-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.3-.4.3-.4.7-1.4.1-.2 0-.3 0-.5l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.8 11.9 11.9 0 0 0 4.6 4c1.7.7 2.4.8 3.2.7.5-.1 1.5-.6 1.7-1.2s.2-1.1.2-1.2-.2-.2-.4-.3z"/></svg></div><div class="num">+968 7798 3448</div></div>
+      <div class="wa" id="wa2"><div class="ic"><svg width="52" height="52" viewBox="0 0 24 24" fill="#fff"><use href="#"/><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8s-.4-.1-.6.1-.7.8-.8 1-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.3-.4.3-.4.7-1.4.1-.2 0-.3 0-.5l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.8 11.9 11.9 0 0 0 4.6 4c1.7.7 2.4.8 3.2.7.5-.1 1.5-.6 1.7-1.2s.2-1.1.2-1.2-.2-.2-.4-.3z"/></svg></div><div class="num">+968 7755 8615</div></div>
+      <div class="date">من 20 نوفمبر إلى 3 ديسمبر</div>
+    </div>
+  </div>
+  <div id="flash"></div>
+</div>
+
+<script>
+const params=new URLSearchParams(location.search);
+const FRAMES=params.get('frames')||'build/frames';
+const FPS=30, MAIN_FRAMES=+(params.get('n')||1968), MAIN=MAIN_FRAMES/FPS;
+const END_LEN=17.0, DURATION=MAIN+END_LEN, NFRAMES=Math.round(DURATION*FPS);
+const $=s=>document.querySelector(s);
+const clamp=(x,a=0,b=1)=>Math.max(a,Math.min(b,x));
+const lin=(t,a,b)=>clamp((t-a)/(b-a));
+const eo=x=>1-Math.pow(1-x,3);                 // ease-out cubic
+const eio=x=>x<.5?4*x*x*x:1-Math.pow(-2*x+2,3)/2;
+const back=x=>{const c=1.4;return 1+(c+1)*Math.pow(x-1,3)+c*Math.pow(x-1,2)};
+const mix=(a,b,p)=>a+(b-a)*p;
+
+/* Arabic translation of the woman's English speech (timed to Whisper word timestamps) */
+const SUBS=[
+ [21.90,25.30,'نحن من شركة <b>سلام مينا</b> في عُمان'],
+ [26.10,30.80,'الموزّع المعتمد لعلامة <b>Creality</b><br>من شنتشن في الصين'],
+ [30.90,34.30,'وهنا نعرض لكم جهازين'],
+ [34.40,37.95,'الأول هو جهاز المبتدئين <b>i7</b>'],
+ [37.95,43.00,'والثاني هو الطراز الاحترافي <b>K2 Plus</b>'],
+ [43.45,47.50,'نحن الآن في عُمان<br>وقد بدأنا نشاطنا في السوق العُماني'],
+ [47.60,51.40,'ونقدّم ضماناً لمدة <b>12 شهراً</b>'],
+ [51.40,54.60,'مع خدمة ما بعد البيع لكل منتجاتنا'],
+];
+const TAG=[22.0,27.4];
+const SLIDES=[0.25,4.75,9.25], SLIDE_LEN=4.5, FINAL=13.75;
+const SIZES=[[1034,1280],[1034,1280],[1080,1425]];
+
+/* sound cue sheet (consumed by audio.py) */
+const CUES=[
+ {t:TAG[0]-.05,type:'swoosh',vol:.5},
+ ...SUBS.map(s=>({t:s[0]-.04,type:'tick',vol:.35})),
+ {t:MAIN-1.3,type:'riser',dur:1.3,vol:.55},
+ {t:MAIN,type:'impact',vol:.8},
+ ...SLIDES.map((s,i)=>({t:MAIN+s-.1,type:'whoosh',dur:.7,vol:.9})),
+ ...SLIDES.map((s,i)=>({t:MAIN+s+.55,type:'pop',pitch:1+i*.12,vol:.6})),
+ {t:MAIN+FINAL-.1,type:'whoosh',dur:.7,vol:.9},
+ {t:MAIN+FINAL+.2,type:'sparkle',vol:.8},
+ {t:MAIN+FINAL+1.55,type:'pop',pitch:1.2,vol:.7},
+ {t:MAIN+FINAL+1.8,type:'pop',pitch:1.35,vol:.7},
+ {t:MAIN+FINAL+2.2,type:'ding',vol:.8},
+];
+CUES.sort((a,b)=>a.t-b.t);
+Object.assign(window,{CUES,DURATION,NFRAMES});
+
+/* decorative elements */
+const rings=$('#rings');[380,560,760,980].forEach(r=>{const i=document.createElement('i');i.style.width=i.style.height=r+'px';rings.appendChild(i)});
+const dots=$('#dots');const DOTS=[];let seed=7;const rnd=()=>(seed=(seed*16807)%2147483647)/2147483647;
+for(let k=0;k<26;k++){const d=document.createElement('div');d.className='dot';const s=4+rnd()*12;d.style.width=d.style.height=s+'px';
+  dots.appendChild(d);DOTS.push({d,x:rnd()*1080,y:rnd()*1920,v:20+rnd()*50,ph:rnd()*6})}
+document.querySelectorAll('.card').forEach((c,i)=>{const [w,h]=SIZES[i];const W=880,H=Math.round(W*h/w);
+  c.style.width=W+'px';c.style.height=H+'px';c.style.marginLeft=(-W/2)+'px';c.style.marginTop=(-H/2)+'px';
+  const f=c.querySelector('.frame');f.style.width=W+'px';f.style.height=H+'px';});
+
+let lastSub=-2;
+async function render(t){
+  /* ---------- main footage ---------- */
+  const inMain=t<MAIN+0.6;
+  $('#main').style.display=inMain?'block':'none';
+  if(inMain){
+    const f=Math.min(MAIN_FRAMES,Math.floor(t*FPS+1e-6)+1);
+    const img=$('#vid');const src=`${FRAMES}/${String(f).padStart(5,'0')}.jpg`;
+    if(!img.src.endsWith(src)){img.src=src;await img.decode().catch(()=>{});}
+    // push-in + blur into the transition
+    const p=eio(lin(t,MAIN-0.9,MAIN));
+    $('#main').style.transform=`scale(${1+p*.18}) rotate(${p*-2}deg)`;
+    $('#main').style.filter=p>0?`blur(${p*14}px) brightness(${1+p*.5})`:'none';
+    // subtitles
+    const i=SUBS.findIndex(s=>t>=s[0]&&t<s[1]);
+    const box=$('#subBox');
+    if(i<0){box.style.opacity=0;}
+    else{
+      const [a,b,txt]=SUBS[i];
+      if(i!==lastSub){box.innerHTML=txt;lastSub=i;}
+      const pin=eo(lin(t,a,a+.28)), pout=lin(t,b-.18,b);
+      box.style.opacity=pin*(1-pout);
+      box.style.transform=`translateY(${(1-pin)*36}px) scale(${.94+.06*pin})`;
+      box.style.setProperty('--bar',(eo(lin(t,a+.1,a+.6))*160)+'px');
+    }
+    // name tag (lower third style, top right)
+    const tin=eo(lin(t,TAG[0],TAG[0]+.5)),tout=eio(lin(t,TAG[1]-.4,TAG[1]));
+    const tag=$('#tag');tag.style.opacity=tin*(1-tout);
+    tag.style.transform=`translateX(${(1-tin+tout)*620}px)`;
+    $('#tagBar').style.height=(150*tin)+'px';
+  }
+  /* ---------- flash ---------- */
+  const fl=t<MAIN?Math.pow(lin(t,MAIN-.35,MAIN),2):1-eo(lin(t,MAIN,MAIN+.6));
+  $('#flash').style.opacity=t<MAIN-.35?0:fl*.95;
+
+  /* ---------- end card ---------- */
+  const e=t-MAIN;
+  $('#end').style.opacity=e<0?0:1;
+  if(e<0) return;
+  $('#grid').style.transform=`translateY(${-(e*18)%90}px)`;
+  $('#b1').style.transform=`translate(${Math.sin(e*.5)*80}px,${Math.cos(e*.4)*60}px)`;
+  $('#b2').style.transform=`translate(${Math.cos(e*.45)*90}px,${Math.sin(e*.35)*70}px)`;
+  $('#b3').style.transform=`translate(${Math.sin(e*.3)*120}px,0)`;
+  rings.querySelectorAll('i').forEach((r,k)=>{const s=1+.06*Math.sin(e*1.6-k*.8);r.style.transform=`translate(-50%,-50%) scale(${s})`;
+    r.style.opacity=e<FINAL?1:Math.max(0,1-(e-FINAL)*2)});
+  DOTS.forEach(o=>{const y=((o.y-e*o.v)%1920+1920)%1920;o.d.style.transform=`translate(${o.x-540+Math.sin(e+o.ph)*20}px,${y}px)`;});
+
+  SLIDES.forEach((s0,i)=>{
+    const el=$('#s'+i), le=e-s0;
+    if(le<-.1||le>SLIDE_LEN+.6){el.style.display='none';return;}
+    el.style.display='block';
+    const pin=lin(le,0,.9), pout=lin(le,SLIDE_LEN-.1,SLIDE_LEN+.5);
+    const card=el.querySelector('.card'), img=el.querySelector('img'), shine=el.querySelector('.shine');
+    const bi=back(clamp(pin)), oo=eio(pout);
+    const x=(1-bi)*1150 - oo*1150, ry=(1-bi)*-35 + oo*35, sc=(.82+.18*eo(pin))*(1-.12*oo);
+    card.style.transform=`translateX(${x}px) rotateY(${ry}deg) scale(${sc})`;
+    card.style.opacity=clamp(pin*3)*(1-oo);
+    img.style.transform=`scale(${1.0+.06*lin(le,0,SLIDE_LEN+.5)})`;
+    const sh=lin(le,.7,1.6);shine.style.transform=`translateX(${mix(-120,120,sh)}%)`;shine.style.opacity=sh>0&&sh<1?1:0;
+    // headline: chip pops, title rises with wipe
+    const head=el.querySelector('.head'), k=head.querySelector('.k'), h=head.querySelector('h1');
+    const kp=back(lin(le,.15,.6));k.style.transform=`scale(${kp})`;k.style.opacity=clamp(kp);
+    const hp=eo(lin(le,.3,1.0));
+    h.style.clipPath=`inset(0 0 0 ${(1-hp)*100}%)`;           // RTL wipe (reveals from the right)
+    h.style.transform=`translateY(${(1-hp)*40}px)`;
+    head.style.opacity=1-oo;head.style.transform=`translateX(${-oo*300}px)`;
+    const foot=el.querySelector('.foot');const fp=eo(lin(le,.8,1.3));
+    foot.style.opacity=fp*(1-oo);foot.style.transform=`translateY(${(1-fp)*60+oo*40}px)`;
+  });
+
+  const fe=e-FINAL, fin=$('#final');
+  fin.style.display=fe<-.05?'none':'flex';
+  if(fe>=-.05){
+    const b=fin.querySelector('.brand'), x=fin.querySelector('.x'), ln=fin.querySelector('.line'),
+          ar=fin.querySelector('.ar'), wh=fin.querySelector('.where'), dt=fin.querySelector('.date');
+    const pb=back(lin(fe,0,.7));b.style.transform=`scale(${.6+.4*pb})`;b.style.opacity=clamp(pb);
+    const px=eo(lin(fe,.35,.9));x.style.opacity=px;x.style.letterSpacing=(30-22*px)+'px';
+    ln.style.width=(eo(lin(fe,.6,1.2))*420)+'px';
+    const pa=eo(lin(fe,.8,1.3));ar.style.opacity=pa;ar.style.transform=`translateY(${(1-pa)*40}px)`;
+    const pw=eo(lin(fe,1.0,1.5));wh.style.opacity=pw;wh.style.transform=`translateY(${(1-pw)*30}px)`;
+    ['#wa1','#wa2'].forEach((id,k)=>{const p=back(lin(fe,1.5+k*.25,2.0+k*.25));const w=$(id);
+      w.style.opacity=clamp(p*2);w.style.transform=`scale(${.5+.5*p})`;
+      w.querySelector('.ic').style.transform=`rotate(${(1-clamp(p))*-90}deg)`;});
+    const pd=back(lin(fe,2.1,2.6));dt.style.opacity=clamp(pd);dt.style.transform=`scale(${.6+.4*pd})`;
+    // gentle breathing after everything has landed
+    const br=fe>2.8?1+.012*Math.sin((fe-2.8)*2.4):1;
+    fin.style.transform=`scale(${br})`;
+    // fade to white at the very end
+    fin.style.opacity=1-lin(e,END_LEN-.5,END_LEN);
+  }
+}
+window.render=render;
+</script>
+</body>
+</html>
