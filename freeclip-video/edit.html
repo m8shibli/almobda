@@ -1,0 +1,548 @@
+<!doctype html>
+<html lang="ar">
+<head>
+<meta charset="utf-8">
+<title>FreeClip 2S Edit</title>
+<style>
+@font-face{font-family:"Mont";src:url("assets/Montserrat.woff2") format("woff2");font-weight:100 900}
+@font-face{font-family:"Play";src:url("assets/PlayfairItalic.woff2") format("woff2");font-style:italic;font-weight:400 900}
+@font-face{font-family:"Mada";src:url("assets/sf-mada-bold.ttf") format("truetype")}
+:root{--gold1:#fff4d6;--gold:#e8c98a;--gold2:#b98d4e;--blue:#7cc4ff;--ink:rgba(10,12,18,.58);--line:rgba(255,255,255,.16)}
+*{box-sizing:border-box}
+html,body{margin:0;width:1080px;height:1920px;overflow:hidden;background:#000}
+#stage{position:relative;width:1080px;height:1920px;overflow:hidden;font-family:"Mont","Mada",sans-serif;color:#fff}
+#vid{position:absolute;left:0;top:0;width:1080px;height:1920px;transform-origin:540px 860px}
+.layer{position:absolute;inset:0;pointer-events:none}
+#topShade{background:linear-gradient(180deg,rgba(0,0,0,.72) 0%,rgba(0,0,0,.35) 22%,rgba(0,0,0,0) 40%);opacity:0}
+#botShade{background:linear-gradient(0deg,rgba(0,0,0,.78) 0%,rgba(0,0,0,.4) 22%,rgba(0,0,0,0) 42%);opacity:0}
+#vig{background:radial-gradient(ellipse 80% 65% at 50% 48%,rgba(0,0,0,0) 55%,rgba(0,0,0,.42) 100%)}
+#leak{mix-blend-mode:screen;opacity:0}
+#flash{background:radial-gradient(circle at 50% 30%,rgba(255,246,220,.95),rgba(232,201,138,.25) 40%,rgba(0,0,0,0) 75%);mix-blend-mode:screen;opacity:0}
+#grain{opacity:.07;mix-blend-mode:overlay}
+#grain canvas{position:absolute;inset:0;width:100%;height:100%;display:none}
+#fade{background:#000;opacity:0}
+
+/* type */
+.ov{position:absolute;opacity:0}
+.eyebrow{font-family:"Mont";font-weight:500;font-size:28px;letter-spacing:.5em;text-transform:uppercase;color:var(--gold);padding-left:.5em}
+.ar{font-family:"Mada";direction:rtl}
+.goldT{background:linear-gradient(100deg,var(--gold2) 0%,var(--gold) 30%,var(--gold1) 48%,var(--gold) 62%,var(--gold2) 100%);background-size:260% 100%;
+  -webkit-background-clip:text;background-clip:text;color:transparent}
+.silverT{background:linear-gradient(180deg,#ffffff 20%,#c9ced8 70%,#8e96a6);-webkit-background-clip:text;background-clip:text;color:transparent}
+.glass{background:linear-gradient(160deg,rgba(28,30,38,.62),rgba(8,9,13,.66));backdrop-filter:blur(22px) saturate(140%);-webkit-backdrop-filter:blur(22px) saturate(140%);
+  border:1.5px solid var(--line);border-radius:40px;box-shadow:0 40px 90px rgba(0,0,0,.45),inset 0 1.5px 0 rgba(255,255,255,.14)}
+.hair{height:2px;background:linear-gradient(90deg,rgba(232,201,138,0),var(--gold),rgba(232,201,138,0));transform-origin:50% 50%}
+.center{left:0;right:0;display:flex;flex-direction:column;align-items:center;text-align:center}
+
+/* product title */
+.brandline{font-family:"Mont";font-weight:500;font-size:40px;letter-spacing:.62em;padding-left:.62em;color:#e9edf3}
+.pname{font-family:"Mont";font-size:150px;line-height:1.02;letter-spacing:-.01em;white-space:nowrap;direction:ltr;filter:drop-shadow(0 10px 30px rgba(0,0,0,.55))}
+.pname .l{font-weight:250}.pname .b{font-weight:700}
+.pname .num{font-weight:800}
+.ch{display:inline-block;will-change:transform}
+.chipE{display:inline-flex;align-items:center;gap:16px;font-family:"Mont";font-weight:600;font-size:30px;letter-spacing:.32em;padding:16px 34px 16px calc(34px + .32em);border-radius:999px;
+  background:rgba(10,12,18,.55);border:1.5px solid rgba(232,201,138,.55);color:var(--gold1);backdrop-filter:blur(14px);white-space:nowrap}
+.chipE i{width:12px;height:12px;border-radius:50%;background:var(--gold);box-shadow:0 0 14px var(--gold)}
+.special{font-family:"Play";font-style:italic;font-weight:600;font-size:96px;line-height:1}
+
+/* counters */
+.big{font-family:"Mont";font-weight:800;line-height:1;direction:ltr;white-space:nowrap;font-variant-numeric:tabular-nums}
+.unit{font-family:"Mont";font-weight:300}
+
+/* tag rows (design) */
+.tag{display:flex;align-items:center;gap:26px;padding:22px 34px;margin:10px 0;direction:ltr;min-width:640px}
+.tag .ic{width:74px;height:74px;border-radius:22px;display:grid;place-items:center;background:rgba(232,201,138,.12);border:1.5px solid rgba(232,201,138,.4);flex:none}
+.tag .ic svg{width:60%;height:60%}
+.tag .txt{display:flex;flex-direction:column;gap:4px;text-align:left}
+.tag .en{font-family:"Mont";font-weight:700;font-size:38px;letter-spacing:.14em}
+.tag .arS{font-family:"Mada";font-size:30px;color:rgba(255,255,255,.7)}
+
+/* chapters */
+.chap{display:flex;align-items:center;gap:28px;direction:ltr}
+.chap .n{font-family:"Mont";font-weight:800;font-size:190px;line-height:.85;color:transparent;-webkit-text-stroke:2.5px var(--gold)}
+.chap .t{display:flex;flex-direction:column;gap:10px}
+.chap .t b{font-family:"Mont";font-weight:700;font-size:64px;letter-spacing:.3em}
+.chap .t span{font-family:"Mada";font-size:40px;color:var(--gold);text-align:left}
+
+/* devices */
+#devices{left:40px;right:40px;top:230px;height:560px;padding:40px 30px 30px}
+#devRow{position:absolute;left:0;right:0;bottom:96px;display:flex;justify-content:center;align-items:flex-end;gap:34px;direction:ltr}
+.dev{position:relative;display:flex;flex-direction:column;align-items:center}
+.dlab{position:absolute;bottom:-66px;left:50%;transform:translateX(-50%);font-family:"Mont";font-weight:600;font-size:21px;letter-spacing:.1em;color:#e9edf3;white-space:nowrap}
+.dlab::before{content:"";display:inline-block;width:10px;height:10px;border-radius:50%;background:#46e39b;box-shadow:0 0 10px #46e39b;margin-right:12px;vertical-align:middle}
+.wall{position:absolute;inset:0;background:
+  radial-gradient(120% 80% at 10% 0%,rgba(124,196,255,.85),rgba(124,196,255,0) 55%),
+  radial-gradient(120% 90% at 100% 100%,rgba(232,201,138,.9),rgba(232,201,138,0) 55%),
+  linear-gradient(160deg,#141a2e,#0a0c14)}
+.gloss{position:absolute;inset:0;background:linear-gradient(115deg,rgba(255,255,255,.22) 0%,rgba(255,255,255,0) 38%,rgba(255,255,255,0) 100%);pointer-events:none}
+.phone{width:100px;height:206px;border-radius:26px;padding:5px;background:linear-gradient(135deg,#9aa1ad,#3b3f47 40%,#b9bfca 60%,#2c2f35);box-shadow:0 24px 40px rgba(0,0,0,.55)}
+.phone .scr{position:relative;width:100%;height:100%;border-radius:21px;overflow:hidden;background:#000;border:3px solid #050507}
+.island{position:absolute;top:8px;left:50%;width:36px;height:11px;margin-left:-18px;border-radius:8px;background:#000;z-index:2}
+.punch{position:absolute;top:9px;left:50%;width:10px;height:10px;margin-left:-5px;border-radius:50%;background:#000;z-index:2;box-shadow:0 0 0 2px rgba(255,255,255,.08)}
+.android{border-radius:18px;background:linear-gradient(135deg,#d9dde5,#6f7580 45%,#e6e9ef 60%,#565b64)}
+.android .scr{border-radius:14px}
+.tablet{width:290px;height:206px;border-radius:24px;padding:4px;background:linear-gradient(135deg,#c7ccd5,#5e636c 45%,#d8dce3 60%,#4a4e56);box-shadow:0 28px 50px rgba(0,0,0,.55)}
+.tablet .scr{position:relative;width:100%;height:100%;border-radius:20px;overflow:hidden;border:11px solid #08090c;background:#000}
+.tablet .cam{position:absolute;left:50%;top:-8px;width:6px;height:6px;margin-left:-3px;border-radius:50%;background:#1d2230;z-index:3}
+.laptop{display:flex;flex-direction:column;align-items:center}
+.lid{width:318px;height:206px;border-radius:16px 16px 4px 4px;padding:3px;background:linear-gradient(135deg,#c7ccd5,#6d727b)}
+.lid .scr{position:relative;width:100%;height:100%;border-radius:13px 13px 2px 2px;overflow:hidden;border:10px solid #08090c;border-top-width:14px;background:#000}
+.lid .notch{position:absolute;left:50%;top:-14px;width:44px;height:12px;margin-left:-22px;border-radius:0 0 6px 6px;background:#08090c;z-index:3}
+.base{width:378px;height:16px;border-radius:2px 2px 14px 14px;background:linear-gradient(180deg,#e8ebf0,#9aa0aa 55%,#5d626b);position:relative;box-shadow:0 22px 40px rgba(0,0,0,.6)}
+.base::after{content:"";position:absolute;left:50%;top:0;width:70px;height:6px;margin-left:-35px;border-radius:0 0 8px 8px;background:#8a909a}
+.pop{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:14px;
+  background:rgba(14,16,24,.72);border:1px solid rgba(255,255,255,.18);backdrop-filter:blur(8px);font-family:"Mont";font-weight:600;color:#fff;white-space:nowrap}
+.pop svg{flex:none}
+.pop small{display:block;font-weight:500;color:#46e39b;font-size:.8em}
+.dock{position:absolute;bottom:6px;left:50%;transform:translateX(-50%);display:flex;gap:5px;padding:4px 6px;border-radius:9px;background:rgba(255,255,255,.18)}
+.dock i{width:14px;height:14px;border-radius:4px;display:block}
+.menubar{position:absolute;top:0;left:0;right:0;height:9px;background:rgba(0,0,0,.35)}
+
+/* price */
+#price{left:90px;right:90px;top:1170px;padding:40px 40px 44px}
+#priceNum{font-size:210px;letter-spacing:-.02em}
+#priceRow{display:flex;align-items:flex-end;justify-content:center;gap:18px;direction:ltr}
+#priceRow .cur{display:flex;flex-direction:column;align-items:flex-start;margin-bottom:28px}
+#priceRow .cur b{font-family:"Mont";font-weight:700;font-size:62px;letter-spacing:.08em}
+#priceRow .cur span{font-family:"Mada";font-size:34px;color:rgba(255,255,255,.75)}
+#gift{left:150px;right:150px;top:1640px;padding:26px 34px;display:flex;align-items:center;gap:28px;direction:ltr;border-color:rgba(232,201,138,.55)}
+#gift svg{width:110px;height:110px;flex:none;overflow:visible}
+.burst{position:absolute;border-radius:50%;border:3px solid var(--gold);opacity:0;pointer-events:none}
+.pt{position:absolute;width:10px;height:10px;border-radius:50%;background:var(--gold1);box-shadow:0 0 14px var(--gold);opacity:0}
+
+/* badge */
+#badge{left:56px;top:70px;display:flex;align-items:center;gap:16px;padding:14px 26px 14px 18px;border-radius:999px;direction:ltr}
+#badge .nm{font-family:"Mont";font-weight:700;font-size:30px;letter-spacing:.02em}
+#badge .nm span{font-weight:300}
+#badge .sep{width:1.5px;height:30px;background:rgba(255,255,255,.3)}
+#badge .hw{font-family:"Mont";font-weight:500;font-size:22px;letter-spacing:.4em;color:var(--gold)}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute">
+ <defs>
+  <linearGradient id="gGold" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff4d6"/><stop offset=".5" stop-color="#e8c98a"/><stop offset="1" stop-color="#b98d4e"/></linearGradient>
+  <linearGradient id="gBlue" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#d7ecff"/><stop offset="1" stop-color="#4a8cd8"/></linearGradient>
+  <linearGradient id="gBud" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#5a6a8c"/><stop offset=".5" stop-color="#1b2338"/><stop offset="1" stop-color="#0b0f1a"/></linearGradient>
+  <radialGradient id="gBall" cx=".35" cy=".3" r=".75"><stop offset="0" stop-color="#9fb2d6"/><stop offset=".45" stop-color="#2a3554"/><stop offset="1" stop-color="#0b0f1a"/></radialGradient>
+  <!-- C-bridge open-ear earbud glyph -->
+  <symbol id="bud" viewBox="0 0 48 48">
+   <path d="M15 31 C 6 20, 14 6, 27 7 C 36 8, 40 14, 39 20" fill="none" stroke="url(#gBud)" stroke-width="5.5" stroke-linecap="round"/>
+   <path d="M15 31 C 6 20, 14 6, 27 7 C 36 8, 40 14, 39 20" fill="none" stroke="rgba(255,255,255,.35)" stroke-width="1.2" stroke-linecap="round"/>
+   <ellipse cx="38.5" cy="24" rx="5.5" ry="7.5" fill="url(#gBud)" stroke="rgba(255,255,255,.25)" stroke-width=".8"/>
+   <circle cx="15" cy="33" r="9.5" fill="url(#gBall)" stroke="rgba(255,255,255,.35)" stroke-width=".9"/>
+   <circle cx="12" cy="30" r="2.6" fill="rgba(255,255,255,.55)"/>
+  </symbol>
+  <symbol id="bt" viewBox="0 0 24 24"><path d="M7 7l10 10-5 4V3l5 4L7 17" fill="none" stroke="#7cc4ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+ </defs>
+</svg>
+
+<div id="stage">
+ <img id="vid" alt="">
+ <div class="layer" id="vig"></div>
+ <div class="layer" id="topShade"></div>
+ <div class="layer" id="botShade"></div>
+ <div class="layer" id="leak"></div>
+
+ <!-- ===== 1. hook: 8 million sold ===== -->
+ <div class="ov glass center" id="hook" style="left:110px;right:110px;top:1270px;padding:38px 30px 40px" data-in="0.35" data-out="4.35" data-fx="rise">
+  <svg id="globe" viewBox="-100 -100 200 200" style="position:absolute;right:34px;top:34px;width:120px;height:120px;opacity:.85"></svg>
+  <div class="eyebrow">Global Sales</div>
+  <div class="big goldT" id="salesNum" style="font-size:148px;margin-top:18px">0</div>
+  <div class="hair" style="width:70%;margin:22px 0 18px" id="hookHair"></div>
+  <div class="ar" style="font-size:42px;color:rgba(255,255,255,.85)">مبيعات حول العالم</div>
+ </div>
+
+ <!-- ===== 2. FreeClip 2 name ===== -->
+ <div class="ov center" id="name1" style="top:220px" data-in="4.45" data-out="7.95" data-fx="none">
+  <div class="brandline split" data-t0="4.52" data-st="0.05">HUAWEI</div>
+  <div class="hair" style="width:620px;margin:22px 0 18px" id="n1Hair"></div>
+  <div class="pname"><span class="split" data-t0="4.88" data-st="0.035"><span class="l">Free</span><span class="b">Clip</span></span>&nbsp;<span class="num goldT split" data-t0="5.38" data-st="0.05">2</span></div>
+  <div class="chipE" id="openEar" style="margin-top:34px;opacity:0"><i></i>OPEN-EAR EARBUDS</div>
+ </div>
+
+ <!-- ===== 3. celebration + special edition + FreeClip 2S hero ===== -->
+ <div class="ov center" style="top:250px" data-in="8.7" data-out="10.6" data-fx="rise"><div class="chipE"><i></i>CELEBRATING SUCCESS</div></div>
+ <div class="layer" id="confetti"></div>
+ <div class="ov center" id="hero" style="top:170px" data-in="10.7" data-out="13.55" data-fx="none">
+  <div style="display:flex;align-items:center;gap:26px" id="spRow">
+   <div class="hair" style="width:120px" id="spL"></div>
+   <div class="special goldT split" data-t0="10.78" data-st="0.03">Special Edition</div>
+   <div class="hair" style="width:120px" id="spR"></div>
+  </div>
+  <div class="brandline split" style="margin-top:44px" data-t0="11.72" data-st="0.05">HUAWEI</div>
+  <div class="pname" style="font-size:168px;margin-top:10px"><span class="split" data-t0="12.3" data-st="0.03"><span class="l">Free</span><span class="b">Clip</span></span>&nbsp;<span class="num goldT" id="twoS">2S</span></div>
+  <div class="hair" style="width:760px;margin-top:22px" id="heroHair"></div>
+ </div>
+ <div class="burst" id="heroBurst" style="left:540px;top:500px"></div>
+
+ <!-- ===== persistent badge ===== -->
+ <div class="ov glass" id="badge" data-in="13.75" data-out="58.9" data-fx="slideL">
+  <svg width="42" height="42"><use href="#bud"/></svg>
+  <div class="nm">Free<span>Clip</span> 2S</div><div class="sep"></div><div class="hw">HUAWEI</div>
+ </div>
+
+ <!-- ===== DESIGN ===== -->
+ <div class="ov" style="left:70px;top:1380px" data-in="14.85" data-out="15.75" data-fx="chap">
+  <div class="chap"><div class="n">01</div><div class="t"><b>DESIGN</b><span>التصميم</span></div></div>
+ </div>
+ <div class="ov" style="left:0;right:0;top:250px;display:flex;flex-direction:column;align-items:center" data-in="15.9" data-out="19.6" data-fx="none" id="tags">
+  <div class="glass tag" data-t="16.02"><div class="ic"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="url(#gBud)" stroke="#e8c98a" stroke-width="1.2"/><circle cx="9" cy="9" r="2.6" fill="rgba(255,255,255,.4)"/></svg></div><div class="txt"><div class="en">ELEGANT COLOR</div><div class="arS">لون أنيق</div></div></div>
+  <div class="glass tag" data-t="16.92"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="url(#gGold)" stroke-width="1.6" stroke-linejoin="round"><path d="M6 3h12l4 6-10 12L2 9z"/><path d="M2 9h20M9 3l3 18 3-18"/></svg></div><div class="txt"><div class="en">PREMIUM TOUCH</div><div class="arS">لمسة فخامة</div></div></div>
+  <div class="glass tag" data-t="18.24"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="url(#gGold)" stroke-width="1.6" stroke-linecap="round"><path d="M12 2l2.6 6.4L21 9l-5 4.5L17.5 21 12 17.5 6.5 21 8 13.5 3 9l6.4-.6z"/></svg></div><div class="txt"><div class="en">UNIQUE CHARACTER</div><div class="arS">شخصية مختلفة</div></div></div>
+ </div>
+
+ <!-- weight -->
+ <div class="ov glass center" id="weight" style="left:170px;right:170px;top:250px;padding:36px 30px 40px" data-in="20.1" data-out="22.95" data-fx="rise">
+  <div class="eyebrow">Ultra-Light</div>
+  <div style="display:flex;align-items:baseline;gap:12px;direction:ltr;margin-top:10px"><div class="big goldT" id="wNum" style="font-size:190px">0.0</div><div class="unit" style="font-size:90px;color:#e9edf3">g</div></div>
+  <div style="position:relative;width:78%;height:6px;border-radius:6px;background:rgba(255,255,255,.14);margin-top:20px;overflow:hidden"><b id="wBar" style="position:absolute;left:0;top:0;bottom:0;width:0;background:linear-gradient(90deg,var(--gold2),var(--gold1));border-radius:6px"></b></div>
+  <div class="ar" style="font-size:38px;margin-top:20px;color:rgba(255,255,255,.85)">وزن السماعة الواحدة</div>
+ </div>
+ <!-- comfort -->
+ <div class="ov glass" id="comfort" style="left:150px;right:150px;top:250px;padding:30px 36px;display:flex;align-items:center;gap:34px;direction:ltr" data-in="23.25" data-out="26.25" data-fx="rise">
+  <svg viewBox="0 0 120 120" style="width:150px;height:150px;flex:none">
+   <circle cx="60" cy="60" r="50" fill="none" stroke="rgba(255,255,255,.12)" stroke-width="7"/>
+   <circle id="cRing" cx="60" cy="60" r="50" fill="none" stroke="url(#gGold)" stroke-width="7" stroke-linecap="round" stroke-dasharray="314.16" stroke-dashoffset="314.16" transform="rotate(-90 60 60)"/>
+   <text x="60" y="68" text-anchor="middle" font-family="Mont" font-weight="700" font-size="26" fill="#fff" id="cTxt">ALL</text>
+  </svg>
+  <div style="display:flex;flex-direction:column;gap:8px">
+   <div class="eyebrow" style="letter-spacing:.32em;padding-left:0">Comfort</div>
+   <div style="font-family:Mont;font-weight:700;font-size:56px;letter-spacing:.06em">ALL-DAY WEAR</div>
+   <div class="ar" style="font-size:34px;color:rgba(255,255,255,.75);text-align:left">خفة وراحة طول اليوم</div>
+  </div>
+ </div>
+
+ <!-- ===== SOUND ===== -->
+ <div class="ov" style="left:70px;top:1400px" data-in="26.6" data-out="28.35" data-fx="chap">
+  <div class="chap"><div class="n">02</div><div class="t"><b>SOUND</b><span>تجربة صوت مختلفة</span></div></div>
+ </div>
+ <!-- adaptive volume -->
+ <div class="ov glass" id="adapt" style="left:80px;right:80px;top:1330px;padding:34px 40px;direction:ltr" data-in="28.85" data-out="31.9" data-fx="rise">
+  <div style="display:flex;justify-content:space-between;align-items:center">
+   <div><div class="eyebrow" style="padding-left:0;letter-spacing:.34em">Smart Audio</div><div style="font-family:Mont;font-weight:700;font-size:54px;margin-top:8px;letter-spacing:.04em">ADAPTIVE VOLUME</div></div>
+   <div style="font-family:Mont;font-weight:700;font-size:24px;letter-spacing:.2em;padding:10px 18px;border-radius:12px;border:1.5px solid #46e39b;color:#46e39b">AUTO</div>
+  </div>
+  <div style="display:flex;align-items:flex-end;gap:7px;height:130px;margin-top:22px" id="eq"></div>
+  <div class="ar" style="font-size:34px;margin-top:18px;color:rgba(255,255,255,.78);text-align:right">يضبط مستوى الصوت تلقائياً حسب البيئة المحيطة</div>
+ </div>
+ <!-- reverse sound field -->
+ <div class="ov glass" id="rsf" style="left:80px;right:80px;top:1300px;padding:30px 40px;display:flex;align-items:center;gap:30px;direction:ltr" data-in="32.2" data-out="36.3" data-fx="rise">
+  <svg viewBox="-110 -110 220 220" style="width:250px;height:250px;flex:none;overflow:visible" id="rsfSvg">
+   <g id="rsfWaves"></g>
+   <use href="#bud" x="-40" y="-40" width="80" height="80"/>
+  </svg>
+  <div style="display:flex;flex-direction:column;gap:10px">
+   <div class="eyebrow" style="padding-left:0;letter-spacing:.3em">Anti-Leak</div>
+   <div style="font-family:Mont;font-weight:700;font-size:46px;line-height:1.1;letter-spacing:.03em">REVERSE<br>SOUND FIELD</div>
+   <div class="ar" style="font-size:32px;color:rgba(255,255,255,.75);text-align:left">يقلل تسرّب الصوت حتى مع رفع المستوى</div>
+  </div>
+ </div>
+
+ <!-- ===== CALLS ===== -->
+ <div class="ov" style="left:70px;top:1420px" data-in="36.55" data-out="38.1" data-fx="chap">
+  <div class="chap"><div class="n">03</div><div class="t"><b>CALLS</b><span>المكالمات</span></div></div>
+ </div>
+ <div class="ov glass" id="mics" style="left:120px;right:120px;top:240px;padding:30px 40px;display:flex;align-items:center;gap:34px;direction:ltr" data-in="37.2" data-out="40.15" data-fx="rise">
+  <div style="position:relative;width:190px;height:190px;flex:none">
+   <svg viewBox="0 0 48 48" style="position:absolute;inset:0;width:100%;height:100%"><use href="#bud"/></svg>
+   <div class="mic" style="left:30px;top:120px"></div><div class="mic" style="left:142px;top:96px"></div><div class="mic" style="left:110px;top:16px"></div>
+  </div>
+  <div style="display:flex;flex-direction:column;gap:6px">
+   <div style="display:flex;align-items:baseline;gap:16px"><div class="big goldT" style="font-size:150px">3</div><div style="font-family:Mont;font-weight:700;font-size:56px;letter-spacing:.12em">MICS</div></div>
+   <div class="chipE" id="aiChip" style="font-size:24px;letter-spacing:.22em;padding:12px 24px;opacity:0"><i></i>AI NOISE REDUCTION</div>
+  </div>
+ </div>
+ <!-- noise cancel waveform -->
+ <div class="ov glass" id="noise" style="left:70px;right:70px;top:1330px;padding:30px 40px 34px;direction:ltr" data-in="40.5" data-out="43.95" data-fx="rise">
+  <div style="display:flex;justify-content:space-between;align-items:center">
+   <div class="eyebrow" style="padding-left:0;letter-spacing:.34em" id="nzLab">Noise Cancellation</div>
+   <div style="font-family:Mont;font-weight:700;font-size:22px;letter-spacing:.2em;padding:8px 16px;border-radius:10px" id="nzState">NOISY</div>
+  </div>
+  <svg viewBox="0 0 900 200" style="width:100%;height:190px;margin-top:10px;overflow:visible"><path id="nzPath" fill="none" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  <div class="ar" style="font-size:36px;color:rgba(255,255,255,.85);text-align:right">صوتك واضح حتى في الأماكن المزدحمة</div>
+ </div>
+
+ <!-- ===== DEVICES ===== -->
+ <div class="ov glass" id="devices" data-in="44.0" data-out="46.8" data-fx="rise">
+  <div class="eyebrow" style="text-align:center;padding-left:.5em">Works With</div>
+  <div id="devRow">
+   <div class="dev" id="dPhone"><div class="phone"><div class="scr"><div class="wall"></div><div class="island"></div>
+     <div class="pop" style="font-size:11px;padding:6px 8px"><svg width="22" height="22"><use href="#bud"/></svg><div>FreeClip<small>Connected</small></div></div><div class="gloss"></div></div></div><div class="dlab">iPhone</div></div>
+   <div class="dev" id="dAndroid"><div class="phone android"><div class="scr"><div class="wall" style="filter:hue-rotate(-25deg)"></div><div class="punch"></div>
+     <div class="pop" style="font-size:11px;padding:6px 8px"><svg width="22" height="22"><use href="#bud"/></svg><div>FreeClip<small>Connected</small></div></div><div class="gloss"></div></div></div><div class="dlab">ANDROID</div></div>
+   <div class="dev" id="dTablet"><div class="tablet"><div class="scr"><div class="cam"></div><div class="wall" style="filter:hue-rotate(15deg)"></div>
+     <div class="pop" style="font-size:17px;padding:10px 16px;gap:12px"><svg width="40" height="40"><use href="#bud"/></svg><div>FreeClip 2S<small>Connected</small></div><svg width="22" height="22"><use href="#bt"/></svg></div>
+     <div class="dock"><i style="background:#7cc4ff"></i><i style="background:#e8c98a"></i><i style="background:#ff7a7a"></i><i style="background:#46e39b"></i><i style="background:#c9a7ff"></i></div><div class="gloss"></div></div></div><div class="dlab">TABLET</div></div>
+   <div class="dev" id="dLaptop"><div class="laptop"><div class="lid"><div class="scr"><div class="notch"></div><div class="wall"></div><div class="menubar"></div>
+     <div class="pop" style="font-size:17px;padding:10px 16px;gap:12px"><svg width="40" height="40"><use href="#bud"/></svg><div>FreeClip 2S<small>Connected</small></div><svg width="22" height="22"><use href="#bt"/></svg></div>
+     <div class="dock"><i style="background:#7cc4ff"></i><i style="background:#e8c98a"></i><i style="background:#ff7a7a"></i><i style="background:#46e39b"></i><i style="background:#c9a7ff"></i><i style="background:#fff"></i></div><div class="gloss"></div></div></div><div class="base"></div></div><div class="dlab">COMPUTER</div></div>
+  </div>
+ </div>
+
+ <!-- dual connection -->
+ <div class="ov glass" id="dual" style="left:70px;right:70px;top:250px;padding:30px 40px 34px;direction:ltr" data-in="47.1" data-out="51.25" data-fx="rise">
+  <div class="eyebrow" style="text-align:center">Dual-Device</div>
+  <div style="font-family:Mont;font-weight:700;font-size:54px;text-align:center;margin-top:8px;letter-spacing:.06em">MULTIPOINT CONNECTION</div>
+  <svg viewBox="0 0 900 230" style="width:100%;height:230px;margin-top:10px;overflow:visible">
+   <g id="dvL" transform="translate(90 40)"><rect x="0" y="0" width="80" height="150" rx="16" fill="#0c0f18" stroke="#c9ced8" stroke-width="3"/><rect x="28" y="9" width="24" height="7" rx="3.5" fill="#c9ced8"/></g>
+   <g id="dvR" transform="translate(640 60)"><rect x="0" y="0" width="170" height="108" rx="10" fill="#0c0f18" stroke="#c9ced8" stroke-width="3"/><path d="M-18 116h206l-10 12H-8z" fill="#c9ced8"/></g>
+   <path id="beamL" d="M190 115 C 280 115, 330 115, 400 115" fill="none" stroke="#7cc4ff" stroke-width="5" stroke-dasharray="14 12" stroke-linecap="round"/>
+   <path id="beamR" d="M500 115 C 560 115, 590 115, 625 115" fill="none" stroke="#e8c98a" stroke-width="5" stroke-dasharray="14 12" stroke-linecap="round"/>
+   <circle cx="450" cy="115" r="62" fill="rgba(232,201,138,.10)" stroke="rgba(232,201,138,.6)" stroke-width="2"/>
+   <use href="#bud" x="410" y="75" width="80" height="80"/>
+  </svg>
+  <div class="ar" style="font-size:36px;text-align:center;color:rgba(255,255,255,.82)" id="dualAr">اتصال بجهازين في نفس الوقت</div>
+ </div>
+
+ <!-- ===== PRICE ===== -->
+ <div class="ov glass center" id="price" data-in="51.4" data-out="56.85" data-fx="rise">
+  <div class="eyebrow">Price <span class="ar" style="letter-spacing:0;font-size:32px">· السعر</span></div>
+  <div id="priceRow"><div class="big goldT" id="priceNum">0.000</div><div class="cur"><b class="goldT">OMR</b><span>ريال عُماني</span></div></div>
+  <div class="hair" style="width:80%;margin-top:6px" id="priceHair"></div>
+ </div>
+ <div class="burst" id="priceBurst" style="left:540px;top:1420px"></div>
+ <div class="layer" id="sparks"></div>
+ <div class="ov glass" id="gift" data-in="54.75" data-out="56.85" data-fx="rise">
+  <svg viewBox="0 0 100 100" id="giftSvg">
+   <g id="gBox"><rect x="16" y="46" width="68" height="46" rx="6" fill="url(#gGold)"/><rect x="45" y="46" width="10" height="46" fill="#8a5d22"/></g>
+   <g id="gLid"><rect x="11" y="33" width="78" height="16" rx="5" fill="url(#gGold)"/><rect x="45" y="33" width="10" height="16" fill="#8a5d22"/>
+    <path d="M50 33 C 38 12, 22 18, 30 29 C 34 34, 46 33, 50 33Z M50 33 C 62 12, 78 18, 70 29 C 66 34, 54 33, 50 33Z" fill="#8a5d22"/></g>
+  </svg>
+  <div style="display:flex;flex-direction:column;gap:4px;flex:1">
+   <div class="eyebrow" style="padding-left:0;letter-spacing:.34em">Free Gift</div>
+   <div style="display:flex;align-items:baseline;gap:14px"><span class="ar" style="font-size:36px;color:rgba(255,255,255,.8)">بقيمة</span><span class="big goldT" style="font-size:78px" id="giftNum">0.000</span><span style="font-family:Mont;font-weight:700;font-size:34px">OMR</span></div>
+  </div>
+ </div>
+
+ <!-- open-ear lovers -->
+ <div class="ov center" style="top:1450px" data-in="57.6" data-out="59.05" data-fx="rise">
+  <div class="eyebrow" style="font-size:26px">For Open-Ear Lovers</div>
+  <div class="ar" style="font-size:66px;margin-top:14px;text-shadow:0 6px 30px rgba(0,0,0,.6)">لعشّاق <span class="goldT">السماعات المفتوحة</span></div>
+ </div>
+
+ <!-- ===== OUTRO ===== -->
+ <div class="ov center" id="outro" style="top:230px" data-in="59.1" data-out="99" data-fx="none">
+  <div class="brandline split" data-t0="59.18" data-st="0.05">HUAWEI</div>
+  <div class="pname" style="font-size:168px;margin-top:14px"><span class="split" data-t0="59.3" data-st="0.035"><span class="l">Free</span><span class="b">Clip</span></span>&nbsp;<span class="num goldT split" data-t0="59.78" data-st="0.12">2S</span></div>
+  <div class="hair" style="width:760px;margin:22px 0 26px" id="outHair"></div>
+  <div style="display:flex;gap:26px;align-items:center;font-family:Mont;font-weight:600;font-size:32px;letter-spacing:.3em" id="pillars">
+   <span data-t="61.28">ELEGANCE</span><i style="width:8px;height:8px;border-radius:50%;background:var(--gold)" data-t="61.6"></i><span data-t="61.8">COMFORT</span><i style="width:8px;height:8px;border-radius:50%;background:var(--gold)" data-t="62.4"></i><span data-t="62.84" class="goldT">SOUND</span>
+  </div>
+ </div>
+ <div class="ov glass" style="left:300px;right:300px;top:1560px;padding:18px 20px;text-align:center" data-in="63.3" data-out="99" data-fx="rise">
+  <span class="big goldT" style="font-size:64px">69.900</span> <span style="font-family:Mont;font-weight:600;font-size:30px;letter-spacing:.1em">OMR</span>
+ </div>
+
+ <div class="layer" id="grain"></div>
+ <div class="layer" id="flash"></div>
+ <div class="layer" id="fade"></div>
+</div>
+
+<style>.mic{position:absolute;width:20px;height:20px;margin:-10px 0 0 -10px;border-radius:50%;background:#7cc4ff;box-shadow:0 0 0 0 rgba(124,196,255,.6)}</style>
+<script>
+const FPS=30, NFRAMES=1949, DURATION=NFRAMES/FPS;
+const params=new URLSearchParams(location.search);
+const FRAMES=params.get('frames')||'frames';
+const clamp=(x,a=0,b=1)=>Math.max(a,Math.min(b,x));
+const lerp=(a,b,p)=>a+(b-a)*p;
+const eOut=p=>1-Math.pow(1-p,3);
+const eOut5=p=>1-Math.pow(1-p,5);
+const eInOut=p=>p<.5?4*p*p*p:1-Math.pow(-2*p+2,3)/2;
+const eBack=p=>{const c1=1.4,c3=c1+1;return 1+c3*Math.pow(p-1,3)+c1*Math.pow(p-1,2)};
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+// deterministic PRNG
+let seed=7;const rnd=()=>{seed=(seed*16807)%2147483647;return (seed-1)/2147483646};
+
+// ---- cuts (ffmpeg scene detection) ----
+const CUTS=[0,4.0667,8.0667,13.6667,15.8333,17.1333,18.4,20.7333,23.1667,24.6333,25.7,26.5667,30.7667,33.7333,36.5333,40.4667,44.1,45.9667,47.9667,51.4667,54.6,60.3,62,63.5333];
+
+// ---- split text into letters ----
+$$('.split').forEach(el=>{
+  const walk=n=>{[...n.childNodes].forEach(c=>{
+    if(c.nodeType===3){const f=document.createDocumentFragment();[...c.textContent].forEach(ch=>{const s=document.createElement('span');s.className='ch';s.textContent=ch===' '?' ':ch;f.appendChild(s)});c.replaceWith(f)}
+    else walk(c)})};
+  walk(el);
+  el._chars=[...el.querySelectorAll('.ch')];
+  const gold=el.classList.contains('goldT')||!!el.closest('.goldT');
+  if(gold){el.classList.remove('goldT');el._chars.forEach(c=>c.classList.add('goldT'))}
+});
+function splitAnim(t){
+  for(const el of $$('.split')){const t0=+el.dataset.t0,st=+el.dataset.st;
+    el._chars.forEach((c,i)=>{const p=clamp((t-t0-i*st)/.55);const e=eOut5(p);
+      c.style.opacity=clamp(p*2.2);c.style.transform=`translateY(${(1-e)*0.55}em) rotateX(${(1-e)*70}deg)`;c.style.filter=p<1?`blur(${(1-e)*12}px)`:'';})}
+}
+
+// ---- generic enter/exit ----
+const DUR={rise:.6,slideL:.6,chap:.7,none:.01};
+const ovs=$$('.ov');
+function fxIn(el,p,kind){
+  let o=1,tr='',bl=0;const e=eOut5(p);
+  switch(kind){
+    case 'rise':o=clamp(p*2);tr=`translateY(${(1-e)*70}px) scale(${.94+.06*e})`;bl=(1-e)*14;break;
+    case 'slideL':o=clamp(p*2);tr=`translateX(${-(1-e)*200}px)`;bl=(1-e)*10;break;
+    case 'chap':o=clamp(p*2);tr=`translateX(${-(1-e)*120}px)`;bl=(1-e)*16;break;
+    case 'none':o=1;break;
+  }
+  return {o,tr,bl};
+}
+
+// ---- sound cue sheet ----
+const CUES=[];const cue=(t,type,o={})=>CUES.push({t:+t.toFixed(3),type,...o});
+CUTS.slice(1).forEach(c=>cue(c-0.18,'swoosh',{dur:.38,vol:.32}));
+ovs.forEach(el=>{const t=+el.dataset.in,k=el.dataset.fx;if(k==='rise'||k==='slideL'||k==='chap')cue(t-.04,'whoosh',{dur:.55,vol:.55})});
+cue(0,'riser',{dur:.5,vol:.25});
+for(let k=0;k<12;k++)cue(2.46+k*.075,'tick',{vol:.35});cue(3.35,'ding',{vol:.6});
+cue(4.45,'shimmer',{vol:.8});cue(5.38,'impact',{vol:.45});cue(7.0,'pop',{pitch:1.1,vol:.7});
+cue(9.4,'sparkle',{vol:.8});cue(9.52,'pop',{pitch:1.25,vol:.5});
+cue(10.6,'shimmer',{vol:.6});cue(11.0,'riser',{dur:1.9,vol:.55});cue(12.94,'boom',{vol:.9});cue(12.96,'sparkle',{vol:.7});
+cue(16.02,'pop',{pitch:1,vol:.55});cue(16.92,'pop',{pitch:1.12,vol:.55});cue(18.24,'pop',{pitch:1.24,vol:.55});
+for(let k=0;k<8;k++)cue(21.48+k*.055,'tick',{vol:.3});cue(21.9,'ding',{vol:.55});
+cue(23.4,'sparkle',{vol:.4});
+cue(26.55,'impact',{vol:.35});cue(36.5,'impact',{vol:.35});cue(14.82,'impact',{vol:.35});
+cue(37.32,'pop',{pitch:1,vol:.5});cue(37.47,'pop',{pitch:1.15,vol:.5});cue(37.62,'pop',{pitch:1.3,vol:.5});cue(38.56,'sparkle',{vol:.5});
+cue(42.1,'success',{vol:.45});
+cue(44.42,'pop',{pitch:1,vol:.55});cue(45.0,'pop',{pitch:1.1,vol:.55});cue(45.52,'pop',{pitch:1.2,vol:.6});cue(46.14,'pop',{pitch:1.3,vol:.6});
+cue(48.28,'click',{vol:.6});cue(49.66,'swoosh',{dur:.35,vol:.5});cue(50.64,'click',{vol:.5});
+for(let k=0;k<14;k++)cue(52.78+k*.08,'tick',{vol:.32});cue(53.9,'cash',{vol:.8});cue(53.9,'boom',{vol:.55});cue(53.95,'sparkle',{vol:.6});
+cue(54.86,'thud',{vol:.5});cue(55.0,'sparkle',{vol:.6});for(let k=0;k<5;k++)cue(55.78+k*.08,'coin',{pitch:1+k*.07,vol:.6});
+cue(59.1,'shimmer',{vol:.7});cue(59.78,'impact',{vol:.5});cue(61.28,'pop',{pitch:1,vol:.4});cue(61.8,'pop',{pitch:1.12,vol:.4});cue(62.84,'pop',{pitch:1.24,vol:.4});
+cue(63.4,'outro',{vol:.55});
+// ambience bed for the noise-isolation line (rendered in audio.py)
+cue(40.35,'ambience',{dur:3.75});
+CUES.sort((a,b)=>a.t-b.t);window.CUES=CUES;window.DURATION=DURATION;window.NFRAMES=NFRAMES;
+
+// ---- build dynamic bits ----
+// globe
+(function(){const g=$('#globe');let h='<circle r="92" fill="rgba(124,196,255,.06)" stroke="rgba(232,201,138,.7)" stroke-width="2"/>';
+ for(let k=0;k<6;k++)h+=`<ellipse class="mer" rx="92" ry="92" fill="none" stroke="rgba(232,201,138,.35)" stroke-width="1.4"/>`;
+ [-55,-25,0,25,55].forEach(y=>{const r=Math.sqrt(92*92-(y*1.4)**2);h+=`<ellipse cx="0" cy="${y*1.4}" rx="${r}" ry="${r*.18}" fill="none" stroke="rgba(232,201,138,.25)" stroke-width="1.2"/>`});
+ for(let k=0;k<7;k++)h+=`<circle class="city" r="4" fill="#fff4d6"/>`;g.innerHTML=h})();
+// eq bars
+for(let i=0;i<40;i++){const b=document.createElement('b');b.style.cssText='flex:1;border-radius:4px;background:linear-gradient(0deg,#b98d4e,#fff4d6);height:10px';$('#eq').appendChild(b)}
+const eqBars=$$('#eq b');
+// rsf waves
+(function(){let h='';for(let k=0;k<4;k++)h+=`<circle class="wo" r="50" fill="none" stroke="#7cc4ff" stroke-width="3"/>`;for(let k=0;k<4;k++)h+=`<circle class="wi" r="50" fill="none" stroke="#e8c98a" stroke-width="3" stroke-dasharray="6 8"/>`;
+ h+='<circle r="104" fill="none" stroke="rgba(255,255,255,.18)" stroke-width="2" stroke-dasharray="3 9"/>';$('#rsfWaves').innerHTML=h})();
+// confetti
+const CONF=[];for(let i=0;i<46;i++){const d=document.createElement('div');const w=8+rnd()*10;d.style.cssText=`position:absolute;width:${w}px;height:${w*(1.6+rnd())}px;border-radius:2px;opacity:0;background:${['#fff4d6','#e8c98a','#b98d4e','#ffffff','#7cc4ff'][i%5]}`;
+ $('#confetti').appendChild(d);CONF.push({d,x:rnd()*1080,vx:(rnd()-.5)*240,vy:-(500+rnd()*700),r:rnd()*720,delay:rnd()*.25})}
+// price sparks
+const SPK=[];for(let i=0;i<26;i++){const d=document.createElement('div');d.className='pt';$('#sparks').appendChild(d);SPK.push({d,a:rnd()*6.283,v:260+rnd()*380,s:.5+rnd()})}
+// grain (pre-rendered noise tiles)
+const GR=[];for(let k=0;k<6;k++){const c=document.createElement('canvas');c.width=540;c.height=960;const x=c.getContext('2d');const im=x.createImageData(540,960);
+ for(let i=0;i<im.data.length;i+=4){const v=rnd()*255;im.data[i]=im.data[i+1]=im.data[i+2]=v;im.data[i+3]=255}x.putImageData(im,0,0);$('#grain').appendChild(c);GR.push(c)}
+
+const fmt3=v=>v.toFixed(3);
+function shotIndex(t){let i=0;for(let k=0;k<CUTS.length;k++)if(t>=CUTS[k])i=k;return i}
+const win=(t,a,b,fi=.35,fo=.35)=>clamp((t-a)/fi)*(1-clamp((t-b)/fo));
+
+function custom(t){
+  splitAnim(t);
+  // shades behind text areas
+  const top=Math.max(win(t,4.3,7.95),win(t,8.6,13.5),win(t,15.8,19.6),win(t,20,26.2),win(t,37.1,40.1),win(t,43.9,51.2),win(t,59,99));
+  const bot=Math.max(win(t,.3,4.3),win(t,14.7,15.7),win(t,26.5,36.3),win(t,36.5,38.1),win(t,40.4,43.9),win(t,51.3,59.1),win(t,63.2,99));
+  $('#topShade').style.opacity=top;$('#botShade').style.opacity=bot;
+
+  // hook counter + globe
+  const sp=eOut(clamp((t-2.3)/1.05));$('#salesNum').textContent=Math.round(sp*8000000).toLocaleString('en-US')+(sp>=1?'+':'');
+  $('#hookHair').style.transform=`scaleX(${eOut(clamp((t-.7)/.8))})`;
+  $$('#globe .mer').forEach((m,k)=>{const ph=t*.9+k*Math.PI/6;m.setAttribute('rx',Math.abs(Math.cos(ph))*92)});
+  $$('#globe .city').forEach((c,k)=>{const ph=t*.9+k*.9;const x=Math.sin(ph)*80,y=(k-3)*20;c.setAttribute('cx',x);c.setAttribute('cy',y);c.setAttribute('opacity',Math.cos(ph)>0?.9:0)});
+  // name1
+  $('#n1Hair').style.transform=`scaleX(${eOut(clamp((t-4.7)/.7))})`;
+  {const p=eOut5(clamp((t-7.0)/.5));const o=$('#openEar');o.style.opacity=p;o.style.transform=`translateY(${(1-p)*30}px)`;o.style.filter=`blur(${(1-p)*8}px)`}
+  // confetti
+  CONF.forEach(c=>{const tt=t-9.45-c.delay;if(tt<0||tt>2.6){c.d.style.opacity=0;return}
+    const x=c.x+c.vx*tt,y=-30+(-c.vy)*0+ (tt*tt*260) + 40*tt; c.d.style.opacity=clamp(1-(tt-1.8)/.8);
+    c.d.style.transform=`translate(${x}px,${y}px) rotate(${c.r+tt*400}deg) rotateY(${tt*500}deg)`});
+  // hero
+  const sl=eOut(clamp((t-10.75)/.6));$('#spL').style.transform=`scaleX(${sl})`;$('#spR').style.transform=`scaleX(${sl})`;
+  {const p=clamp((t-12.94)/.5);const e=eBack(p);const s=$('#twoS');s.style.display='inline-block';s.style.opacity=clamp(p*3);s.style.transform=`scale(${p>0?(2.4-1.4*e):2.4})`;s.style.filter=p<1?`blur(${(1-eOut(p))*16}px)`:''}
+  $('#heroHair').style.transform=`scaleX(${eOut(clamp((t-12.95)/.8))})`;
+  {const p=clamp((t-12.94)/.9);const b=$('#heroBurst');b.style.opacity=p>0&&p<1?(1-p)*.9:0;const r=40+eOut(p)*520;b.style.width=b.style.height=r*2+'px';b.style.margin=`${-r}px 0 0 ${-r}px`}
+  // gold sweep on gradients
+  $$('.goldT').forEach(g=>g.style.backgroundPosition=`${100-((t*38)%200)}% 0`);
+  // design tags
+  $$('#tags .tag').forEach(el=>{const p=clamp((t-+el.dataset.t)/.6);const e=eOut5(p);el.style.opacity=clamp(p*2);el.style.transform=`translateX(${(1-e)*-160}px)`;el.style.filter=p<1?`blur(${(1-e)*10}px)`:''});
+  // weight
+  const wp=eOut(clamp((t-21.48)/.45));$('#wNum').textContent=(wp*5.1).toFixed(1);$('#wBar').style.width=(wp*100)+'%';
+  // comfort ring
+  const cp=eInOut(clamp((t-23.5)/2.2));$('#cRing').style.strokeDashoffset=314.16*(1-cp);$('#cTxt').textContent=cp>.98?'24/7':'ALL';
+  // adaptive eq: ambient bars (noisy), auto-leveled loudness line
+  eqBars.forEach((b,i)=>{const amb=.5+.5*Math.sin(t*3.1+i*.35)*Math.sin(t*1.3+i*.12);const raw=.25+.75*Math.abs(Math.sin(t*9+i*1.7)*Math.cos(t*5.3+i*.9))*amb;
+    const lev=.45+.25*Math.sin(t*1.1);b.style.height=(12+118*lerp(raw,lev,.55))+'px'});
+  // reverse sound field
+  $$('#rsfWaves .wo').forEach((c,k)=>{const ph=((t*.9+k/4)%1);const r=46+ph*58;c.setAttribute('r',r);c.setAttribute('opacity',(1-ph)*.9)});
+  $$('#rsfWaves .wi').forEach((c,k)=>{const ph=((t*.9+k/4)%1);const r=104-ph*40;c.setAttribute('r',r);c.setAttribute('opacity',Math.sin(ph*Math.PI)*.8)});
+  // mics
+  $$('.mic').forEach((m,k)=>{const p=clamp((t-37.32-k*.15)/.4);m.style.transform=`scale(${eBack(p)})`;const pp=((t-37.32-k*.15)%1.1)/1.1;m.style.boxShadow=`0 0 0 ${pp*22}px rgba(124,196,255,${.6*(1-pp)}), 0 0 16px #7cc4ff`});
+  {const p=eOut5(clamp((t-38.56)/.5));const a=$('#aiChip');a.style.opacity=p;a.style.transform=`translateY(${(1-p)*20}px)`}
+  // noise -> clean
+  {const k=eInOut(clamp((t-41.5)/.9));let d='';for(let i=0;i<=120;i++){const x=i*7.5;const u=i/120;
+     const nz=(Math.sin(i*1.9+t*31)*.55+Math.sin(i*.73-t*17)*.35+Math.sin(i*3.7+t*47)*.3)*(.6+.4*Math.sin(i*.21+t*4));
+     const cl=Math.sin(u*Math.PI*6-t*7)*.55*Math.sin(u*Math.PI);
+     const y=100+lerp(nz*85,cl*85,k);d+=(i?'L':'M')+x.toFixed(1)+' '+y.toFixed(1)}
+   const p=$('#nzPath');p.setAttribute('d',d);
+   const c1=[255,110,90],c2=[124,196,255];const c=c1.map((v,i)=>Math.round(lerp(v,c2[i],k)));p.setAttribute('stroke',`rgb(${c})`);p.style.filter=`drop-shadow(0 0 12px rgba(${c},.8))`;
+   const s=$('#nzState');s.textContent=k>.5?'CLEAR':'NOISY';s.style.color=k>.5?'#46e39b':'#ff7a6a';s.style.border=`1.5px solid ${k>.5?'#46e39b':'#ff7a6a'}`}
+  // devices
+  [['#dPhone',44.42],['#dAndroid',45.0],['#dTablet',45.52],['#dLaptop',46.14]].forEach(([s,a])=>{const p=clamp((t-a+.08)/.55);const e=eBack(p);const el=$(s);
+    el.style.opacity=clamp(p*2.5);el.style.transform=`translateY(${(1-e)*120}px) scale(${.6+.4*e})`;
+    const pop=el.querySelector('.pop');const q=eBack(clamp((t-a-.3)/.4));pop.style.transform=`translate(-50%,-50%) scale(${q})`;pop.style.opacity=clamp((t-a-.3)/.15)});
+  // dual
+  {const sw=t>=49.66&&t<50.64?1:0;const L=$('#beamL'),R=$('#beamR');
+   const lv=clamp((t-47.82)/.3),rv=clamp((t-48.28)/.3);
+   L.style.strokeDashoffset=-(t*60)%26;R.style.strokeDashoffset=(t*60)%26;
+   L.style.opacity=lv*(sw?.3:1);R.style.opacity=rv*(sw?1:(t>49.3?.3:1));
+   $('#dvL rect').setAttribute('stroke',(!sw&&t>49.3)?'#7cc4ff':'#c9ced8');$('#dvR rect').setAttribute('stroke',sw?'#e8c98a':'#c9ced8');
+   $('#dualAr').textContent=t>=49.6?'وتتنقّل بينهم بكل سهولة':'اتصال بجهازين في نفس الوقت'}
+  // price
+  const pp=eOut(clamp((t-52.78)/1.12));$('#priceNum').textContent=fmt3(pp*69.9);
+  $('#priceHair').style.transform=`scaleX(${eOut(clamp((t-53.9)/.6))})`;
+  {const p=clamp((t-53.9)/.9);const b=$('#priceBurst');b.style.opacity=p>0&&p<1?(1-p):0;const r=60+eOut(p)*560;b.style.width=b.style.height=r*2+'px';b.style.margin=`${-r}px 0 0 ${-r}px`}
+  const pr=$('#price');pr.style.boxShadow=`0 40px 90px rgba(0,0,0,.45),0 0 ${120*clamp(1-(t-53.9)/1.2)*(t>53.9)}px rgba(232,201,138,.55)`;
+  SPK.forEach(s=>{const tt=t-53.9;if(tt<0||tt>1.4){s.d.style.opacity=0;return}const d=s.v*eOut(tt/1.4);s.d.style.opacity=1-tt/1.4;
+    s.d.style.transform=`translate(${540+Math.cos(s.a)*d*1.3}px,${1420+Math.sin(s.a)*d*.8+tt*tt*120}px) scale(${s.s})`});
+  // gift
+  {const op=eBack(clamp((t-55.0)/.45));$('#gLid').setAttribute('transform',`translate(${op*8} ${-op*16}) rotate(${-op*12} 50 40)`);
+   const g=eOut(clamp((t-55.78)/.5));$('#giftNum').textContent=fmt3(g*9.9);
+   $('#giftSvg').style.transform=`rotate(${Math.sin(t*6)*3*clamp(1-(t-55.6))}deg)`}
+  // outro
+  $('#outHair').style.transform=`scaleX(${eOut(clamp((t-60.0)/.8))})`;
+  $$('#pillars [data-t]').forEach(el=>{const p=eOut5(clamp((t-+el.dataset.t)/.5));el.style.opacity=p;el.style.transform=`translateY(${(1-p)*24}px)`;el.style.filter=p<1?`blur(${(1-p)*8}px)`:''});
+  $('#fade').style.opacity=clamp((t-64.45)/.5);
+}
+
+async function render(t){
+  const f=Math.min(NFRAMES,Math.floor(t*FPS+1e-6)+1);
+  const img=$('#vid');const src=`${FRAMES}/${String(f).padStart(5,'0')}.jpg`;
+  if(!img.src.endsWith(src)){img.src=src;await img.decode().catch(()=>{});}
+  // slow push-in per shot + punch on big moments
+  const si=shotIndex(t);const ls=t-CUTS[si];const sl=(CUTS[si+1]||DURATION)-CUTS[si];
+  let z=1.0+0.035*eInOut(clamp(ls/sl));
+  for(const [a,amt] of [[12.94,.06],[53.9,.045],[5.38,.025],[59.78,.03]]){const d=t-a;if(d>=0&&d<.6)z+=amt*Math.exp(-d*7)}
+  let shake=0,flash=0;
+  for(const c of CUES){const d=t-c.t;if(d<0||d>.45)continue;
+    if(c.type==='boom'){shake=Math.max(shake,(1-d/.45)*7);flash=Math.max(flash,(1-d/.45)*.8)}
+    if(c.type==='impact'){flash=Math.max(flash,(1-d/.45)*.18)}}
+  img.style.transform=`translate(${Math.sin(t*120)*shake}px,${Math.cos(t*97)*shake}px) scale(${z})`;
+  // warm light leaks on cuts
+  let lk=0,side=0;CUTS.slice(1).forEach((c,k)=>{const d=t-c;if(d>-.1&&d<.5){const v=d<0?(1+d/.1):1-d/.5;if(v>lk){lk=v;side=k%2}}});
+  const L=$('#leak');L.style.opacity=lk*.55;
+  L.style.background=side?'radial-gradient(900px 800px at 100% 10%,rgba(255,190,110,.75),rgba(255,190,110,0) 70%)':'radial-gradient(900px 800px at 0% 90%,rgba(255,170,90,.7),rgba(255,170,90,0) 70%)';
+  $('#flash').style.opacity=flash*.6;
+  GR.forEach((c,k)=>c.style.display=(f%GR.length===k)?'block':'none');
+  // overlays
+  for(const el of ovs){const a=+el.dataset.in,b=+el.dataset.out,k=el.dataset.fx;
+    if(t<a||t>b+.4){el.style.opacity=0;continue}
+    let {o,tr,bl}=fxIn(el,clamp((t-a)/(DUR[k]||.6)),k);
+    const q=clamp((t-b)/.4);if(q>0){const e=eOut(q);o*=1-q;tr+=` translateY(${-e*30}px) scale(${1-.06*e})`;bl+=e*14}
+    el.style.opacity=o;el.style.transform=tr;el.style.filter=bl>.3?`blur(${bl}px)`:'';
+  }
+  custom(t);
+}
+window.render=render;
+</script>
+</body>
+</html>
