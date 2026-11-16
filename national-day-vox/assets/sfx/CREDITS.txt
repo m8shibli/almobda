@@ -1,0 +1,4 @@
+Real sounds (CC0 / public domain):
+- slide/pan/pin/tape/stamp/tear/flip/paper_4: "202 More Sound Effects" by OwlishMedia, opengameart.org/content/202-more-sound-effects (CC0)
+- paper_1..3: Kenney "Casino Audio" card sounds, opengameart.org/content/54-casino-sound-effects-cards-dice-chips (CC0)
+- folder_*: Kenney "RPG Audio" (book open/place/close), kenney.nl (CC0)
