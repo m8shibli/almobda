@@ -227,6 +227,7 @@ function render(t) {
     window.__samples = n;
     ctx.globalAlpha = 1; }
   ctx.setTransform(s, 0, 0, s, 0, 0); QA.on = !!window.QA_ON; drawCaption(T); QA.on = false;
+  { const im = IMG[D.WM]; if (im && im.width) { const z = 150, x = DW - z - 46, y = 58; ctx.save(); ctx.globalAlpha = .9; ctx.beginPath(); ctx.roundRect(x, y, z, z, 22); ctx.clip(); ctx.drawImage(im, x, y, z, z); ctx.restore(); } }   // شعار حقوق
   ctx.setTransform(1, 0, 0, 1, 0, 0); finish(ctx, c, T, W, H);
 }
 
@@ -257,7 +258,7 @@ window.DURATION = D.DURATION;
   try { WORDS = await (await fetch('../' + D.WORDS)).json(); } catch { WORDS = []; }
   buildGroups();
   const load = async f => { const im = new Image(); im.src = '../' + f; try { await im.decode(); return im; } catch { return null; } };
-  await Promise.all((D.IMAGES || []).map(async f => { IMG[f] = await load(f) || new Image();
+  await Promise.all([...(D.IMAGES || []), ...(D.WM ? [D.WM] : [])].map(async f => { IMG[f] = await load(f) || new Image();
     if ((D.CUT || []).includes(f) || ST.cutout) { const cf = f.replace(/\.(png|jpe?g|webp)$/i, '_cut.png'), c2 = await load(cf); if (c2) IMG[f + '#cut'] = c2; } }));
   await loadTex('../assets/tex/'); buildTextures(W, H); buildCollage(DW, DH);
   const q = new URLSearchParams(location.search); render(+(q.get('t') || 0));
