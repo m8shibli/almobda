@@ -4,10 +4,11 @@ export const FPS = 24;
 export const DURATION = 30.0;
 export const WORDS = 'plan/words.json';
 export const CAPTIONS = true;
-export const WM = 'assets/places/15_logo_almobda.jpg';   // شعار حقوق صغير على كامل الفيديو
+export const WM = 'assets/places/logo_black.png';
+export const WM_LIGHT = 'assets/places/logo_white.png';   // شعار حقوق صغير على كامل الفيديو
 export const STYLE = { motion: 'smooth', speed: 1.0, camera: 'one', images: 'color', halftone: 0, outline: 'white', blur: 5 };
 const P = f => 'assets/places/' + f;
-export const IMAGES = ['01_sohar_fort.jpg', '03_mosque_night.jpg', '04_wadi_waterfall.jpg', '16_suwaiq_kayak.jpg', '05_musannah_festival.jpg', '06_palm_walkway.jpg', '07_beach_hill_tower.jpg', '09_nizwa_souq.jpg', '10_jabal_akhdar.jpg', '11_oman_across_ages.jpg', '12_bahla_wall.jpg', '13_misfat.jpg', '17_bidiyah_dunes.jpg', '14_ferris_wheel.jpg', '02_lagoon_park_aerial.jpg', '15_logo_almobda.jpg'].map(P);
+export const IMAGES = ['01_sohar_fort.jpg', '03_mosque_night.jpg', '04_wadi_waterfall.jpg', '16_suwaiq_kayak.jpg', '05_musannah_festival.jpg', '06_palm_walkway.jpg', '07_beach_hill_tower.jpg', '09_nizwa_souq.jpg', '10_jabal_akhdar.jpg', '11_oman_across_ages.jpg', '12_bahla_wall.jpg', '13_misfat.jpg', '17_bidiyah_dunes.jpg', '14_ferris_wheel.jpg', '02_lagoon_park_aerial.jpg'].map(P);
 export const SHOTLIST = [
   { type: 'statement', start: 0, seed: 11, bg: 'aged', size: 104, lines: [{ t: 'وين تروح', ws: [0, 1] }, { t: 'في اليوم الوطني؟', ws: [2, 3, 4], hl: 'red' }] },
   { type: 'cards', start: 3.73, tr: 'slide', go: 'left', seed: 12, bg: 'kraft', items: [{ img: P('01_sohar_fort.jpg'), label: 'قلعة صحار', w: 6 }, { img: P('02_lagoon_park_aerial.jpg'), label: 'منتجع اليوبيل', w: 9 }] },
