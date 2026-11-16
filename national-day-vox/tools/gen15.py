@@ -1,6 +1,6 @@
 # gen15.py — يولّد plan/script.txt + plan/words.json + src/data.js لنسخة الـ15 ثانية (توقيت مسودة بدون صوت)
 import json
-TOTAL = 15.0
+TOTAL = 30.0
 # (سطر، نوع اللقطة، إعدادات) — الأرقام تنحسب تلقائياً من الكلمات
 LINES = [
  ('وين تروح في اليوم الوطني؟', 1.75),
@@ -50,14 +50,14 @@ shots = [
  f"  {{ type: 'statement', start: {S[13]-.12:.2f}, tr: 'zoom', go: 'left', seed: 24, bg: 'dark', size: 130, lines: [{{ t: 'اختر وجهتك', ws: [{F[13]}, {F[13]+1}] }}, {{ t: 'وعيّد فيها', ws: [{F[13]+2}, {F[13]+3}], hl: 'red' }}], stamp: {{ t: 'اليوم الوطني', w: {F[13]+3} }} }},",
 ]
 imgs = ['01_sohar_fort','03_mosque_night','04_wadi_waterfall','16_suwaiq_kayak','05_musannah_festival','06_palm_walkway','07_beach_hill_tower','09_nizwa_souq','10_jabal_akhdar','11_oman_across_ages','12_bahla_wall','13_misfat','17_bidiyah_dunes','14_ferris_wheel','02_lagoon_park_aerial','15_logo_almobda']
-open('src/data.js', 'w', encoding='utf8').write(f"""// وين تروح في اليوم الوطني؟ — نسخة 15 ثانية سريعة. مولَّد من tools/gen15.py (توقيت مسودة بدون صوت).
+open('src/data.js', 'w', encoding='utf8').write(f"""// وين تروح في اليوم الوطني؟ — نسخة 30 ثانية. مولَّد من tools/gen15.py (توقيت مسودة بدون صوت).
 export const SIZE = [1080, 1920];
 export const FPS = 24;
 export const DURATION = {TOTAL};
 export const WORDS = 'plan/words.json';
 export const CAPTIONS = true;
 export const WM = 'assets/places/15_logo_almobda.jpg';   // شعار حقوق صغير على كامل الفيديو
-export const STYLE = {{ motion: 'smooth', speed: 1.5, camera: 'one', images: 'color', halftone: 0, outline: 'white', blur: 5 }};
+export const STYLE = {{ motion: 'smooth', speed: 1.0, camera: 'one', images: 'color', halftone: 0, outline: 'white', blur: 5 }};
 const P = f => 'assets/places/' + f;
 export const IMAGES = [{', '.join("'%s.jpg'" % i for i in imgs)}].map(P);
 export const SHOTLIST = [
