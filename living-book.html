@@ -1,0 +1,885 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>كتابي الحيّ – عُمان في العصر العباسي الأول</title>
+<style>
+:root{
+  --wood:#dcc196; --vein:rgba(110,72,34,.20);
+  --paper:#fbf4e3; --paper2:#efe0bd; --ink:#2a2824; --ink2:#5d5546; --line:#d8c8a2;
+  --oman:#e58b1c; --abb:#58a458; --abbd:#2c6b2c; --sea:#b9d8ee; --land:#f0e4c6; --pen:#4a3f33;
+  --r1:#2a6fdb; --r2:#d6334a; --cap:#7b45b3; --accent:#0f7c8a; --note:#ffe58a;
+  --good:#2e9e5b; --bad:#d6334a; --cover:#8b4a2b; --ui:rgba(255,250,238,.94); --uiInk:#2a2824;
+  --card:#fffaf0; --law:#fff6d8; --ansbg:#e6f5e9; --wallbg:#fffdf5;
+  --f:'Noto Naskh Arabic','Segoe UI','Geeza Pro','Tahoma','Arial','DejaVu Sans',system-ui,sans-serif;
+}
+:root[data-theme=dark]{
+  --wood:#6f5a42; --vein:rgba(0,0,0,.32);
+  --paper:#2f2b25; --paper2:#262219; --ink:#f3ead8; --ink2:#c9bda4; --line:#4d4639;
+  --oman:#f0a03c; --abb:#4a8f4a; --abbd:#8fd08f; --sea:#27465f; --land:#4a4333; --pen:#d9cdb5;
+  --r1:#6ea4ff; --r2:#ff7388; --cap:#c39af0; --accent:#35b4c3; --note:#e9c94d;
+  --good:#4fc283; --bad:#ff7388; --cover:#6b3a22; --ui:rgba(40,35,28,.95); --uiInk:#f3ead8;
+  --card:#3a352c; --law:#3d3624; --ansbg:#24402f; --wallbg:#3a352c;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;overflow:hidden;font-family:var(--f);color:var(--ink);background:var(--wood)}
+button{font-family:var(--f);color:inherit}
+bdi{unicode-bidi:isolate}
+.desk{position:fixed;inset:0;background:
+  radial-gradient(120% 90% at 18% 8%,rgba(255,244,214,.55),rgba(255,244,214,0) 55%),
+  var(--wood);}
+.desk svg{position:absolute;inset:0;width:100%;height:100%;display:block}
+.desk::after{content:"";position:absolute;inset:0;background:radial-gradient(ellipse at 50% 45%,transparent 55%,rgba(60,35,10,.28) 100%);pointer-events:none}
+:root[data-theme=dark] .desk{background:radial-gradient(120% 90% at 18% 8%,rgba(255,226,170,.16),transparent 55%),var(--wood)}
+.defs{position:absolute;width:0;height:0}
+
+#viewport{position:fixed;inset:0}
+#scaler{position:absolute;left:50%;top:0;transform-origin:50% 0}
+#scene{position:relative;width:100%;height:100%;perspective:2400px;perspective-origin:50% 18%}
+#book{position:absolute;left:0;right:0;top:40px;margin:auto;width:980px;height:860px;transform-style:preserve-3d;transform:rotateX(15deg);direction:ltr}
+#book.single{width:500px}
+.cover{position:absolute;inset:-12px -14px -18px;border-radius:18px;background:linear-gradient(135deg,color-mix(in srgb,var(--cover) 85%,#fff) 0,var(--cover) 45%,color-mix(in srgb,var(--cover) 70%,#000) 100%);transform:translateZ(-16px);box-shadow:0 40px 60px -10px rgba(40,22,8,.55),0 6px 14px rgba(0,0,0,.3)}
+.cover::after{content:"";position:absolute;inset:6px;border:2px solid rgba(255,230,180,.28);border-radius:14px}
+.slot{position:absolute;top:10px;width:480px;height:840px;transform-style:preserve-3d}
+.slot.L{left:10px}.slot.R{left:490px}
+#book.single .slot.R{left:10px}
+.slot::before{content:"";position:absolute;inset:2px -3px -6px;background:var(--paper2);border-radius:6px;transform:translateZ(-4px);box-shadow:3px 4px 0 var(--paper2),5px 7px 0 var(--line),0 10px 24px rgba(0,0,0,.25)}
+.slot.L::before{box-shadow:-3px 4px 0 var(--paper2),-5px 7px 0 var(--line),0 10px 24px rgba(0,0,0,.25)}
+#book.single .slot.L{display:none}
+.spine{position:absolute;left:487px;top:10px;width:6px;height:840px;background:linear-gradient(to right,rgba(0,0,0,.25),rgba(0,0,0,.05),rgba(0,0,0,.25));transform:translateZ(1px);pointer-events:none}
+#book.single .spine{display:none}
+
+/* pages */
+.pg{position:absolute;left:0;top:0;width:480px;height:840px;padding:24px 30px 18px;display:none;transform-style:preserve-3d;background:var(--paper);font-size:17px;line-height:1.7}
+.pg.on{display:block}
+.pg.pgR{border-radius:3px 10px 10px 3px;background:linear-gradient(to right,rgba(0,0,0,.14),rgba(0,0,0,0) 26px),var(--paper)}
+.pg.pgL{border-radius:10px 3px 3px 10px;background:linear-gradient(to left,rgba(0,0,0,.14),rgba(0,0,0,0) 26px),var(--paper)}
+html[dir=rtl] .pg{direction:rtl;text-align:right}
+html[dir=ltr] .pg{direction:ltr;text-align:left}
+.pg .ltr,.wall,.ctrl .track,.pg .eq{direction:ltr}
+.clone{position:absolute;top:0;pointer-events:none}
+.ph{display:flex;align-items:center;gap:10px;margin:0 0 8px}
+.chn{flex:none;width:38px;height:38px;border-radius:50%;background:var(--accent);color:#fff;display:grid;place-items:center;font-weight:800;font-size:20px}
+.ph h2,.ph h3{margin:0;font-size:25px;line-height:1.25}
+.hook{font-size:19px;font-weight:700;color:var(--accent);margin:2px 0 8px;line-height:1.5}
+.body p{margin:0 0 6px;font-size:17px;line-height:1.72}
+.law{background:var(--law);border:2px dashed var(--accent);border-radius:12px;padding:7px 12px;font-size:17px;line-height:1.55;margin:6px 0}
+.law b{color:var(--accent)}
+.note{background:var(--note);color:#33290a;padding:8px 12px;font-size:15px;line-height:1.55;transform:rotate(-1.4deg);box-shadow:2px 3px 6px rgba(0,0,0,.28);margin:8px 10px 8px;width:78%;position:relative}
+.note::before{content:"";position:absolute;top:-7px;left:50%;width:44px;height:14px;margin-left:-22px;background:rgba(255,255,255,.55);transform:rotate(3deg)}
+html[dir=rtl] .note{margin-inline-start:auto}
+.predict{margin:5px 0;transform-style:preserve-3d}
+.pq{font-size:16.5px;font-weight:700;margin-bottom:6px;line-height:1.55}
+.pq b{color:var(--cap)}
+.pa{position:relative;min-height:58px;transform-style:preserve-3d;cursor:pointer}
+.ans{background:var(--ansbg);border:2px solid var(--good);border-radius:10px;padding:8px 12px;font-size:16px;line-height:1.6;min-height:58px}
+.tongue{position:absolute;inset:0;border:2px solid #b89550;border-radius:10px;background:linear-gradient(#f4dfaa,#e3c486);color:#5a4318;font:800 17px var(--f);cursor:pointer;transform-origin:50% 0;transform:translateZ(2px);transition:transform .75s cubic-bezier(.3,1.45,.5,1);box-shadow:0 4px 8px rgba(0,0,0,.28)}
+.pa.open .tongue{transform:translateZ(2px) rotateX(80deg);pointer-events:none}
+.check{margin-top:5px}
+.cq{font-weight:800;font-size:16.5px;margin-bottom:4px;line-height:1.55}
+.cq b{color:var(--good)}
+.opt{display:block;width:100%;text-align:start;padding:7px 12px;margin:5px 0;border:2px solid var(--line);border-radius:12px;background:var(--card);font:600 16px/1.45 var(--f);cursor:pointer;min-height:44px}
+.opt:hover{border-color:var(--accent)}
+.opt.ok{background:var(--ansbg);border-color:var(--good)}
+.opt.bad{background:#fde1e5;border-color:var(--bad);animation:shake .4s}
+:root[data-theme=dark] .opt.bad{background:#4a2630}
+.fb{min-height:24px;font-size:15.5px;line-height:1.5;color:var(--ink2);margin-top:2px}
+.fb.good{color:var(--good);font-weight:700}
+.ord{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.ordc{position:relative;padding:6px 10px;min-height:56px;border:2px solid var(--line);border-radius:12px;background:var(--card);font:600 14.5px/1.4 var(--f);cursor:pointer;text-align:start;display:flex;align-items:center;gap:8px}
+.ordc .nb{flex:none;width:30px;height:30px;border-radius:50%;border:2px dashed var(--ink2);display:grid;place-items:center;font-weight:800;font-size:16px}
+.ordc.ok{background:var(--ansbg);border-color:var(--good)}
+.ordc.ok .nb{background:var(--good);border:0;color:#fff}
+.ordc.bad{animation:shake .4s;border-color:var(--bad)}
+.pn{position:absolute;bottom:6px;left:0;right:0;text-align:center;font-size:14px;color:var(--ink2)}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+
+/* lab */
+.lab-h{display:flex;align-items:center;gap:10px;margin-bottom:2px}
+.lab-h h3{margin:0;font-size:23px}
+.stage{position:relative;height:var(--sh,395px);transform-style:preserve-3d}
+.pop{position:absolute;left:0;right:0;bottom:20px;height:var(--wh,380px);transform-style:preserve-3d}
+.wall{position:absolute;inset:0;transform-origin:50% 100%;transform:rotateX(0deg);transition:transform .95s cubic-bezier(.25,1.55,.45,1);background:var(--wallbg);border:4px solid var(--wallbg);border-radius:4px;box-shadow:0 0 0 1.5px var(--pen),0 2px 0 1.5px rgba(0,0,0,.2)}
+.stage.up .wall{transform:rotateX(calc(var(--ang,50deg) * -1))}
+.wall::after{content:"";position:absolute;inset:0;background:linear-gradient(to top,rgba(30,15,0,.22),transparent 38%);pointer-events:none}
+.wall svg{width:100%;height:100%;display:block}
+.shadow{position:absolute;left:4%;right:4%;bottom:2px;height:70px;border-radius:50%;background:radial-gradient(ellipse at 50% 50%,rgba(40,22,5,.5),rgba(40,22,5,0) 70%);transform:scaleY(.25);transition:transform .95s cubic-bezier(.25,1.4,.45,1)}
+.stage.up .shadow{transform:scaleY(1.1)}
+.gus{position:absolute;top:calc(var(--wh,380px)*(1 - cos(var(--ang,50deg))));height:calc(var(--wh,380px)*cos(var(--ang,50deg)));width:calc(var(--wh,380px)*sin(var(--ang,50deg)));transition:transform .95s cubic-bezier(.25,1.55,.45,1);pointer-events:none}
+.gus svg{width:100%;height:100%;display:block}
+.gus polygon{fill:#e2d3ab;stroke:var(--pen);stroke-width:1.6;stroke-linejoin:round}
+:root[data-theme=dark] .gus polygon{fill:#4a4234}
+.gus.l{left:0;transform-origin:0 50%;transform:rotateY(-90deg) scaleX(0)}
+.gus.r{right:0;transform-origin:100% 50%;transform:rotateY(90deg) scaleX(0)}
+.stage.up .gus.l{transform:rotateY(-90deg) scaleX(1)}.stage.up .gus.r{transform:rotateY(90deg) scaleX(1)}
+.tag{position:absolute;top:6px;inset-inline-start:8px;background:var(--accent);color:#fff;padding:1px 12px;border-radius:12px;font-weight:800;font-size:15px;z-index:3;direction:ltr}
+.ctrl{position:relative}
+.read{background:var(--card);border:2px solid var(--line);border-radius:12px;padding:6px 12px;margin-top:6px;font-size:16px;line-height:1.55}
+.read .rd{display:flex;justify-content:space-between;gap:8px}
+.read b{font-weight:800}
+.eq{font:700 15.5px/1.4 ui-monospace,Menlo,Consolas,monospace;color:var(--accent);background:rgba(15,124,138,.1);border-radius:8px;padding:3px 10px;margin-top:4px;text-align:center}
+.btn{min-height:46px;padding:0 18px;border-radius:14px;border:2px solid var(--accent);background:var(--accent);color:#fff;font:800 17px var(--f);cursor:pointer}
+.btn.alt{background:transparent;color:var(--accent)}
+.btn:disabled{opacity:.45;cursor:default}
+.rowb{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
+.chip{min-height:44px;padding:4px 12px;border-radius:22px;border:2px solid var(--line);background:var(--card);font:700 16px var(--f);cursor:pointer}
+.chip.sel{border-color:var(--accent);background:var(--accent);color:#fff}
+.chip.done{border-color:var(--good);background:var(--ansbg);color:var(--ink);opacity:.8}
+.chip.c1{border-color:var(--r1)}.chip.c1.sel{background:var(--r1);border-color:var(--r1)}
+.chip.c2{border-color:var(--r2)}.chip.c2.sel{background:var(--r2);border-color:var(--r2)}
+.chip.lit{box-shadow:0 0 0 4px rgba(255,214,60,.85)}
+.msg{min-height:40px;font-size:15.5px;line-height:1.45;margin-top:2px}
+.ckl{display:grid;grid-template-columns:1fr 1fr;gap:2px 8px;margin-top:2px}
+.ckl .ck{font-size:13.5px;line-height:1.25}
+.legend .eq{font-size:14px!important}
+.track{position:relative;margin:4px 6px 0;height:92px}
+.track input{position:absolute;left:0;right:0;bottom:0;width:100%}
+.tk{position:absolute;bottom:42px;transform:translateX(-50%);width:44px;height:44px;border-radius:50%;border:2px solid var(--ink2);background:var(--card);font:800 18px var(--f);cursor:pointer;padding:0}
+.tk.on{background:var(--oman);border-color:var(--oman);color:#fff;box-shadow:0 0 0 4px rgba(229,139,28,.35)}
+input[type=range]{-webkit-appearance:none;appearance:none;height:44px;background:transparent;margin:0;touch-action:none;cursor:pointer}
+input[type=range]::-webkit-slider-runnable-track{height:14px;border-radius:8px;background:linear-gradient(to right,var(--oman),#c8a35c 50%,var(--abb));border:2px solid var(--pen)}
+input[type=range]::-moz-range-track{height:10px;border-radius:8px;background:linear-gradient(to right,var(--oman),#c8a35c 50%,var(--abb));border:2px solid var(--pen)}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:38px;height:38px;border-radius:50%;background:var(--accent);border:4px solid #fff;margin-top:-14px;box-shadow:0 2px 6px rgba(0,0,0,.45)}
+input[type=range]::-moz-range-thumb{width:30px;height:30px;border-radius:50%;background:var(--accent);border:4px solid #fff}
+.evs{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:2px}
+.evb{display:flex;flex-direction:column;align-items:center;gap:2px;border:2px solid var(--line);background:var(--card);border-radius:10px;padding:4px 3px;font:700 13px/1.25 var(--f);cursor:pointer;min-height:58px;text-align:center}
+.evb i{font-style:normal;font-weight:800;width:24px;height:24px;border-radius:50%;background:var(--ink2);color:var(--paper);display:grid;place-items:center;font-size:14px}
+.evb.on{border-color:var(--oman);background:rgba(229,139,28,.18)}.evb.on i{background:var(--oman);color:#fff}
+.ck{display:flex;gap:6px;align-items:center;font-size:15px;line-height:1.4}
+.ck i{font-style:normal;width:22px;height:22px;border-radius:50%;border:2px solid var(--line);display:grid;place-items:center;font-size:13px;flex:none}
+.ck.ok i{background:var(--good);border-color:var(--good);color:#fff}
+.legend{display:grid;gap:4px;margin-top:4px}
+.lg{border-radius:10px;border:2px solid var(--line);padding:3px 10px;font-size:14.5px;line-height:1.4;background:var(--card)}
+.lg.c1{border-color:var(--r1)}.lg.c2{border-color:var(--r2)}
+.lg.lit{box-shadow:0 0 0 4px rgba(255,214,60,.85)}
+.clues{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:6px}
+.clue{border:2px dashed var(--line);border-radius:10px;padding:4px 6px;font-size:14px;line-height:1.35;min-height:84px;background:var(--card)}
+.clue.on{border-style:solid;border-color:var(--good);background:var(--ansbg)}
+.clue b{display:block;font-size:15px}
+
+/* map */
+.map text{font-family:var(--f);fill:var(--pen);font-size:10px;paint-order:stroke;stroke:var(--land);stroke-width:2.4px;stroke-linejoin:round}
+.map .sea{fill:var(--sea)}.map .land{fill:var(--land)}.map .abb{fill:var(--abb)}.map .om{fill:var(--oman)}
+.map .seal{font-style:italic;stroke:none;fill:#2f5f86;opacity:.85}
+:root[data-theme=dark] .map .seal{fill:#9fc6e6}
+.map .big{font-size:12px;font-weight:700}
+.map .pt .core{fill:var(--pen)}
+.map .pt .ring{fill:#fff;stroke:var(--pen);stroke-width:1.4}
+.map .pt .hit{fill:transparent;cursor:pointer}
+.map .pt.cap .core{fill:var(--cap)}
+.map .pt.sea .core{fill:#fff;stroke:var(--pen);stroke-width:1.2}
+.map .pt.sel .core,.map .pt.sel .ring{stroke:#ffb400;stroke-width:2.4}
+.map .pt.flash .core{fill:var(--bad)}
+.map .pt.good .core{fill:var(--good)}
+.map .lbl text{font-size:11px;font-weight:700}
+.map .zi text{font-size:5.6px;stroke-width:1.2px;font-weight:700}
+.map .r1{stroke:var(--r1)}.map .r2{stroke:var(--r2)}
+.map .route{fill:none;stroke-width:3.2;stroke-linecap:round;stroke-linejoin:round}
+.map .route.dim{opacity:.35}.map .route.fo{stroke-width:5}
+.map .arrow{stroke:none}
+.map .bar line{stroke:var(--pen);stroke-width:2}
+.map .scale text{font-size:9px;stroke:var(--land)}
+
+/* nav bar */
+#bar{position:fixed;left:0;right:0;bottom:0;z-index:20;display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;justify-content:center;padding:8px 10px calc(8px + env(safe-area-inset-bottom));background:var(--ui);color:var(--uiInk);box-shadow:0 -4px 16px rgba(0,0,0,.2)}
+#bar .grp{display:flex;align-items:center;gap:6px}
+.nb2{min-width:48px;height:48px;border-radius:14px;border:2px solid var(--accent);background:var(--card);color:var(--uiInk);font:800 16px var(--f);cursor:pointer;padding:0 12px;display:inline-flex;align-items:center;justify-content:center;gap:6px}
+.nb2.pri{background:var(--accent);color:#fff}
+.nb2:disabled{opacity:.4;cursor:default}
+.nb2.tog[aria-pressed=true]{background:var(--ink2);color:var(--paper);border-color:var(--ink2)}
+.dots{display:flex;gap:6px}
+.dt{width:38px;height:38px;border-radius:50%;border:2px solid var(--ink2);background:var(--card);color:var(--uiInk);font:800 16px var(--f);cursor:pointer;padding:0;display:grid;place-items:center}
+.dt.cur{background:var(--accent);border-color:var(--accent);color:#fff}
+.dt.done::after{content:"✓";position:absolute;margin-top:-34px;margin-inline-start:26px;font-size:12px;background:var(--good);color:#fff;border-radius:50%;width:16px;height:16px;line-height:16px;font-weight:800}
+.dt{position:relative}
+#bar .ttl{font-weight:800;font-size:15px;opacity:.85}
+#fx{position:fixed;inset:0;pointer-events:none;z-index:40}
+.pc{position:absolute;width:12px;height:12px;border-radius:3px;animation:pc .9s ease-out forwards}
+@keyframes pc{to{transform:translate(var(--dx),var(--dy)) rotate(540deg);opacity:0}}
+.leaf{position:absolute;transform-style:preserve-3d;transform:translateZ(3px);z-index:50}
+.strip{position:absolute;top:0;transform-style:preserve-3d}
+.face{position:absolute;inset:0;overflow:hidden;backface-visibility:hidden;-webkit-backface-visibility:hidden}
+.face.b{transform:rotateY(180deg)}
+.fsh{position:absolute;top:10px;width:480px;height:840px;pointer-events:none;transform:translateZ(1px)}
+.stars{display:flex;gap:4px;justify-content:center}
+.star{width:34px;height:34px;fill:none;stroke:var(--ink2);stroke-width:1.4}
+.star.on{fill:#ffc61a;stroke:#b98400;animation:pop .5s cubic-bezier(.3,1.8,.5,1)}
+@keyframes pop{from{transform:scale(.2) rotate(-40deg)}to{transform:scale(1)}}
+.big .star{width:64px;height:64px}
+.rhead{display:flex;justify-content:space-between;align-items:center;margin:2px 0 6px;font-weight:800}
+.rq{font-size:22px;font-weight:700;line-height:1.6;margin:10px 0 14px}
+.ropts .opt{font-size:19px;min-height:60px;padding:10px 16px;margin:10px 0;border-radius:14px}
+.rfb{font-size:17.5px!important}
+.sw{display:inline-block;width:16px;height:16px;border-radius:4px;border:1.5px solid var(--pen);vertical-align:-3px;margin-inline-end:5px}
+.rsum{text-align:center;padding-top:20px}
+.rsum h2{font-size:28px}
+
+/* teacher */
+#teach{position:fixed;inset:0;z-index:30;background:rgba(20,14,6,.88);display:flex;align-items:center;justify-content:center}
+#teach[hidden]{display:none}
+#teachHost{position:relative;transform-origin:50% 50%}
+#teach .tb{position:absolute;top:10px;inset-inline-end:10px;display:flex;gap:8px;z-index:3}
+.pg.teach{position:relative;display:block;width:1100px;height:660px;border-radius:14px;padding:14px 24px;--sh:575px;--wh:535px;--ang:16deg;display:grid;grid-template-columns:1.25fr 1fr;grid-template-rows:auto 1fr;gap:0 18px;font-size:19px;direction:ltr}
+.pg.teach.on{display:grid}
+.pg.teach .lab-h{grid-column:1/3}
+.pg.teach .stage{grid-column:1;grid-row:2}
+.pg.teach .ctrl{grid-column:2;grid-row:2;align-self:start;direction:inherit}
+.pg.teach .pn{display:none}
+html[dir=rtl] .pg.teach .ctrl{direction:rtl}
+html[dir=rtl] .pg.teach .lab-h{direction:rtl}
+
+html[lang=en] .pg{font-size:16px;line-height:1.45}
+html[lang=en] .body p{font-size:16px;line-height:1.5;margin-bottom:5px}
+html[lang=en] .hook{font-size:18px;line-height:1.35}
+html[lang=en] .law,html[lang=en] .pq,html[lang=en] .cq,html[lang=en] .opt{line-height:1.4}
+html[lang=en] .law{font-size:16px;padding:6px 12px}
+html[lang=en] .note{font-size:14.5px;line-height:1.4;padding:6px 12px;margin-top:8px;margin-bottom:8px}
+html[lang=en] .pq{font-size:15.5px}html[lang=en] .cq{font-size:15.5px}
+html[lang=en] .opt{font-size:15px;min-height:40px;padding:5px 12px;margin:4px 0}
+html[lang=en] .ordc{font-size:13.5px;line-height:1.3;min-height:52px}
+html[lang=en] .rq{font-size:20px;line-height:1.5}html[lang=en] .ropts .opt{font-size:17.5px}
+html[lang=en] .read,html[lang=en] .msg{line-height:1.4}
+body.nomo *{transition:none!important;animation:none!important}
+@media (max-width:600px){ #bar{gap:6px 8px;padding:6px 6px calc(6px + env(safe-area-inset-bottom))} #bar .lbl{display:none} .nb2{min-width:46px;padding:0 8px} .dt{width:34px;height:34px} .dots{gap:4px} .nb2[data-a=lang]{font-size:14px} }
+</style>
+</head>
+<body>
+<svg class="defs" aria-hidden="true" focusable="false">
+  <defs>
+    <pattern id="hatch" width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(40)"><line x1="0" y1="0" x2="0" y2="7" stroke="#4a7ba3" stroke-opacity=".22" stroke-width="1"/></pattern>
+    <filter id="rough" x="-2%" y="-2%" width="104%" height="104%"><feTurbulence type="fractalNoise" baseFrequency=".05" numOctaves="2" seed="4" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="2.4"/></filter>
+    <filter id="woodn" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency=".004 .09" numOctaves="4" seed="11"/><feColorMatrix type="matrix" values="0 0 0 0 .43  0 0 0 0 .28  0 0 0 0 .13  0 0 0 -2.2 1.25"/></filter>
+  </defs>
+</svg>
+<div class="desk" aria-hidden="true">
+  <svg preserveAspectRatio="none"><rect width="100%" height="100%" filter="url(#woodn)" opacity=".55"/>
+    <g stroke="rgba(90,58,24,.28)" stroke-width="2"><line x1="0" y1="22%" x2="100%" y2="22%"/><line x1="0" y1="47%" x2="100%" y2="47%"/><line x1="0" y1="73%" x2="100%" y2="73%"/></g>
+  </svg>
+</div>
+<div id="viewport">
+  <div id="scaler"><div id="scene"><div id="book">
+    <div class="cover"></div>
+    <div class="slot L" id="slotL"></div><div class="slot R" id="slotR"></div>
+    <div class="spine"></div>
+  </div></div></div>
+</div>
+<div id="bar" role="navigation"></div>
+<div id="teach" hidden><div class="tb"><button class="nb2" id="tMute"></button><button class="nb2 pri" id="tExit"></button></div><div id="teachHost"></div></div>
+<div id="fx"></div>
+
+<script>
+(()=>{
+'use strict';
+/* ============ helpers ============ */
+const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const el=(t,c,h)=>{const e=document.createElement(t); if(c) e.className=c; if(h!=null) e.innerHTML=h; return e;};
+const clamp=(v,a,b)=>Math.min(b,Math.max(a,v));
+const st={lang:'ar',ch:0,sub:0,single:false,motion:true,muted:false,theme:'light',busy:false,teacher:false,done:[false,false,false,false,false]};
+const AD='٠١٢٣٤٥٦٧٨٩';
+const loc=s=>{s=String(s); if(st.lang==='ar') s=s.replace(/\d/g,d=>AD[d]).replace(/([٠-٩])\.([٠-٩])/g,'$1٫$2').replace(/([٠-٩])%/g,'$1٪'); return s;};
+const B=s=>`<bdi dir="ltr">${loc(s).replace(/[\d٠-٩]+(?:[.٫][\d٠-٩]+)?/g,m=>`<bdi dir="ltr">${m}</bdi>`)}</bdi>`;
+const fx=s=>String(s).replace(/\{#([^}]+)\}/g,(m,x)=>B(x));
+const li=()=>st.lang==='ar'?0:1;
+const S={};
+const t=k=>{const v=S[k]; if(!v) return k; return v[li()];};
+const unit=()=>st.lang==='ar'?'كم':'km';
+
+/* ============ geometry ============ */
+const PJ=(lo,la)=>[(lo-24)*13,(44-la)*15];
+const pp=a=>a.map(p=>PJ(p[0],p[1]).map(v=>v.toFixed(1)).join(',')).join(' ');
+const COAST=[[67,24.8],[64,25.2],[62,25.2],[58.6,25.6],[57.2,26.0],[56.4,27.1],[54.8,26.6],[53.3,26.9],[52.0,27.6],[50.8,28.9],[49.5,29.8],[48.6,30.0],[48.1,29.6],[48.5,28.3],[49.7,27.0],[50.2,26.2],[50.8,24.6],[51.5,24.3],[52.5,24.1],[54.5,24.5],[55.3,25.3],[55.9,26.0],[56.1,26.2],[56.4,26.4],[56.35,25.8],[56.4,25.2],[56.7,24.4],[57.6,23.7],[58.5,23.6],[59.5,22.6],[59.8,22.4],[58.9,20.6],[57.8,19.3],[56.8,18.2],[55.2,17.1],[52.5,16.2],[49.5,14.7],[47,13.9],[45,12.8],[43.4,12.7],[42.8,14.5],[42.5,16.2],[41.5,18.5],[39.2,21.5],[37.5,24.3],[35.3,28],[35.0,29.5],[34.3,27.8],[32.6,29.9],[33.4,28.3],[34.3,26.5],[35.5,24],[36.8,22],[37.4,20],[38.6,18],[39.5,16]];
+const iEg=COAST.findIndex(p=>p[0]===36.8&&p[1]===22);
+const LAND=[[24,44],[88,44],[88,21],[72.8,20],[70,21],[68.5,23.2]].concat(COAST,[[41,14],[42.7,12.8],[43.2,11.6],[44.5,10.5],[48,11.3],[51.2,11.8],[51,10.4],[50.2,8],[24,8]]);
+const GREEN=[[41,44],[75,44],[75,28],[72.5,24.8],[68.5,23.2]].concat(COAST.slice(0,iEg+1),[[34,22],[24,22],[24,34],[34,34],[35.5,36.5],[37,37.2],[39,37.5],[41,39]]);
+const MED=[[24,38],[26.5,37.5],[28.5,36.6],[30.5,36.2],[33,36.1],[35.5,36.7],[36,36.6],[35.9,35.5],[35.6,34.2],[35.0,33.0],[34.3,31.6],[32.5,31.1],[30,31.3],[27,31.1],[24,32.2]];
+const OMAN=[[55.9,26.2],[56.3,25.7],[56.5,25.0],[56.8,24.3],[57.6,23.7],[58.5,23.6],[59.5,22.6],[59.8,22.4],[58.9,20.5],[57.8,19.3],[56.8,18.2],[55.2,17.1],[52.5,16.5],[53.0,18.6],[55.2,19.9],[55.2,22.6],[54.0,23.8],[52.6,24.2],[54.5,24.45],[55.3,25.3]];
+const P={B:PJ(44.4,33.3),S:PJ(47.8,30.5),D:PJ(36.3,33.5),Mk:PJ(39.8,21.4),Md:PJ(39.6,24.5),J:PJ(55.95,25.8),H:PJ(56.1,24.8),So:PJ(56.75,24.35),N:PJ(57.5,22.93)};
+const BAR=50, KM=370;                      // طول الشريط على خريطتنا = 50 وحدة = 370 كم (مقياس الصفحة 79)
+const barsOf=px=>Math.round(px/BAR*100)/100;
+const kmOf=px=>Math.round(barsOf(px)*KM);
+const dist=(a,b)=>Math.hypot(a[0]-b[0],a[1]-b[1]);
+const VA='130 105 390 337', VB='235 122 235 203', VC='385 255 70 70';
+
+/* nodes + edges for routes */
+const NODES={B:{p:P.B,k:'nB',type:'cap'},S:{p:P.S,k:'nS',type:'city'},G1:{p:[342,241],sea:1},G2:{p:[377,274],sea:1},G3:{p:[417,258],sea:1},G4:{p:[436,279],sea:1},J:{p:P.J,k:'nJ',type:'city'},So:{p:P.So,k:'nSo',type:'cap'},N:{p:P.N,k:'nN',type:'cap'}};
+const EDGES=[['B','S'],['S','G1',[[322,216]]],['G1','G2'],['G2','G3'],['G2','J'],['G3','J'],['G3','G4',[[430,256],[443,268]]],['G4','So'],['J','So'],['So','N']];
+const edgeOf=(a,b)=>{for(const e of EDGES){ if(e[0]===a&&e[1]===b) return {via:e[2]||[]}; if(e[0]===b&&e[1]===a) return {via:(e[2]||[]).slice().reverse()}; } return null;};
+const routePts=r=>{const pts=[]; r.forEach((id,i)=>{ if(i){const e=edgeOf(r[i-1],id); e.via.forEach(v=>pts.push(v));} pts.push(NODES[id].p); }); return pts;};
+const plen=pts=>{let L=0; for(let i=1;i<pts.length;i++) L+=dist(pts[i-1],pts[i]); return L;};
+function partial(pts,p){ // يعيد نقاط الخط حتى النسبة p
+  const L=plen(pts); let d=p*L; const out=[pts[0]]; let ang=0;
+  for(let i=1;i<pts.length;i++){ const sg=dist(pts[i-1],pts[i]); ang=Math.atan2(pts[i][1]-pts[i-1][1],pts[i][0]-pts[i-1][0]);
+    if(d>=sg){out.push(pts[i]); d-=sg;} else { const f=sg?d/sg:0; out.push([pts[i-1][0]+(pts[i][0]-pts[i-1][0])*f,pts[i-1][1]+(pts[i][1]-pts[i-1][1])*f]); break; } }
+  return {pts:out,tip:out[out.length-1],ang};
+}
+const arrowAt=(tip,ang,sz=9)=>{const c=Math.cos(ang),s=Math.sin(ang); const f=(x,y)=>`${(tip[0]+x*c-y*s).toFixed(1)},${(tip[1]+x*s+y*c).toFixed(1)}`; return `${f(sz*.6,0)} ${f(-sz*.5,-sz*.55)} ${f(-sz*.5,sz*.55)}`;};
+const ptsStr=a=>a.map(p=>p[0].toFixed(1)+','+p[1].toFixed(1)).join(' ');
+
+/* ============ map svg ============ */
+const LBL={lMed:[142,128,'seal',0],lRed:[190,372,'seal',-62],lGulf:[352,229,'seal',30],lGoO:[458,292,'seal',-60],lArS:[458,392,'seal',0],lKhr:[445,140,'big',0],lDam:[163,150,'',0],lMad:[235,303,'',0],lMak:[235,350,'',0],lOm:[392,355,'big',0]};
+const LB_A=['lRed','lGulf','lGoO','lArS','lKhr','lDam','lMad','lMak','lOm'], LB_B=['lGulf','lGoO'];
+function mapBase(view,opt={}){
+  const keys=opt.labels||(view===VB?LB_B:LB_A);
+  const lb=k=>{const [x,y,c,r]=LBL[k]; return `<text class="${c}" x="${x}" y="${y}" data-s="${k}" ${r?`transform="rotate(${r} ${x} ${y})"`:''} text-anchor="middle"></text>`;};
+  return `<svg class="map" viewBox="${view}" preserveAspectRatio="xMidYMid meet" role="img">
+  <rect class="sea" x="-60" y="-60" width="1100" height="800"/><rect x="-60" y="-60" width="1100" height="800" fill="url(#hatch)"/>
+  <g filter="url(#rough)" stroke="var(--pen)" stroke-width="1.1" stroke-linejoin="round">
+    <polygon class="land" points="${pp(LAND)}"/><polygon class="abb" points="${pp(GREEN)}"/><polygon class="sea" points="${pp(MED)}"/><polygon class="om" points="${pp(OMAN)}"/>
+  </g>
+  <g class="lbl">${keys.map(lb).join('')}</g>
+  `;
+}
+const sym=(id,type,p,cls='',hr=10)=>`<g class="pt ${type} ${cls}" data-id="${id}" transform="translate(${p[0]} ${p[1]})">${type==='cap'?'<circle class="ring" r="4.6"/><circle class="core" r="2"/>':'<circle class="core" r="3.3"/>'}<circle class="hit" r="${hr}"/></g>`;
+
+/* ============ audio ============ */
+const Snd={ctx:null,master:null,osc:null,og:null,idle:0,hold:false,
+  ens(){ if(!this.ctx){const C=window.AudioContext||window.webkitAudioContext; if(!C) return false; try{this.ctx=new C();}catch(e){return false;} this.master=this.ctx.createGain(); this.master.gain.value=.5; this.master.connect(this.ctx.destination);} if(this.ctx.state==='suspended') this.ctx.resume(); return true;},
+  tone(f){ if(st.muted||!this.ens()) return; const c=this.ctx,tm=c.currentTime;
+    if(!this.osc){ this.osc=c.createOscillator(); this.osc.type='triangle'; this.og=c.createGain(); this.og.gain.value=0; this.osc.frequency.value=f; this.osc.connect(this.og); this.og.connect(this.master); this.osc.start(); this.og.gain.setTargetAtTime(.06,tm,.04); this.started=(this.started||0)+1; }
+    this.osc.frequency.setTargetAtTime(f,tm,.03); this.arm(); },
+  arm(){ clearTimeout(this.idle); if(!this.hold) this.idle=setTimeout(()=>this.stop(),1500); },
+  stop(){ clearTimeout(this.idle); if(!this.osc) return; const tm=this.ctx.currentTime,o=this.osc,g=this.og; this.osc=null; g.gain.setTargetAtTime(0,tm,.06); try{o.stop(tm+.4);}catch(e){} },
+  ding(f=660,d=.4,v=.07,type='sine'){ if(st.muted||!this.ens()) return; const c=this.ctx,tm=c.currentTime,o=c.createOscillator(),g=c.createGain(); o.type=type; o.frequency.value=f; g.gain.setValueAtTime(0,tm); g.gain.linearRampToValueAtTime(v,tm+.02); g.gain.exponentialRampToValueAtTime(.0001,tm+d); o.connect(g); g.connect(this.master); o.start(tm); o.stop(tm+d+.05); },
+  flip(){ if(st.muted||!this.ens()) return; const c=this.ctx,n=c.sampleRate*.35|0,buf=c.createBuffer(1,n,c.sampleRate),d=buf.getChannelData(0); for(let i=0;i<n;i++) d[i]=(Math.random()*2-1)*Math.pow(1-i/n,2); const s=c.createBufferSource(); s.buffer=buf; const f=c.createBiquadFilter(); f.type='bandpass'; f.frequency.value=1700; f.Q.value=.7; const g=c.createGain(); g.gain.value=.16; s.connect(f); f.connect(g); g.connect(this.master); s.start(); },
+  good(){ this.ding(523,.25); setTimeout(()=>this.ding(784,.4),110); },
+  soft(){ this.ding(220,.25,.05,'triangle'); }
+};
+function burst(x,y){ if(!st.motion) return; const fxr=$('#fx'); const cols=['#ffc61a','#e58b1c','#58a458','#2a6fdb','#d6334a','#7b45b3']; for(let i=0;i<14;i++){ const p=el('span','pc'); p.style.left=x+'px'; p.style.top=y+'px'; p.style.background=cols[i%6]; const a=Math.random()*6.28,r=60+Math.random()*80; p.style.setProperty('--dx',Math.cos(a)*r+'px'); p.style.setProperty('--dy',Math.sin(a)*r-30+'px'); fxr.append(p); setTimeout(()=>p.remove(),950);} }
+const burstAt=e=>{const r=e.getBoundingClientRect(); burst(r.left+r.width/2,r.top+r.height/2);};
+const STAR='<svg class="star" viewBox="0 0 24 24"><path d="M12 2l3 7 7.4.6-5.6 4.8 1.7 7.2L12 17.6 5.5 21.6l1.7-7.2L1.6 9.6 9 9z" stroke-linejoin="round"/></svg>';
+const starIcon=on=>STAR.replace('class="star"',`class="star${on?' on':''}"`);
+
+/* ============ text dictionary ============ */
+const TXT=[
+{ hook:[`أربعة أحداث اختلطت أوراقها… فمن يعيد ترتيبها؟`,`Four events got shuffled — can you put them back in order?`],
+  ps:[[`بدأت القصة بقيام الإمامة الأولى في عُمان. ثم انتصر جيش العباسيين في معركة جلفار، واستُشهد الإمام الجلندى بن مسعود.`,`The story begins when the first Imamate is established in Oman. Then the Abbasid army wins the Battle of Jalfar, and Imam Al-Julanda bin Mas'ud is martyred.`],
+      [`بعد ذلك بويع الإمام محمد بن عبدالله اليحمدي، ثم هُزمت حملة عيسى بن جعفر.`,`Later, Imam Muhammad bin Abdullah Al-Yahmadi receives the pledge of allegiance, and Isa bin Ja'far's campaign is defeated.`]],
+  law:[`نرتّب من الأقدم إلى الأحدث، وكل حدث يمهّد لما بعده.`,`Order from oldest to newest — each event leads to the next.`],
+  note:[`الفترة التي تدرسها: {#132} – {#232} هـ`,`The period you study: {#132} – {#232} AH`],
+  q:[`أيّهما وقع أولاً: انتصار العباسيين في جلفار، أم هزيمة حملة عيسى بن جعفر؟`,`Which came first: the Abbasid victory at Jalfar, or the defeat of Isa bin Ja'far's campaign?`],
+  a:[`انتصار جلفار أولاً. اسحب مؤشر الزمن في الصفحة المقابلة لترى الترتيب.`,`The victory at Jalfar came first. Drag the time pointer on the facing page to see it.`]},
+{ hook:[`اسم المدينة لا يكفي… يجب أن نضعه في مكانه الصحيح على الخريطة!`,`A city's name isn't enough — it must sit in the right place on the map!`],
+  ps:[[`للخريطة لغة رموز: النقطة ● تعني مدينة، والنقطة ◉ تعني عاصمة. والمقياس يخبرنا كم كيلومتراً يمثّل الشريط.`,`A map speaks in symbols: ● means a city and ◉ means a capital. The scale tells how many kilometres the bar stands for.`],
+      [`أمامك ست أسماء: جلفار، نزوى، صحار، البصرة، حتا، بغداد. اختر اسماً ثم المس موضعه على الخريطة.`,`Six names are waiting: Jalfar, Nizwa, Sohar, Basra, Hatta, Baghdad. Pick a name, then tap its place on the map.`]],
+  law:[`المفتاح: ◉ عاصمة · ● مدينة — المقياس: الشريط = {#370} كم`,`Key: ◉ capital · ● city — Scale: the bar = {#370} km`],
+  note:[`عُمان بالبرتقالي، والدولة العباسية بالأخضر.`,`Oman is orange; the Abbasid state is green.`],
+  q:[`هل تقع جلفار شمال نزوى أم جنوبها؟`,`Is Jalfar north or south of Nizwa?`],
+  a:[`شمالها: جلفار قرب الخليج العربي في أعلى عُمان، ونزوى في الداخل أبعد جنوباً.`,`North of it: Jalfar is near the Arabian Gulf at the top of Oman; Nizwa lies inland, further south.`],
+  cq:[`ماذا يعني الرمز ◉ على الخريطة؟`,`What does the symbol ◉ mean on the map?`],
+  opts:[[`مدينة`,`A city`,0],[`عاصمة`,`A capital`,1],[`بحر`,`A sea`,0]],
+  cw:[`صحيح! ◉ للعاصمة، و● للمدينة.`,`Right! ◉ is a capital and ● is a city.`]},
+{ hook:[`الجيش لا يسير في خط مستقيم فوق كل شيء!`,`An army doesn't march in a straight line over everything!`],
+  ps:[[`خط السير هو الطريق الذي سلكته الحملة من نقطة البداية إلى مكان المعركة. نرسمه مارّاً بمحطاته، ونضع سهماً يبيّن الاتجاه.`,`A route is the road a campaign followed from its start to the battle. We draw it through its stops and add an arrow for the direction.`],
+      [`أرسل العباسيون حملتين إلى عُمان: حملة خازم بن خزيمة وحملة عيسى بن جعفر. ارسم خط سير كلٍّ منهما على الخريطة.`,`The Abbasids sent two campaigns to Oman: Khazim bin Khuzayma's and Isa bin Ja'far's. Draw the route of each on the map.`]],
+  law:[`خط السير = بداية ← محطات ← نهاية + سهم الاتجاه`,`Route = start → stops → end + a direction arrow`],
+  note:[`خطأ شائع: رسم خط مستقيم يتجاوز المحطات!`,`Common mistake: a straight ruler line that skips the stops!`],
+  q:[`رسم طالب خط سير حملة بمسطرة مستقيمة من بغداد إلى جلفار. هل رسمه صحيح؟`,`A student drew a campaign's route with a ruler, straight from Baghdad to Jalfar. Is it right?`],
+  a:[`لا. الخط المستقيم يقفز فوق البصرة وفوق الطريق عبر الخليج العربي. الصحيح: نمرّ بالمحطات ونضع سهماً.`,`No. A straight line jumps over Basra and over the road along the Arabian Gulf. Correct: pass through the stops and add an arrow.`],
+  cq:[`ما الخطأ في رسم خط سير بخط مستقيم؟`,`What is wrong with drawing a route as one straight line?`],
+  opts:[[`يقفز فوق المحطات والطريق الذي سلكته الحملة`,`It jumps over the stops and the road the campaign took`,1],[`يجعل الخريطة أصغر`,`It makes the map smaller`,0],[`لا يحتاج إلى سهم اتجاه`,`It needs no direction arrow`,0]],
+  cw:[`أحسنت! نمرّ بالمحطات ونضع سهماً للاتجاه.`,`Well done! Go through the stops and add a direction arrow.`]},
+{ hook:[`لماذا أرسل العباسيون الجيوش إلى عُمان؟ ابحث عن الدلائل على الخريطة.`,`Why did the Abbasids send armies to Oman? Look for clues on the map.`],
+  ps:[[`سؤال التشخيص يطلب الأسباب. الخريطة تقدّم دلائل: عُمان تطل على الخليج العربي وبحر عمان وبحر العرب، وتقع في طرف الدولة العباسية.`,`The diagnosis question asks for causes. The map gives clues: Oman looks out on the Arabian Gulf, the Sea of Oman and the Arabian Sea, and sits at the edge of the Abbasid state.`],
+      [`وفي خط الزمن رأينا أن عُمان قامت فيها إمامة بقيادة إمام. اجمع الدلائل الثلاثة في مختبر الصفحة المقابلة.`,`The timeline showed that an Imamate led by an Imam arose in Oman. Collect the three clues in the facing lab.`]],
+  law:[`العامل = دليل على الخريطة + أثره. المسافة = عدد الأشرطة × {#370} كم`,`Factor = a clue on the map + its effect. Distance = number of bars × {#370} km`],
+  note:[`تفاصيل العوامل الكاملة في درس الوحدة نفسه.`,`The full details of the factors are in the unit lesson itself.`],
+  q:[`كم مرة يلزم قطع طول الشريط من بغداد إلى جلفار؟`,`How many bar-lengths is it from Baghdad to Jalfar?`],
+  cq:[`أيّ مما يأتي عاملٌ دفع العباسيين إلى محاولة السيطرة على عُمان؟`,`Which of these pushed the Abbasids to try to control Oman?`],
+  opts:[[`عُمان قريبة جداً من بغداد`,`Oman is very close to Baghdad`,0],[`عُمان لا تطل على أي بحر`,`Oman has no sea coast`,0],[`موقع عُمان المهم على البحر`,`Oman's important location on the sea`,1]],
+  cw:[`صحيح! الموقع البحري دليل مهم على الخريطة.`,`Correct! The sea location is a key clue on the map.`]}
+];
+const NAMES={nB:['بغداد','Baghdad'],nS:['البصرة','Basra'],nJ:['جلفار','Jalfar'],nSo:['صحار','Sohar'],nN:['نزوى','Nizwa'],nH:['حتا','Hatta']};
+Object.entries(NAMES).forEach(([k,v])=>S[k]=v);
+Object.assign(S,{
+ title:['كتابي الحيّ','My Living Book'],sub:['عُمان في العصر العباسي الأول','Oman in the Early Abbasid Era'],
+ prev:['السابق','Back'],next:['التالي','Next'],mute:['كتم','Mute'],unmute:['الصوت','Sound'],pause:['إيقاف الحركة','Pause motion'],play:['تشغيل الحركة','Resume motion'],
+ teacher:['وضع المعلم','Teacher mode'],exit:['خروج','Exit'],lang:['English','العربية'],
+ cn0:['من الأقدم إلى الأحدث','Oldest to Newest'],cn1:['أين تقع؟','Where Is It?'],cn2:['خط السير','Drawing the Route'],cn3:['لماذا عُمان؟','Why Oman?'],cn4:['التحدّي','The Challenge'],
+ lawT:['القانون: ','Rule: '],predT:['توقّع ثم اكشف: ','Predict, then reveal: '],lift:['ارفع اللسان ↑','Lift the tab ↑'],chkT:['تحقّق: ','Check: '],again:['قريب! جرّب مرة أخرى.','Close! Try again.'],
+ ordQ:['رتّب الأحداث من الأقدم إلى الأحدث: اضغطها بالترتيب.','Order the events from oldest to newest: tap them in order.'],
+ ordOk:['أحسنت! هذا هو الترتيب الصحيح.','Well done! That is the correct order.'],ordNo:['ليس بعد… شاهد مؤشر الزمن في المختبر وجرّب.','Not yet… watch the time pointer in the lab and try again.'],
+ ev1:['قيام الإمامة الأولى في عُمان','The first Imamate is established in Oman'],
+ ev2:['انتصار العباسيين في جلفار واستشهاد الإمام الجلندى بن مسعود','Abbasid victory at Jalfar; Imam Al-Julanda bin Mas\'ud martyred'],
+ ev3:['مبايعة الإمام محمد بن عبدالله اليحمدي','Imam Muhammad bin Abdullah Al-Yahmadi receives the pledge'],
+ ev4:['هزيمة حملة عيسى بن جعفر','Isa bin Ja\'far\'s campaign is defeated'],
+ es1:['الإمامة الأولى','First Imamate'],es2:['معركة جلفار','Jalfar'],es3:['اليحمدي','Al-Yahmadi'],es4:['حملة عيسى','Isa\'s campaign'],
+ lt1:['مختبر الزمن','Time Lab'],lt2:['مختبر الخريطة','Map Lab'],lt3:['مختبر خط السير','Route Lab'],lt4:['مختبر الدلائل','Clue Lab'],lt5:['خريطة التحدّي','Challenge Map'],
+ listen:['استمع','Listen'],stopL:['إيقاف','Stop'],rdEv:['الحدث','Event'],rdPos:['موضع المؤشر','Pointer'],
+ fl1:['الإمامة الأولى','First Imamate'],fl2:['الإمامة الثانية','Second Imamate'],
+ lMed:['البحر المتوسط','Mediterranean'],lRed:['البحر الأحمر','Red Sea'],lGulf:['الخليج العربي','Arabian Gulf'],lGoO:['بحر عمان','Sea of Oman'],lArS:['بحر العرب','Arabian Sea'],lKhr:['خراسان','Khurasan'],lDam:['دمشق','Damascus'],lMad:['المدينة المنورة','Madinah'],lMak:['مكة المكرمة','Makkah'],lOm:['عُمان','Oman'],
+ scaleL:['{#370} كم','{#370} km'],
+ pick:['اختر اسماً ثم المس موضعه على الخريطة.','Pick a name, then tap its place on the map.'],
+ pickDot:['اختر اسماً من الأسفل أولاً.','Pick a name below first.'],
+ hint:['ليس هنا… جرّب نقطة أخرى. تلميح: ','Not here… try another dot. Hint: '],
+ okp:['أحسنت! في مكانه الصحيح: ','Great! In its place: '],placed:['تم وضع','Placed'],of:['من','of'],reset:['ابدأ من جديد','Start over'],
+ hB:['عاصمة في الشمال بعيدة عن البحر','a capital in the north, far from the sea'],hS:['مدينة قرب رأس الخليج العربي','a city at the head of the Arabian Gulf'],hJ:['أشمال نقطة في عُمان قرب الخليج العربي','the northernmost point of Oman, by the Arabian Gulf'],hH:['مدينة في الداخل جنوب جلفار وقريبة منها','a city inland, just south of Jalfar'],hSo:['عاصمة على ساحل بحر عمان','a capital on the Sea of Oman coast'],hN:['عاصمة في الداخل، أبعد نقطة جنوباً','a capital inland, the furthest south'],
+ zoom:['تكبير عُمان','Oman zoom'],
+ k1:['حملة خازم بن خزيمة','Khazim bin Khuzayma\'s campaign'],k2:['حملة عيسى بن جعفر','Isa bin Ja\'far\'s campaign'],k1s:['خازم','Khazim'],k2s:['عيسى','Isa'],
+ cmp:['قارن بالتناوب','Compare in turn'],cmpOff:['أوقف المقارنة','Stop comparing'],undo:['تراجع','Undo'],clear:['امسح','Clear'],
+ m0:['المس بغداد أو البصرة لتبدأ الخط.','Tap Baghdad or Basra to start the line.'],
+ mStart:['ابدأ الخط من بغداد أو البصرة.','Start the line at Baghdad or Basra.'],
+ mJump:['هذا خط مستقيم يقفز فوق المحطات — هذا هو الخطأ الشائع! تابع من آخر محطة عبر الطريق.','That straight line jumps over the stops — the common mistake! Continue from the last stop along the road.'],
+ mLoop:['مررتَ بهذه المحطة من قبل. استخدم «تراجع».','You already passed this stop. Use “Undo”.'],
+ mMid:['تابع: المس المحطة التالية على الطريق.','Keep going: tap the next stop along the road.'],
+ mDone:['وصل الخط إلى عُمان ✓ طابِق المحطة الأخيرة مع درس الوحدة.','The line reaches Oman ✓ — match its last stop with your unit lesson.'],
+ ck1:['يبدأ من بغداد أو البصرة','Starts at Baghdad or Basra'],ck2:['يمرّ عبر الخليج العربي بحراً','Passes by sea along the Arabian Gulf'],ck3:['ينتهي في عُمان','Ends in Oman'],ck4:['فيه سهم يبيّن الاتجاه','Has an arrow showing the direction'],
+ len:['الطول ≈','Length ≈'],sea:['في البحر','at sea'],
+ rad:['نصف القطر','Radius'],sl4:['وسّع دائرة المدى حول بغداد','Widen the reach circle around Baghdad'],inside:['داخل الدائرة','Inside'],outside:['خارجها','Outside'],
+ c1t:['الموقع البحري','Sea location'],c1:['تطل عُمان على الخليج العربي وبحر عمان وبحر العرب.','Oman looks out on the Arabian Gulf, the Sea of Oman and the Arabian Sea.'],
+ c2t:['الطرف البعيد','The far edge'],c2:['عُمان في طرف الدولة العباسية، وبينها وبين بغداد مسافة طويلة.','Oman lies at the edge of the Abbasid state, far from Baghdad.'],
+ c3t:['قيام الإمامة','The Imamate'],c3:['قامت في عُمان إمامة بقيادة إمام، فصار لها حكمها الخاص.','An Imamate led by an Imam arose in Oman, giving it its own rule.'],
+ clueHint:['المس الفقاعات ❓ على الخريطة لتجمع الدلائل.','Tap the ❓ bubbles on the map to collect clues.'],
+ allClues:['اجتمعت الدلائل الثلاثة ✓ هذه عوامل تستخلصها من الخريطة، وتجد تفاصيلها في درس الوحدة.','All three clues found ✓ — these are read from the map; the unit lesson has the details.'],
+ jIn:['بغداد ← جلفار:','Baghdad → Jalfar:'],
+ round:['الجولة','Round'],rnext:['التالي ▸','Next ▸'],rfin:['اعرض النتيجة','See my result'],
+ resT:['نتيجتك','Your result'],resMsg:['أحسنتَ! كل جولة ثبّتت فكرة جديدة.','Well done! Every round fixed a new idea.'],resTry:['جرّب مرة أخرى لتحصل على نجوم أكثر!','Try again to collect more stars!'],replay:['أعد التحدّي','Play again'],
+ first:['من أول محاولة','on the first try'],lgOm:['عُمان','Oman'],lgAb:['الدولة العباسية','Abbasid state'],lgCap:['◉ عاصمة','◉ capital'],lgCity:['● مدينة','● city'],lgScale:['الشريط = {#370} كم','bar = {#370} km'],
+ r2q:['المس موقع جلفار على الخريطة المقابلة.','Tap the position of Jalfar on the facing map.'],r2h:['تلميح: جلفار أشمال نقطة، قرب الخليج العربي.','Hint: Jalfar is the northernmost dot, by the Arabian Gulf.'],
+ r2w:['جلفار أشمال نقطة في عُمان، قرب الخليج العربي.','Jalfar is the northernmost point of Oman, by the Arabian Gulf.']
+});
+for(let i=0;i<4;i++){ const x=TXT[i]; S['hook'+i]=x.hook; x.ps.forEach((p,k)=>S[`p${i}_${k}`]=p); S['law'+i]=x.law; S['note'+i]=x.note; S['q'+i]=x.q; if(x.a) S['a'+i]=x.a; if(x.cq){S['cq'+i]=x.cq; x.opts.forEach((o,k)=>S[`co${i}_${k}`]=[o[0],o[1]]); S['cw'+i]=x.cw;} }
+/* challenge rounds */
+const R_BS=dist(P.B,P.S), R_BSbars=barsOf(R_BS), R_BSkm=kmOf(R_BS);
+const dJ=dist(P.B,P.J), dSo=dist(P.B,P.So), dN=dist(P.B,P.N);
+const ROUNDS=[
+ {vis:'time',q:[`أيّ الأحداث الآتية وقع أولاً؟`,`Which of these events happened first?`],opts:[[`هزيمة حملة عيسى بن جعفر`,`Isa bin Ja'far's campaign is defeated`,0],[`قيام الإمامة الأولى في عُمان`,`The first Imamate is established in Oman`,1],[`مبايعة الإمام محمد بن عبدالله اليحمدي`,`Imam Muhammad bin Abdullah Al-Yahmadi receives the pledge`,0]],why:[`الأقدم هو قيام الإمامة الأولى، ثم جلفار، ثم مبايعة اليحمدي، ثم هزيمة حملة عيسى.`,`The oldest is the first Imamate, then Jalfar, then Al-Yahmadi, then Isa's defeat.`]},
+ {vis:'click',q:S.r2q,click:'J',why:S.r2w},
+ {vis:'scale',q:[`على الخريطة المقابلة: الشريط = {#370} كم، والخط بين بغداد والبصرة = {#${R_BSbars}} شريط. كم تقريباً المسافة؟`,`On the facing map: the bar = {#370} km, and the line from Baghdad to Basra = {#${R_BSbars}} bars. About how far is it?`],opts:[[`{#370} كم`,`{#370} km`,0],[`{#${R_BSbars}} كم`,`{#${R_BSbars}} km`,0],[`{#${R_BSkm}} كم`,`{#${R_BSkm}} km`,1]],why:[`المسافة = عدد الأشرطة × {#370} كم = {#${R_BSbars} × 370 ≈ ${R_BSkm}} كم.`,`Distance = bars × {#370} km = {#${R_BSbars} × 370 ≈ ${R_BSkm}} km.`]},
+ {vis:'shortcut',q:[`رسم طالب خط سير حملة كما في الخريطة المقابلة. ما الخطأ؟`,`A student drew a campaign route as on the facing map. What is wrong?`],opts:[[`الخط قصير جداً`,`The line is too short`,0],[`اللون غير مناسب`,`The colour is unsuitable`,0],[`خط مستقيم يقفز فوق البصرة والطريق، ولا سهم فيه`,`A straight line that skips Basra and the road, with no arrow`,1]],why:[`خط السير يمرّ بمحطاته (بغداد ← البصرة ← الخليج ← عُمان) ويحمل سهماً للاتجاه.`,`A route passes through its stops (Baghdad → Basra → the Gulf → Oman) and carries a direction arrow.`]},
+ {vis:'reach',q:[`في مختبر الدلائل: عند توسيع دائرة المدى من بغداد، أيّ مدينة عُمانية تدخل الدائرة أولاً؟`,`In the Clue Lab: as the reach circle widens from Baghdad, which Omani city enters it first?`],opts:[[`نزوى`,`Nizwa`,0],[`جلفار`,`Jalfar`,1],[`صحار`,`Sohar`,0]],why:[`جلفار الأقرب: {#${barsOf(dJ)} × 370 ≈ ${kmOf(dJ)}} كم، بينما صحار {#${kmOf(dSo)}} كم ونزوى {#${kmOf(dN)}} كم.`,`Jalfar is nearest: {#${barsOf(dJ)} × 370 ≈ ${kmOf(dJ)}} km, while Sohar is {#${kmOf(dSo)}} km and Nizwa {#${kmOf(dN)}} km.`]},
+ {vis:'sea',q:[`ما العوامل التي دفعت العباسيين إلى محاولة السيطرة على عُمان؟ اختر عاملاً صحيحاً.`,`What pushed the Abbasids to try to control Oman? Choose a correct factor.`],opts:[[`موقع عُمان المهم على البحر`,`Oman's important location on the sea`,1],[`عُمان لا تطل على بحر`,`Oman has no sea coast`,0],[`عُمان قريبة جداً من بغداد`,`Oman is very close to Baghdad`,0]],why:[`تطل عُمان على الخليج العربي وبحر عمان وبحر العرب، وهذا من العوامل التي تظهر على الخريطة.`,`Oman looks out on the Arabian Gulf, the Sea of Oman and the Arabian Sea — a factor visible on the map.`]},
+ {vis:'time',q:[`أيّ القائدين أرسله العباسيون إلى عُمان؟`,`Which of these leaders did the Abbasids send to Oman?`],opts:[[`الإمام الجلندى بن مسعود`,`Imam Al-Julanda bin Mas'ud`,0],[`الإمام محمد بن عبدالله اليحمدي`,`Imam Muhammad bin Abdullah Al-Yahmadi`,0],[`عيسى بن جعفر`,`Isa bin Ja'far`,1]],why:[`عيسى بن جعفر قاد حملة عباسية هُزمت، أما الجلندى بن مسعود واليحمدي فإمامان عُمانيان.`,`Isa bin Ja'far led an Abbasid campaign that was defeated; Al-Julanda and Al-Yahmadi were Omani Imams.`]}
+];
+S.a3=[`حوالي {#${barsOf(dJ)}} مرة: {#${barsOf(dJ)} × 370 ≈ ${kmOf(dJ)}} كم (تقريباً على خريطتنا).`,`About {#${barsOf(dJ)}} times: {#${barsOf(dJ)} × 370 ≈ ${kmOf(dJ)}} km (approximate, on our map).`];
+ROUNDS.forEach((r,i)=>{S['rq'+i]=r.q; S['rw'+i]=r.why; if(r.opts) r.opts.forEach((o,k)=>S[`ro${i}_${k}`]=[o[0],o[1]]);});
+
+/* ============ build pages ============ */
+const pages=[]; const labs=[];
+const slotL=$('#slotL'), slotR=$('#slotR'), book=$('#book');
+for(let i=0;i<5;i++){ const t=el('section','pg textpg'), l=el('section','pg labpg'); pages.push({t,l}); }
+
+function mcq(i){ const x=TXT[i]; return `<div class="cq"><b data-i="chkT"></b><span data-i="cq${i}"></span></div>${x.opts.map((o,k)=>`<button class="opt" data-ok="${o[2]}" data-i="co${i}_${k}"></button>`).join('')}<div class="fb" aria-live="polite"></div>`; }
+function ordering(){ const ord=[2,0,3,1]; return `<div class="cq"><b data-i="chkT"></b><span data-i="ordQ"></span></div><div class="ord">${ord.map(k=>`<button class="ordc" data-n="${k}"><span class="nb">?</span><span data-i="ev${k+1}"></span></button>`).join('')}</div><div class="fb" aria-live="polite"></div>`; }
+function textPage(i){
+  const x=TXT[i], p=pages[i].t;
+  p.innerHTML=`<header class="ph"><span class="chn">${i+1}</span><h2 data-i="cn${i}"></h2></header>
+  <p class="hook" data-i="hook${i}"></p>
+  <div class="body">${x.ps.map((_,k)=>`<p data-i="p${i}_${k}"></p>`).join('')}</div>
+  <div class="law"><b data-i="lawT"></b><span data-i="law${i}"></span></div>
+  <aside class="note" data-i="note${i}"></aside>
+  <div class="predict"><div class="pq"><b data-i="predT"></b><span data-i="q${i}"></span></div>
+    <div class="pa"><div class="ans" data-i="a${i}"></div><button class="tongue" data-i="lift"></button></div></div>
+  <div class="check">${i===0?ordering():mcq(i)}</div><footer class="pn"></footer>`;
+  $('.pa',p).addEventListener('click',e=>{ const pa=e.currentTarget; pa.classList.toggle('open'); Snd.ding(pa.classList.contains('open')?740:520,.2,.04); });
+  // MCQ
+  $$('.opt',p).forEach(b=>b.addEventListener('click',()=>{ const fb=$('.fb',p);
+    if(b.dataset.ok==='1'){ b.classList.add('ok'); fb.className='fb good'; fb.dataset.i='cw'+i; fb.innerHTML=fx(t('cw'+i)); finish(i); burstAt(b); Snd.good(); }
+    else { b.classList.add('bad'); fb.className='fb'; fb.dataset.i='again'; fb.innerHTML=t('again'); Snd.soft(); setTimeout(()=>b.classList.remove('bad'),450); } }));
+  // ordering
+  if(i===0){ let nx=0; $$('.ordc',p).forEach(b=>b.addEventListener('click',()=>{ if(b.classList.contains('ok')) return; const fb=$('.fb',p);
+    if(+b.dataset.n===nx){ b.classList.add('ok'); $('.nb',b).textContent=loc(nx+1); b.dataset.pos=nx+1; nx++; Snd.ding(523+nx*100,.3); fb.className='fb'; fb.dataset.i=''; fb.innerHTML='';
+      if(nx===4){ fb.className='fb good'; fb.dataset.i='ordOk'; fb.innerHTML=t('ordOk'); finish(0); burstAt(b); Snd.good(); } }
+    else { b.classList.add('bad'); fb.className='fb'; fb.dataset.i='ordNo'; fb.innerHTML=t('ordNo'); Snd.soft(); setTimeout(()=>b.classList.remove('bad'),450);} })); }
+}
+function finish(i){ if(!st.done[i]){ st.done[i]=true; renderNav(); } }
+
+function shell(i,title,wall,ctrl){ return `<div class="lab-h"><span class="chn">${i+1}</span><h3 data-i="${title}"></h3></div>
+ <div class="stage"><div class="shadow"></div><div class="pop"><div class="gus l"><svg viewBox="0 0 100 100" preserveAspectRatio="none"><polygon points="0,0 100,0 0,100" vector-effect="non-scaling-stroke"/></svg></div><div class="gus r"><svg viewBox="0 0 100 100" preserveAspectRatio="none"><polygon points="0,0 100,0 100,100" vector-effect="non-scaling-stroke"/></svg></div><div class="wall">${wall}<div class="tag"></div></div></div></div><div class="ctrl">${ctrl}</div><footer class="pn"></footer>`; }
+
+/* ---------- lab 1: time ---------- */
+function labTime(i){
+  const p=pages[i].l; const T={t:0,idx:-1,play:null};
+  const RA=routePts(['B','S','G1','G2','J']);
+  const RB=routePts(['B','S','G1','G2','G3','G4']);
+  const wall=mapBase(VA)+`
+   ${sym('B','cap',P.B,'',0)}${sym('S','city',P.S,'',0)}${sym('J','city',P.J,'',0)}
+   <polyline class="route" id="x" points="" style="stroke:var(--abbd)" data-r="A"/><polygon class="arrow" data-a="A" style="fill:var(--abbd)"/>
+   <polyline class="route r2" points="" data-r="B"/><polygon class="arrow" data-a="B" style="fill:var(--r2)"/>
+   <g data-bat="1" transform="translate(${P.J[0]} ${P.J[1]})"><polygon points="0,-13 3,-4 12,-6 6,2 12,10 2,6 -3,14 -4,5 -13,3 -6,-3" fill="#ffb400" stroke="var(--r2)" stroke-width="1.6"/></g>
+   <g data-x="1" transform="translate(${NODES.G4.p[0]} ${NODES.G4.p[1]})" stroke="var(--r2)" stroke-width="3.4" stroke-linecap="round"><line x1="-7" y1="-7" x2="7" y2="7"/><line x1="7" y1="-7" x2="-7" y2="7"/></g>
+   <g data-flag="1" transform="translate(${P.N[0]} ${P.N[1]})"><line x1="0" y1="0" x2="0" y2="-30" stroke="var(--pen)" stroke-width="2.4"/><path data-fp d="M0,-30 L22,-24 L0,-17 Z" fill="var(--oman)" stroke="var(--pen)" stroke-width="1.3"/></g>
+   <text data-flt x="${P.N[0]}" y="${P.N[1]+16}" class="big" text-anchor="middle" style="font-size:12px"></text>
+   <g class="scale"><line x1="140" y1="430" x2="190" y2="430" style="stroke:var(--pen);stroke-width:2"/><text x="165" y="424" text-anchor="middle" data-s="scaleL"></text></g></svg>`;
+  const ctrl=`<div class="evs">${[1,2,3,4].map(k=>`<button class="evb" data-k="${k-1}"><i>${k}</i><span data-i="es${k}"></span></button>`).join('')}</div>
+   <div class="track" style="height:48px;margin-top:6px"><input type="range" min="0" max="99" step="0.1" value="0" aria-label="time"></div>
+   <div class="rowb"><button class="btn" data-act="listen"></button><span class="msg" data-i="sl1" style="flex:1;align-self:center"></span></div>
+   <div class="read"><div class="rd"><span data-i="rdEv"></span><b class="v1" style="text-align:end"></b></div><div class="rd"><span data-i="rdPos"></span><b class="v2"></b></div><div class="eq"></div></div>`;
+  S.sl1=['اسحب المؤشر: كل ربع = حدث (الأبعاد ليست بمقياس زمني).','Drag the pointer: each quarter = one event (not to time scale).'];
+  p.innerHTML=shell(i,'lt1',wall,ctrl);
+  const rng=$('input',p), svg=$('svg',p);
+  const q=s=>$(s,p);
+  function upd(){
+    const tt=T.t, idx=Math.min(3,Math.floor(tt/25));
+    const pA=clamp((tt-25)/12.5,0,1), pB=clamp((tt-75)/12.5,0,1);
+    const showA=tt>25&&tt<62.5, showB=tt>75;
+    const A=partial(RA,pA), Bp=partial(RB,pB);
+    const lA=q('[data-r=A]'), aA=q('[data-a=A]'), lB=q('[data-r=B]'), aB=q('[data-a=B]');
+    lA.setAttribute('points',showA?ptsStr(A.pts):''); aA.setAttribute('points',showA?arrowAt(A.tip,A.ang):'');
+    lB.setAttribute('points',showB?ptsStr(Bp.pts):''); aB.setAttribute('points',showB?arrowAt(Bp.tip,Bp.ang):'');
+    q('[data-bat]').style.display=(tt>=37.5&&tt<62.5)?'':'none';
+    q('[data-x]').style.display=(tt>=87.5)?'':'none';
+    const fl=q('[data-flag]'), fp=q('[data-fp]'), ft=q('[data-flt]');
+    const state=tt<37.5?1:(tt<62.5?0:2);
+    fp.style.fill=state?'var(--oman)':'#999'; fp.setAttribute('d',state?'M0,-30 L22,-24 L0,-17 Z':'M0,-12 L22,-6 L0,1 Z');
+    ft.textContent=state===1?t('fl1'):(state===2?t('fl2'):'');
+    $$('.evb',p).forEach((b,k)=>b.classList.toggle('on',k===idx));
+    $('.v1',p).textContent=loc(idx+1)+' — '+t('ev'+(idx+1));
+    $('.v2',p).innerHTML=B(Math.round(tt)+'%');
+    $('.eq',p).innerHTML=B(`⌊${Math.round(tt)} ÷ 25⌋ + 1 = ${idx+1}`);
+    $('.tag',p).textContent=loc(idx+1)+' / '+loc(4);
+    if(idx!==T.idx){ if(T.idx>=0) Snd.ding([523,587,659,784][idx],.5,.06); T.idx=idx; }
+  }
+  function setT(v,snd=true){ T.t=clamp(v,0,99); rng.value=T.t; upd(); if(snd) Snd.tone(220*Math.pow(2,T.t/100*1.5)); }
+  rng.addEventListener('input',()=>{ if(T.play) stopPlay(); setT(+rng.value); });
+  $$('.evb',p).forEach(b=>b.addEventListener('click',()=>{ if(T.play) stopPlay(); setT(b.dataset.k*25+12.5); }));
+  const lb=$('[data-act=listen]',p);
+  function stopPlay(){ clearInterval(T.play); T.play=null; Snd.hold=false; Snd.arm(); lb.textContent=t('listen'); }
+  lb.addEventListener('click',()=>{ if(T.play){stopPlay();return;} Snd.hold=true; if(T.t>=98) T.t=0; lb.textContent=t('stopL'); const t0=performance.now(), from=T.t, dur=(99-from)*95+400;
+    T.play=setInterval(()=>{ const f=clamp((performance.now()-t0)/dur,0,1); setT(from+(99-from)*f); if(f>=1) stopPlay(); },40); });
+  labs[i]={update:()=>{ lb.textContent=T.play?t('stopL'):t('listen'); upd(); },stop:()=>{ if(T.play) stopPlay(); }};
+  labs[i].update();
+  // نقطة أولية بلا صوت
+  setT(0,false);
+}
+
+/* ---------- lab 2: locate ---------- */
+function labLocate(i){
+  const p=pages[i].l; const items=['B','S','J','H','So','N']; const placed={}; let sel=null; let selDot=null;
+  const typ={B:'cap',S:'city',J:'city',H:'city',So:'cap',N:'cap'};
+  const keyOf={B:'nB',S:'nS',J:'nJ',H:'nH',So:'nSo',N:'nN'};
+  const hintOf={B:'hB',S:'hS',J:'hJ',H:'hH',So:'hSo',N:'hN'};
+  // inset
+  const mainDots=['B','S'].map(id=>sym(id,typ[id],P[id],'',11)).join('')+['J','H','So','N'].map(id=>`<g class="pt ${typ[id]}" style="pointer-events:none" transform="translate(${P[id][0]} ${P[id][1]})">${typ[id]==='cap'?'<circle class="ring" r="3.4"/><circle class="core" r="1.5"/>':'<circle class="core" r="2.4"/>'}</g>`).join('');
+  const wall=mapBase(VB)+`${mainDots}<g data-lbls></g>
+    <rect x="385" y="255" width="70" height="70" fill="none" stroke="#ffb400" stroke-width="1.6" stroke-dasharray="4 2"/>
+    <g class="scale"><line x1="246" y1="316" x2="296" y2="316" style="stroke:var(--pen);stroke-width:2"/><text x="271" y="311" text-anchor="middle" data-s="scaleL"></text></g></svg>
+    <div class="inz"><svg class="map" viewBox="${VC}" preserveAspectRatio="xMidYMid slice"><rect class="sea" x="-60" y="-60" width="1100" height="800"/><rect x="-60" y="-60" width="1100" height="800" fill="url(#hatch)"/>
+     <g filter="url(#rough)" stroke="var(--pen)" stroke-width=".5"><polygon class="land" points="${pp(LAND)}"/><polygon class="abb" points="${pp(GREEN)}"/><polygon class="om" points="${pp(OMAN)}"/></g>
+     <g class="zi">${['J','H','So','N'].map(id=>sym(id,typ[id],P[id],'',5.5)).join('')}<g data-lbls2></g></g></svg><span class="inl" data-i="zoom"></span></div>`;
+  const ctrl=`<div class="rowb" data-chips style="margin-top:2px">${items.map(id=>`<button class="chip" data-id="${id}"></button>`).join('')}</div>
+   <div class="msg" aria-live="polite"></div>
+   <div class="read"><div class="rd"><span data-i="placed"></span><b class="cnt"></b></div><div class="eq"></div></div>
+   <div class="rowb"><button class="btn alt" data-act="reset" data-i="reset"></button></div>`;
+  p.innerHTML=shell(i,'lt2',wall,ctrl);
+  // inset overlay style
+  const inz=$('.inz',p); inz.style.cssText='position:absolute;top:34px;inset-inline-end:8px;width:176px;height:176px;border:3px solid #ffb400;border-radius:10px;overflow:hidden;background:var(--sea);z-index:2;direction:ltr';
+  const inl=$('.inl',p); inl.style.cssText='position:absolute;bottom:2px;left:6px;font:800 12px var(--f);color:var(--pen);background:rgba(255,253,245,.85);padding:0 6px;border-radius:6px';
+  const msg=$('.msg',p);
+  function say(h){ msg.innerHTML=h; }
+  function dots(id){ return $$(`.pt[data-id="${id}"]`,p); }
+  function trySet(chip,dot){
+    if(chip===dot){ placed[chip]=true; dots(chip).forEach(d=>d.classList.add('good')); Snd.ding(440+Object.keys(placed).length*90,.4); say(`${t('okp')}<b>${t(keyOf[chip])}</b>`); sel=null; selDot=null; burstAt($(`.pt[data-id="${chip}"]`,p));
+      if(Object.keys(placed).length===6) Snd.good(); }
+    else { Snd.soft(); dots(dot).forEach(d=>{d.classList.add('flash'); setTimeout(()=>d.classList.remove('flash'),500);}); say(`${t('hint')}${fx(t(hintOf[chip]))}`); selDot=null; }
+    upd();
+  }
+  $$('.chip',p).forEach(c=>c.addEventListener('click',()=>{ const id=c.dataset.id; if(placed[id]) return; if(selDot){ trySet(id,selDot); return; } sel=id; say(t('pick').replace(/.*/,'')+'<b>'+t(keyOf[id])+'</b> ← ?'); upd(); }));
+  $$('.pt[data-id]',p).forEach(d=>d.addEventListener('click',()=>{ const id=d.dataset.id; if(placed[id]) return; if(sel){ trySet(sel,id); } else { selDot=id; say(t('pickDot')); upd(); } }));
+  $('[data-act=reset]',p).addEventListener('click',()=>{ for(const k in placed) delete placed[k]; sel=null; selDot=null; $$('.pt',p).forEach(d=>d.classList.remove('good')); say(t('pick')); upd(); });
+  function upd(){
+    const n=Object.keys(placed).length;
+    $$('.chip',p).forEach(c=>{ const id=c.dataset.id; c.textContent=(placed[id]?'✓ ':'')+t(keyOf[id]); c.classList.toggle('done',!!placed[id]); c.classList.toggle('sel',sel===id); });
+    $$('.pt',p).forEach(d=>d.classList.toggle('sel',selDot===d.dataset.id));
+    $('.cnt',p).innerHTML=B(`${n} / 6`); $('.eq',p).innerHTML=B(`${n} ÷ 6 = ${Math.round(n/6*100)}%`);
+    const L=$('[data-lbls]',p), L2=$('[data-lbls2]',p); let a='',b='';
+    ['B','S'].forEach(id=>{ if(placed[id]) a+=`<text x="${P[id][0]}" y="${P[id][1]-8}" text-anchor="middle" style="font-size:11px;font-weight:800">${t(keyOf[id])}</text>`; });
+    ['J','H','So','N'].forEach(id=>{ if(placed[id]){ a+=`<text x="${P[id][0]+(id==='J'||id==='H'?-6:0)}" y="${P[id][1]-5}" text-anchor="${id==='J'||id==='H'?'end':'start'}" style="font-size:7px;font-weight:800">${t(keyOf[id])}</text>`; b+=`<text x="${P[id][0]+(id==='So'||id==='N'?-5:5)}" y="${P[id][1]+1.8}" text-anchor="${id==='So'||id==='N'?'end':'start'}">${t(keyOf[id])}</text>`; } });
+    L.innerHTML=a; L2.innerHTML=b;
+    $('.tag',p).textContent=loc(n)+' / '+loc(6);
+    if(!msg.innerHTML) say(t('pick'));
+  }
+  labs[i]={update:()=>{ msg.innerHTML=''; upd(); },done:()=>Object.keys(placed).length};
+  labs[i].update();
+}
+
+/* ---------- lab 3: route ---------- */
+function labRoute(i){
+  const p=pages[i].l; const routes={1:[],2:[]}; let act=1, cmp=null, focus=0, t0=[0,performance.now(),performance.now()], shortcut=null;
+  const nodes=Object.entries(NODES).map(([id,n])=>n.sea?sym(id,'sea',n.p,'',10):sym(id,n.type,n.p,'',11)).join('');
+  const labels=Object.entries(NODES).filter(([id,n])=>!n.sea).map(([id,n])=>{ const dx=id==='So'||id==='N'||id==='J'?-9:0, an=id==='So'||id==='N'||id==='J'?'end':'middle', dy=(id==='B'||id==='S')?-9:(id==='J'?-6:4); return `<text data-s="${n.k}" x="${n.p[0]+dx}" y="${n.p[1]+dy}" text-anchor="${an}" style="font-size:9.5px;font-weight:800"></text>`; }).join('');
+  const wall=mapBase(VB)+`
+   <polyline class="route r1" data-r="1" points=""/><polygon class="arrow" data-a="1" style="fill:var(--r1)"/>
+   <polyline class="route r2" data-r="2" points=""/><polygon class="arrow" data-a="2" style="fill:var(--r2)"/>
+   <line data-sc="1" x1="0" y1="0" x2="0" y2="0" stroke="var(--bad)" stroke-width="2.4" stroke-dasharray="5 4" style="display:none"/>
+   <text data-sct x="0" y="0" text-anchor="middle" style="font-size:10px;font-weight:800;display:none;fill:var(--bad)">✕</text>
+   ${nodes}${labels}<circle data-pen r="4.5" fill="#fff3a0" stroke="#ff9e00" stroke-width="2" style="display:none"/>
+   <g class="scale"><line x1="246" y1="316" x2="296" y2="316" style="stroke:var(--pen);stroke-width:2"/><text x="271" y="311" text-anchor="middle" data-s="scaleL"></text></g></svg>`;
+  const ctrl=`<div class="rowb" style="margin-top:0"><button class="chip c1 sel" data-k="1"></button><button class="chip c2" data-k="2"></button></div>
+   <div class="rowb" style="margin-top:4px"><button class="btn alt" data-act="cmp"></button><button class="btn alt" data-act="undo"></button><button class="btn alt" data-act="clear"></button></div>
+   <div class="msg" aria-live="polite"></div>
+   <div class="ckl"></div><div class="legend"></div>`;
+  p.innerHTML=shell(i,'lt3',wall,ctrl);
+  const msg=$('.msg',p); let mk='m0';
+  const say=k=>{mk=k; msg.innerHTML=t(k);};
+  function tap(id){
+    const r=routes[act];
+    if(!r.length){ if(id!=='B'&&id!=='S'){ say('mStart'); Snd.soft(); return;} r.push(id); }
+    else { const last=r[r.length-1]; if(id===last) return; if(r.includes(id)){ say('mLoop'); Snd.soft(); return; }
+      if(!edgeOf(last,id)){ showShortcut(last,id); say('mJump'); Snd.soft(); return; }
+      r.push(id); }
+    Snd.tone(262*Math.pow(2,r.length/7)); t0[act]=performance.now();
+    const end=r[r.length-1]; say(['J','So','N'].includes(end)?'mDone':'mMid');
+    if(['J','So','N'].includes(end)){ Snd.good(); burstAt($(`.pt[data-id="${end}"] .core`,p)); }
+    draw(); upd();
+  }
+  function showShortcut(a,b){ const ln=$('[data-sc]',p),x=$('[data-sct]',p); const A=NODES[a].p,Bq=NODES[b].p; ln.setAttribute('x1',A[0]);ln.setAttribute('y1',A[1]);ln.setAttribute('x2',Bq[0]);ln.setAttribute('y2',Bq[1]); ln.style.display=''; x.setAttribute('x',(A[0]+Bq[0])/2); x.setAttribute('y',(A[1]+Bq[1])/2-4); x.style.display=''; clearTimeout(showShortcut.t); showShortcut.t=setTimeout(()=>{ln.style.display='none';x.style.display='none';},2600); }
+  $$('.pt[data-id]',p).forEach(d=>d.addEventListener('click',()=>tap(d.dataset.id)));
+  $$('.chip[data-k]',p).forEach(c=>c.addEventListener('click',()=>{ act=+c.dataset.k; if(cmp){stopCmp();} say(routes[act].length?'mMid':'m0'); upd(); }));
+  $('[data-act=undo]',p).addEventListener('click',()=>{ routes[act].pop(); t0[act]=performance.now(); say(routes[act].length?'mMid':'m0'); draw(); upd(); });
+  $('[data-act=clear]',p).addEventListener('click',()=>{ routes[act].length=0; say('m0'); draw(); upd(); });
+  $('[data-act=cmp]',p).addEventListener('click',()=>{ if(cmp) stopCmp(); else { focus=1; cmp=setInterval(()=>{focus=focus===1?2:1; upd(); draw(); Snd.ding(focus===1?392:523,.25,.04);},1500); } upd(); draw(); });
+  function stopCmp(){ clearInterval(cmp); cmp=null; focus=0; }
+  function geom(k){ return routePts(routes[k]); }
+  let prog={1:1,2:1};
+  function draw(){
+    [1,2].forEach(k=>{ const pts=geom(k), ln=$(`[data-r="${k}"]`,p), ar=$(`[data-a="${k}"]`,p);
+      if(pts.length<2){ ln.setAttribute('points',pts.length?ptsStr([pts[0],pts[0]]):''); ar.setAttribute('points',''); } else { const pr=partial(pts,prog[k]); ln.setAttribute('points',ptsStr(pr.pts)); ar.setAttribute('points',arrowAt(pr.tip,pr.ang,10)); }
+      ln.classList.toggle('fo',focus===k); ln.classList.toggle('dim',!!focus&&focus!==k); ar.style.opacity=(focus&&focus!==k)?.35:1; });
+    $$('.pt',p).forEach(d=>{ const id=d.dataset.id; d.classList.toggle('sel',routes[act].includes(id)); });
+  }
+  function upd(){
+    $$('.chip[data-k]',p).forEach(c=>{ c.textContent=t('k'+c.dataset.k); c.classList.toggle('sel',+c.dataset.k===act); c.classList.toggle('lit',focus===+c.dataset.k); });
+    $('[data-act=cmp]',p).textContent=cmp?t('cmpOff'):t('cmp'); $('[data-act=undo]',p).textContent=t('undo'); $('[data-act=clear]',p).textContent=t('clear');
+    msg.innerHTML=t(mk);
+    const r=routes[act]; const has=x=>r.length>1&&r.some(id=>NODES[id].sea);
+    const c=[r.length>0&&(r[0]==='B'||r[0]==='S'), r.some(id=>NODES[id].sea), ['J','So','N'].includes(r[r.length-1]), r.length>1];
+    $('.ckl',p).innerHTML=c.map((v,k)=>`<div class="ck ${v?'ok':''}"><i>${v?'✓':''}</i><span>${t('ck'+(k+1))}</span></div>`).join('');
+    $('.legend',p).innerHTML=[1,2].map(k=>{ const L=plen(geom(k)), bars=barsOf(L), km=Math.round(bars*KM);
+      return `<div class="lg c${k} ${focus===k?'lit':''}"><b>${t('k'+k+'s')}</b> ${routes[k].map(id=>NODES[id].sea?'·':t(NODES[id].k)).join(' ← ')||'—'}${L?`<div class="eq" style="margin-top:2px">${t('len')} ${B(`${bars} × 370 ≈ ${km} ${unit()}`)}</div>`:''}</div>`; }).join('');
+    $('.tag',p).textContent=t('k'+act+'s');
+  }
+  labs[i]={update:()=>{upd();draw();},stop:()=>{ if(cmp){stopCmp();upd();draw();} },
+    pen(now){ if(!st.motion){ prog[1]=prog[2]=1; return; } const pen=$('[data-pen]',p); let any=false;
+      [1,2].forEach(k=>{ const pts=geom(k); if(pts.length<2){prog[k]=1;return;} const L=plen(pts), dur=Math.max(900,L*14), hold=1600, cyc=(now-t0[k])%(dur+hold); const f=clamp(cyc/dur,0,1); prog[k]=f; if(k===act&&f<1){ const pr=partial(pts,f); pen.setAttribute('cx',pr.tip[0]); pen.setAttribute('cy',pr.tip[1]); any=true; } });
+      pen.style.display=any?'':'none'; draw(); }};
+  labs[i].update();
+}
+
+/* ---------- lab 4: clues ---------- */
+function labWhy(i){
+  const p=pages[i].l; const found={}; let r=0;
+  const cities=[['D','lDam'],['S','nS'],['Md','lMad'],['Mk','lMak'],['J','nJ'],['So','nSo'],['N','nN']];
+  const bub=(id,x,y)=>`<g class="bub" data-c="${id}" transform="translate(${x} ${y})" style="cursor:pointer"><circle r="11" fill="#fff6b0" stroke="#ff9e00" stroke-width="2"/><text class="bq" y="4" text-anchor="middle" style="font-size:13px;font-weight:800;stroke:none">?</text><circle r="19" fill="transparent"/></g>`;
+  const wall=mapBase(VA)+`<circle data-rc cx="${P.B[0]}" cy="${P.B[1]}" r="0" fill="rgba(42,111,219,.14)" stroke="var(--r1)" stroke-width="2.2" stroke-dasharray="6 4"/>
+   ${cities.map(([id])=>`<g data-city="${id}" transform="translate(${P[id][0]} ${P[id][1]})"><circle class="cc" r="4" fill="var(--pen)"/></g>`).join('')}
+   ${sym('B','cap',P.B,'',0)}
+   <g data-flag="1" transform="translate(${P.N[0]} ${P.N[1]})"><line x1="0" y1="0" x2="0" y2="-26" stroke="var(--pen)" stroke-width="2.4"/><path d="M0,-26 L19,-21 L0,-14 Z" fill="var(--oman)" stroke="var(--pen)" stroke-width="1.3"/></g>
+   ${bub(1,466,318)}${bub(2,395,368)}${bub(3,P.N[0]-20,P.N[1]-40)}
+   <text data-s="nB" x="${P.B[0]}" y="${P.B[1]-9}" text-anchor="middle" style="font-size:11px;font-weight:800"></text>
+   <g class="scale"><line x1="140" y1="430" x2="190" y2="430" style="stroke:var(--pen);stroke-width:2"/><text x="165" y="424" text-anchor="middle" data-s="scaleL"></text></g></svg>`;
+  const ctrl=`<div class="track" style="height:56px;margin-top:0"><input type="range" min="0" max="2000" step="10" value="0" aria-label="radius"></div>
+   <div class="read"><div class="rd"><span data-i="rad"></span><b class="v1"></b></div><div class="rd"><span class="jl"></span><b class="v2"></b></div><div class="eq"></div></div>
+   <div class="clues">${[1,2,3].map(k=>`<div class="clue" data-c="${k}"><b data-i="c${k}t"></b><span class="ct"></span></div>`).join('')}</div>
+   <div class="msg" aria-live="polite"></div>`;
+  p.innerHTML=shell(i,'lt4',wall,ctrl);
+  const rng=$('input',p);
+  function upd(){
+    const px=r/KM*BAR; $('[data-rc]',p).setAttribute('r',px.toFixed(1));
+    $$('[data-city]',p).forEach(g=>{ const id=g.dataset.city, d=dist(P.B,P[id]), ins=px>=d; $('.cc',g).setAttribute('fill',ins?'var(--r1)':'var(--pen)'); $('.cc',g).setAttribute('r',ins?6:4); });
+    $('.v1',p).innerHTML=B(`${r} ${unit()}`);
+    const dj=dist(P.B,P.J); $('.jl',p).innerHTML=`${t('jIn')} ${t('inside').slice(0,0)}`; $('.v2',p).textContent=(px>=dj?t('inside'):t('outside'));
+    $('.eq',p).innerHTML=B(`${barsOf(dj)} × 370 ≈ ${kmOf(dj)} ${unit()}`);
+    $$('.clue',p).forEach(c=>{ const k=c.dataset.c; c.classList.toggle('on',!!found[k]); $('.ct',c).textContent=found[k]?t('c'+k):'?'; });
+    $$('.bub',p).forEach(b=>{ const k=b.dataset.c; $('.bq',b).textContent=found[k]?'✓':'?'; b.firstElementChild.setAttribute('fill',found[k]?'#c9f0d2':'#fff6b0'); });
+    const n=Object.keys(found).length; $('.msg',p).innerHTML=n===3?`<b style="color:var(--good)">${t('allClues')}</b>`:t('clueHint');
+    $('.tag',p).textContent=loc(n)+' / '+loc(3);
+  }
+  rng.addEventListener('input',()=>{ r=+rng.value; upd(); Snd.tone(180+r*.2); });
+  $$('.bub',p).forEach(b=>b.addEventListener('click',()=>{ const k=b.dataset.c; if(!found[k]){ found[k]=1; Snd.ding(440+k*130,.4); burstAt(b); } upd(); }));
+  labs[i]={update:upd,set(v){ r=v; rng.value=v; upd(); }}; labs[i].update();
+}
+
+/* ---------- lab 5: challenge ---------- */
+const CH5={r:0,first:[],ans:false,tries:0,done:false};
+function buildChallenge(){
+  const tp=pages[4].t, lp=pages[4].l;
+  tp.innerHTML=`<header class="ph"><span class="chn">5</span><h2 data-i="cn4"></h2></header><div class="rbody"></div><footer class="pn"></footer>`;
+  const wall=`<div class="wv" style="position:absolute;inset:0"></div>`;
+  lp.innerHTML=shell(4,'lt5',wall,`<div class="msg vmsg" style="font-size:16px"></div><div class="read"><div class="rd"><span><i class="sw" style="background:var(--oman)"></i><span data-i="lgOm"></span></span><span><i class="sw" style="background:var(--abb)"></i><span data-i="lgAb"></span></span></div><div class="rd"><span data-i="lgCap"></span><span data-i="lgCity"></span></div><div class="eq" data-i="lgScale"></div></div>`);
+  labs[4]={update:renderRound,stop(){}};
+  renderRound();
+}
+function visual(kind){
+  const w=$('.wv',pages[4].l); let h='';
+  const arrow=(pts,col)=>`<polyline class="route" points="${ptsStr(pts)}" style="stroke:${col}"/>`;
+  if(kind==='time'||kind==='sea'){ h=mapBase(VA)+`${sym('B','cap',P.B,'',0)}${sym('J','city',P.J,'',0)}
+    <g transform="translate(${P.N[0]} ${P.N[1]})"><line x1="0" y1="0" x2="0" y2="-26" stroke="var(--pen)" stroke-width="2.4"/><path d="M0,-26 L19,-21 L0,-14 Z" fill="var(--oman)" stroke="var(--pen)" stroke-width="1.3"/></g>
+    ${kind==='sea'?`<circle cx="450" cy="330" r="34" fill="none" stroke="var(--r1)" stroke-width="3" stroke-dasharray="5 4"/><circle cx="352" cy="244" r="26" fill="none" stroke="var(--r1)" stroke-width="3" stroke-dasharray="5 4"/>`:''}</svg>`; }
+  else if(kind==='click'){ h=`<svg class="map" viewBox="${VC}" preserveAspectRatio="xMidYMid meet"><rect class="sea" x="-60" y="-60" width="1100" height="800"/><rect x="-60" y="-60" width="1100" height="800" fill="url(#hatch)"/>
+    <g filter="url(#rough)" stroke="var(--pen)" stroke-width=".5"><polygon class="land" points="${pp(LAND)}"/><polygon class="abb" points="${pp(GREEN)}"/><polygon class="om" points="${pp(OMAN)}"/></g>
+    <g>${['J','H','So','N'].map(id=>sym(id,({J:'city',H:'city',So:'cap',N:'cap'})[id],P[id],'',6)).join('')}</g></svg>`; }
+  else if(kind==='scale'){ h=mapBase(VB)+`${sym('B','cap',P.B,'',0)}${sym('S','city',P.S,'',0)}
+    <line x1="${P.B[0]}" y1="${P.B[1]}" x2="${P.S[0]}" y2="${P.S[1]}" stroke="var(--r1)" stroke-width="3"/>
+    <text data-s="nB" x="${P.B[0]-4}" y="${P.B[1]-8}" text-anchor="middle" style="font-size:10px;font-weight:800"></text><text data-s="nS" x="${P.S[0]+14}" y="${P.S[1]+14}" text-anchor="middle" style="font-size:10px;font-weight:800"></text>
+    <g><line x1="246" y1="316" x2="296" y2="316" style="stroke:var(--pen);stroke-width:2.5"/><text x="271" y="310" text-anchor="middle" data-s="scaleL" style="font-size:10px"></text></g></svg>`; }
+  else if(kind==='shortcut'){ h=mapBase(VB)+`${sym('B','cap',P.B,'',0)}${sym('S','city',P.S,'',0)}${sym('J','city',P.J,'',0)}
+    <line x1="${P.B[0]}" y1="${P.B[1]}" x2="${P.J[0]}" y2="${P.J[1]}" stroke="var(--bad)" stroke-width="3.2" stroke-dasharray="6 4"/>
+    <text data-s="nB" x="${P.B[0]-4}" y="${P.B[1]-8}" text-anchor="middle" style="font-size:10px;font-weight:800"></text><text data-s="nS" x="${P.S[0]+14}" y="${P.S[1]+14}" text-anchor="middle" style="font-size:10px;font-weight:800"></text><text data-s="nJ" x="${P.J[0]-8}" y="${P.J[1]-6}" text-anchor="end" style="font-size:10px;font-weight:800"></text></svg>`; }
+  else if(kind==='reach'){ const px=1200/KM*BAR; h=mapBase(VA)+`<circle cx="${P.B[0]}" cy="${P.B[1]}" r="${px}" fill="rgba(42,111,219,.14)" stroke="var(--r1)" stroke-width="2.2" stroke-dasharray="6 4"/>
+    ${sym('B','cap',P.B,'',0)}${['J','So','N'].map(id=>`<circle cx="${P[id][0]}" cy="${P[id][1]}" r="4.5" fill="var(--pen)"/><text data-s="${NODES[id].k}" x="${P[id][0]+8}" y="${P[id][1]+3}" style="font-size:9.5px;font-weight:800"></text>`).join('')}
+    <text x="${P.B[0]}" y="${P.B[1]-10}" text-anchor="middle" data-s="nB" style="font-size:10px;font-weight:800"></text><text x="${P.B[0]+4}" y="${P.B[1]+px+14}" style="font-size:10px;font-weight:800">${loc(1200)} ${unit()}</text></svg>`; }
+  w.innerHTML=h; $$('[data-s]',w).forEach(x=>x.textContent=fx(t(x.dataset.s)).replace(/<[^>]+>/g,''));
+  if(kind==='click') $$('.pt[data-id]',w).forEach(d=>d.addEventListener('click',()=>answerClick(d.dataset.id,d)));
+}
+function renderRound(){
+  const tp=pages[4].t, body=$('.rbody',tp); const R=ROUNDS[CH5.r];
+  if(CH5.done){ const n=CH5.first.filter(Boolean).length, stars=n>=6?3:(n>=4?2:1);
+    body.innerHTML=`<div class="rsum"><h2>${t('resT')}</h2><div class="stars big">${[0,1,2].map(k=>starIcon(k<stars)).join('')}</div>
+     <p style="font-size:20px;font-weight:800;margin:10px 0 2px">${B(n+' / 7')} <span style="font-weight:600">${t('first')}</span></p><p>${t('resMsg')}</p>${stars<3?`<p style="color:var(--ink2)">${t('resTry')}</p>`:''}
+     <button class="btn" data-act="replay">${t('replay')}</button></div>`;
+    $('[data-act=replay]',body).addEventListener('click',()=>{CH5.r=0;CH5.first=[];CH5.done=false;CH5.ans=false;CH5.tries=0;renderRound();});
+    $('.vmsg',pages[4].l).textContent=''; visual('time'); return; }
+  const dots=ROUNDS.map((_,k)=>`<span style="display:inline-block;width:14px;height:14px;border-radius:50%;margin:0 2px;border:2px solid var(--ink2);background:${k<CH5.r?(CH5.first[k]?'#ffc61a':'var(--line)'):(k===CH5.r?'var(--accent)':'transparent')}"></span>`).join('');
+  body.innerHTML=`<div class="rhead"><span>${t('round')} ${B((CH5.r+1)+' / 7')}</span><span>${dots}</span></div>
+   <div class="rq">${fx(t('rq'+CH5.r))}</div>
+   ${R.opts?`<div class="ropts">${R.opts.map((o,k)=>`<button class="opt" data-k="${k}" data-ok="${o[2]}">${fx(t(`ro${CH5.r}_${k}`))}</button>`).join('')}</div>`:''}
+   <div class="fb rfb" style="min-height:90px;margin-top:8px"></div>
+   <div style="text-align:center;margin-top:6px"><button class="btn" data-act="rn" style="display:none"></button></div>`;
+  $$('.opt',body).forEach(b=>b.addEventListener('click',()=>answerOpt(b)));
+  $('[data-act=rn]',body).addEventListener('click',nextRound);
+  if(CH5.ans) markAnswered(true);
+  visual(R.vis);
+  $('.tag',pages[4].l).textContent=loc(CH5.r+1)+' / '+loc(7);
+  $('.vmsg',pages[4].l).innerHTML=`<div class="stars" style="margin-top:10px">${ROUNDS.map((_,k)=>starIcon(k<CH5.r&&CH5.first[k])).join('')}</div>`;
+}
+function markAnswered(noFx){ const body=$('.rbody',pages[4].t), R=ROUNDS[CH5.r]; const fb=$('.rfb',body); fb.className='fb rfb good'; fb.innerHTML=`<b>✓</b> ${fx(t('rw'+CH5.r))}`;
+  const rn=$('[data-act=rn]',body); rn.style.display=''; rn.textContent=CH5.r===6?t('rfin'):t('rnext'); }
+function answerOpt(b){ if(CH5.ans) return; const body=$('.rbody',pages[4].t);
+  if(b.dataset.ok==='1'){ b.classList.add('ok'); CH5.first[CH5.r]=CH5.tries===0; CH5.ans=true; markAnswered(); burstAt(b); Snd.good(); if(CH5.first[CH5.r]) {} }
+  else { CH5.tries++; b.classList.add('bad'); Snd.soft(); const fb=$('.rfb',body); fb.className='fb rfb'; fb.textContent=t('again'); setTimeout(()=>b.classList.remove('bad'),450); } }
+function answerClick(id,d){ if(CH5.ans) return; if(id===ROUNDS[CH5.r].click){ CH5.first[CH5.r]=CH5.tries===0; CH5.ans=true; d.classList.add('good'); markAnswered(); burstAt($('.core',d)); Snd.good(); }
+  else { CH5.tries++; Snd.soft(); const fb=$('.rfb',pages[4].t); fb.className='fb rfb'; fb.innerHTML=`${t('again')} ${t('r2h')}`; d.classList.add('flash'); setTimeout(()=>d.classList.remove('flash'),500); } }
+function nextRound(){ if(CH5.r===6){ CH5.done=true; finish(4); const n=CH5.first.filter(Boolean).length; renderRound(); const e=$('.stars.big',pages[4].t); if(e) burstAt(e); Snd.good(); return; } CH5.r++; CH5.ans=false; CH5.tries=0; renderRound(); }
+
+/* build all */
+textPage(0);textPage(1);textPage(2);textPage(3);
+labTime(0);labLocate(1);labRoute(2);labWhy(3);buildChallenge();
+/* ============ language / apply ============ */
+function applyLang(){
+  const ar=st.lang==='ar'; const h=document.documentElement; h.lang=st.lang; h.dir=ar?'rtl':'ltr';
+  document.title=ar?'كتابي الحيّ – عُمان في العصر العباسي الأول':'My Living Book – Oman in the Early Abbasid Era';
+  $$('[data-i]').forEach(e=>{ const k=e.dataset.i; if(!k) return; if(S[k]) e.innerHTML=fx(t(k)); });
+  $$('[data-s]').forEach(e=>{ const k=e.dataset.s; if(S[k]) e.textContent=fx(t(k)).replace(/<[^>]+>/g,''); });
+  // نص ثابت يحتوي أرقاماً
+  labs.forEach(l=>l&&l.update&&l.update());
+  renderNav(); setPN();
+}
+function setPN(){ pages.forEach((pg,i)=>{ $('.pn',pg.t).textContent=loc(i*2+1); $('.pn',pg.l).textContent=loc(i*2+2); }); }
+
+/* ============ layout / nav ============ */
+const sc=$('#scaler'); const bar=$('#bar');
+function slotsFor(){ return st.lang==='ar'?{text:slotR,lab:slotL,tn:'R',ln:'L'}:{text:slotL,lab:slotR,tn:'L',ln:'R'}; }
+function place(){
+  const sl=slotsFor(); st.single=innerWidth<600; book.classList.toggle('single',st.single);
+  pages.forEach(pg=>{ const tgtT=st.single?slotR:sl.text, tgtL=st.single?slotR:sl.lab; tgtT.append(pg.t); tgtL.append(pg.l);
+    pg.t.classList.remove('pgL','pgR'); pg.l.classList.remove('pgL','pgR');
+    pg.t.classList.add(st.single?'pgR':'pg'+sl.tn); pg.l.classList.add(st.single?'pgR':'pg'+sl.ln); });
+  show();
+}
+function show(){
+  $$('.pg.on').forEach(x=>{ if(!x.classList.contains('teach')) x.classList.remove('on'); });
+  const c=pages[st.ch];
+  if(st.single){ (st.sub?c.l:c.t).classList.add('on'); } else { c.t.classList.add('on'); c.l.classList.add('on'); }
+  fit(); risePops();
+}
+function fit(){
+  const bw=st.single?520:1020, bh=st.single?940:985; const bh2=bar.offsetHeight;
+  const aw=innerWidth-12, ah=innerHeight-bh2-6; const s=Math.min(aw/bw, ah/bh, 1.3);
+  sc.style.width=bw+'px'; sc.style.height=bh+'px'; sc.style.transform=`translateX(-50%) scale(${s})`; sc.style.top='0px';
+  book.style.transform=`rotateX(${st.single?10:18}deg)`; book.style.top=(st.single?34:36)+'px';
+}
+function risePops(delay=250){ $$('.stage').forEach(s=>s.classList.remove('up')); const c=pages[st.ch].l; setTimeout(()=>{ if(c.classList.contains('on')||c.classList.contains('teach')) $('.stage',c).classList.add('up'); },st.motion?delay:0); if(!st.motion) $$('.stage',pages[st.ch].l).forEach(s=>s.classList.add('up')); }
+function foldPops(){ $$('.stage').forEach(s=>s.classList.remove('up')); }
+function stopAudio(){ Snd.hold=false; Snd.stop(); labs.forEach(l=>l&&l.stop&&l.stop()); }
+
+function renderNav(){
+  const ar=st.lang==='ar'; const last=st.single?(st.ch===4&&st.sub===1):st.ch===4; const first=st.ch===0&&(!st.single||st.sub===0);
+  const pa=ar?'▶':'◀', na=ar?'◀':'▶';
+  bar.innerHTML=`<div class="grp"><button class="nb2 pri" data-n="-1" ${first?'disabled':''}><span aria-hidden="true">${pa}</span><span class="lbl">${t('prev')}</span></button>
+   <div class="dots">${[0,1,2,3,4].map(k=>`<button class="dt ${k===st.ch?'cur':''} ${st.done[k]?'done':''}" data-d="${k}" aria-label="${t('cn'+k)}" title="${t('cn'+k)}">${loc(k+1)}</button>`).join('')}</div>
+   <button class="nb2 pri" data-n="1" ${last?'disabled':''}><span class="lbl">${t('next')}</span><span aria-hidden="true">${na}</span></button></div>
+   <div class="grp"><button class="nb2 tog" data-a="mute" aria-pressed="${st.muted}">${st.muted?'🔇':'🔊'} <span class="lbl">${st.muted?t('unmute'):t('mute')}</span></button>
+   <button class="nb2 tog" data-a="motion" aria-pressed="${!st.motion}">${st.motion?'⏸':'▶'} <span class="lbl">${st.motion?t('pause'):t('play')}</span></button>
+   <button class="nb2" data-a="teacher">🖥 <span class="lbl">${t('teacher')}</span></button>
+   <button class="nb2" data-a="theme" aria-label="theme">${st.theme==='dark'?'☀':'☾'}</button>
+   <button class="nb2" data-a="lang">${t('lang')}</button></div>`;
+  $('#tMute').textContent=(st.muted?'🔇 ':'🔊 ')+(st.muted?t('unmute'):t('mute')); $('#tExit').textContent='✕ '+t('exit');
+  fit();
+}
+bar.addEventListener('click',e=>{ const b=e.target.closest('button'); if(!b) return;
+  if(b.dataset.n) go(+b.dataset.n); else if(b.dataset.d!=null) jump(+b.dataset.d);
+  else if(b.dataset.a==='mute') toggleMute(); else if(b.dataset.a==='motion') toggleMotion(); else if(b.dataset.a==='teacher') enterTeacher();
+  else if(b.dataset.a==='theme') toggleTheme(); else if(b.dataset.a==='lang') toggleLang(); });
+function toggleMute(){ st.muted=!st.muted; if(st.muted) Snd.stop(); renderNav(); }
+function toggleMotion(){ st.motion=!st.motion; document.body.classList.toggle('nomo',!st.motion); renderNav(); risePops(0); labs.forEach(l=>l&&l.update&&l.update()); }
+function toggleTheme(){ st.theme=st.theme==='dark'?'light':'dark'; document.documentElement.dataset.theme=st.theme; renderNav(); }
+function toggleLang(){ st.lang=st.lang==='ar'?'en':'ar'; place(); applyLang(); }
+
+/* ---- page turning ---- */
+const W=480,H=840,N=7;
+function showIn(slot,pg){ $$('.pg',slot).forEach(x=>x.classList.remove('on')); pg.classList.add('on'); }
+function prep(n){ $$('input[type=range]',n).forEach(r=>r.setAttribute('value',r.value)); }
+function cloneOf(pg,side){ prep(pg); const c=pg.cloneNode(true); c.classList.add('on','clone'); c.classList.remove('pgL','pgR'); c.classList.add('pg'+side); c.removeAttribute('id'); return c; }
+function jump(k){ if(k===st.ch||st.busy) return; turn(k); }
+function go(d){
+  if(st.busy) return;
+  if(st.single){ let ch=st.ch, sub=st.sub+d; if(sub>1){ch++;sub=0;} if(sub<0){ch--;sub=1;} if(ch<0||ch>4) return; stopAudio(); foldPops(); const apply=()=>{ st.ch=ch; st.sub=sub; show(); renderNav(); }; st.busy=true; Snd.flip();
+    const cur=$('.pg.on',slotR); if(st.motion&&cur){ cur.style.transition='transform .22s'; cur.style.transform=`translateX(${(d>0?-1:1)*(st.lang==='ar'?-1:1)*60}px)`; setTimeout(()=>{cur.style.transition='';cur.style.transform='';apply(); const nw=$('.pg.on',slotR); nw.animate([{transform:`translateX(${(d>0?1:-1)*(st.lang==='ar'?-1:1)*60}px)`},{transform:'none'}],{duration:260,easing:'ease-out'}); st.busy=false;},230); } else { apply(); st.busy=false; } return; }
+  const to=st.ch+d; if(to<0||to>4) return; turn(to);
+}
+function turn(to){
+  const fwd=to>st.ch; st.busy=true; stopAudio();
+  if(st.single){ st.ch=to; st.sub=0; show(); renderNav(); st.busy=false; return; }
+  const sl=slotsFor(); const cur=pages[st.ch], nx=pages[to];
+  const s0=fwd?sl.ln:sl.tn, s1=fwd?sl.tn:sl.ln;           // الجهة التي يُرفع منها الورق وجهة هبوطه
+  const frontPg=fwd?cur.l:cur.t, backPg=fwd?nx.t:nx.l;
+  const slotS=fwd?sl.lab:sl.text, slotE=fwd?sl.text:sl.lab;
+  const doTurn=()=>{
+    if(!st.motion){ showIn(slotS,fwd?nx.l:nx.t); showIn(slotE,backPg); st.ch=to; renderNav(); risePops(0); st.busy=false; return; }
+    const leaf=el('div','leaf'); leaf.style.cssText=`left:${s0==='R'?490:10}px;top:10px;width:${W}px;height:${H}px;transform-origin:${s0==='R'?'0 50%':'100% 50%'}`;
+    const w=W/N; const sx=(side,k)=>side==='R'?k*w:W-(k+1)*w; const strips=[]; let parent=leaf;
+    for(let k=0;k<N;k++){ const s=el('div','strip'); s.style.width=(w+.5)+'px'; s.style.height=H+'px';
+      if(s0==='R'){ s.style.left=(k?w:0)+'px'; s.style.transformOrigin='0 50%'; } else { s.style.left=(k?-w:W-w)+'px'; s.style.transformOrigin='100% 50%'; }
+      const f=el('div','face f'), b=el('div','face b'); const cf=cloneOf(frontPg,s0), cb=cloneOf(backPg,s1); cf.style.left=(-sx(s0,k))+'px'; cb.style.left=(-sx(s1,k))+'px'; f.append(cf); b.append(cb); s.append(f,b); parent.append(s); parent=s; strips.push(s); }
+    const shd=el('div','fsh'); shd.style.left=(s1==='R'?490:10)+'px'; shd.style.background=`linear-gradient(to ${s1==='R'?'right':'left'},rgba(0,0,0,.5),rgba(0,0,0,0) 70%)`; shd.style.opacity=0;
+    const shu=el('div','fsh'); shu.style.left=(s0==='R'?490:10)+'px'; shu.style.background=`linear-gradient(to ${s0==='R'?'right':'left'},rgba(0,0,0,.35),rgba(0,0,0,0) 60%)`; shu.style.opacity=0;
+    book.append(shu,shd,leaf);
+    showIn(slotS,fwd?nx.l:nx.t); Snd.flip();
+    const sign=s0==='R'?-1:1; const dur=1000, t0=performance.now(); let ended=false;
+    const apply=tt=>{ const e=tt<.5?2*tt*tt:1-Math.pow(-2*tt+2,2)/2; const ang=sign*180*e, bend=-sign*4.2*Math.sin(Math.PI*tt); strips.forEach((s,k)=>{ s.style.transform=`rotateY(${k?bend:ang}deg)`; }); const sh=Math.sin(Math.PI*tt); shd.style.opacity=(.15+.85*sh)*(tt>.45?1:0)*.9; shu.style.opacity=sh*.8; };
+    const end=()=>{ if(ended) return; ended=true; leaf.remove(); shd.remove(); shu.remove(); showIn(slotE,backPg); st.ch=to; renderNav(); risePops(); st.busy=false; };
+    const step=now=>{ if(ended) return; const tt=Math.min(1,(now-t0)/dur); apply(tt); if(tt<1) requestAnimationFrame(step); else end(); };
+    apply(0); requestAnimationFrame(step); setTimeout(end,dur+500);
+  };
+  foldPops(); if(st.motion) setTimeout(doTurn,260); else doTurn();
+}
+
+/* ---- keyboard / swipe ---- */
+addEventListener('keydown',e=>{ if(e.key==='Escape'&&st.teacher){exitTeacher();return;} if(/INPUT|TEXTAREA/.test((e.target||{}).tagName)&&(e.key.startsWith('Arrow'))&&e.target.type==='range') return;
+  const ar=st.lang==='ar'; if(e.key==='ArrowRight') go(ar?-1:1); else if(e.key==='ArrowLeft') go(ar?1:-1); });
+let sw=null; const vp=$('#viewport');
+vp.addEventListener('pointerdown',e=>{ if(e.target.closest('input,button,.bub,.pt,.tongue,.pa')) {sw=null;return;} sw={x:e.clientX,y:e.clientY}; });
+vp.addEventListener('pointerup',e=>{ if(!sw) return; const dx=e.clientX-sw.x, dy=e.clientY-sw.y; sw=null; if(Math.abs(dx)>70&&Math.abs(dx)>Math.abs(dy)*1.6){ const ar=st.lang==='ar'; go((dx<0)===(!ar)?1:-1); } });
+addEventListener('pointerdown',()=>{ Snd.ens(); },{once:true});
+addEventListener('resize',()=>{ const was=st.single; if(was!==(innerWidth<600)){ place(); } else fit(); if(st.teacher) fitTeach(); });
+
+/* ---- teacher mode ---- */
+let tHost=null;
+function labPage(){ return pages[st.ch].l; }
+function enterTeacher(){ if(st.teacher) return; stopAudio(); const pg=labPage(); st.teacher=true; tHost={par:pg.parentNode,next:pg.nextSibling,pg}; pg.classList.add('teach','on'); $('#teachHost').append(pg); $('#teach').hidden=false; sc.style.visibility='hidden'; bar.style.visibility='hidden'; fitTeach(); setTimeout(()=>$('.stage',pg).classList.add('up'),50); labs.forEach(l=>l&&l.update&&l.update()); }
+function exitTeacher(){ if(!st.teacher) return; const {par,next,pg}=tHost; pg.classList.remove('teach'); par.insertBefore(pg,next); $('#teach').hidden=true; sc.style.visibility=''; bar.style.visibility=''; st.teacher=false; stopAudio(); fit(); risePops(0); }
+function fitTeach(){ const s=Math.min((innerWidth-30)/1100,(innerHeight-30)/660); $('#teachHost').style.transform=`scale(${s})`; $('#teachHost').style.width='1100px'; $('#teachHost').style.height='660px'; }
+$('#tExit').addEventListener('click',exitTeacher); $('#tMute').addEventListener('click',()=>{toggleMute();});
+
+/* ---- rAF loop for lit pen ---- */
+(function loop(now){ if(st.motion&&!document.hidden&&labs[2]&&labs[2].pen){ labs[2].pen(now); } requestAnimationFrame(loop); })(performance.now());
+
+/* ---- init ---- */
+st.theme=(matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light'; document.documentElement.dataset.theme=st.theme;
+place(); applyLang(); setTimeout(()=>risePops(150),100);
+window.__lb={st,go,jump,labs,pages,CH5,toggleLang,toggleMotion,enterTeacher,exitTeacher,Snd,ROUNDS,TXT,fit,S};
+})();
+</script>
+</body>
+</html>
