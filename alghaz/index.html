@@ -1,0 +1,285 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>لعبة الألغاز العربية</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg1:#1b1464; --bg2:#5b2a86; --card:#ffffff; --ink:#26215c;
+    --gold:#ffc83d; --ok:#1fb86a; --bad:#e5484d; --soft:#f1eeff; --accent:#7c4dff;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;min-height:100%}
+  body{
+    font-family:"Cairo","Segoe UI",Tahoma,Arial,sans-serif;
+    background:linear-gradient(160deg,var(--bg1),var(--bg2));
+    background-attachment:fixed;color:var(--ink);
+    display:flex;justify-content:center;padding:16px;
+  }
+  #app{width:100%;max-width:560px}
+  .card{background:var(--card);border-radius:24px;padding:22px 18px;box-shadow:0 14px 40px rgba(0,0,0,.35)}
+  h1{margin:0 0 4px;font-size:2rem;font-weight:900;text-align:center}
+  .sub{text-align:center;color:#6b66a3;margin:0 0 18px}
+  .logo{font-size:3.4rem;text-align:center;line-height:1}
+  .menu button,.btn{
+    font:inherit;font-weight:700;border:0;border-radius:16px;cursor:pointer;
+    padding:14px 16px;width:100%;margin:6px 0;font-size:1.1rem;
+    background:var(--soft);color:var(--ink);transition:transform .1s, background .2s;
+  }
+  .menu button:active,.btn:active{transform:scale(.97)}
+  .menu button small{display:block;font-weight:400;color:#6b66a3;font-size:.85rem}
+  .btn.primary{background:var(--accent);color:#fff}
+  .best{text-align:center;margin-top:12px;color:#6b66a3;font-size:.95rem}
+  .top{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:10px;font-weight:700}
+  .pill{background:var(--soft);padding:6px 12px;border-radius:999px;font-size:.95rem}
+  .bar{height:10px;background:#e6e1ff;border-radius:99px;overflow:hidden;margin-bottom:14px}
+  .bar>i{display:block;height:100%;width:100%;background:var(--ok);transition:width .25s linear, background .3s}
+  .tag{display:inline-block;background:var(--gold);color:#4a3600;font-weight:900;border-radius:99px;padding:3px 12px;font-size:.85rem;margin-bottom:8px}
+  .q{font-size:1.35rem;font-weight:700;line-height:1.7;margin:4px 0 14px;text-align:center}
+  .pic{
+    font-size:3.6rem;line-height:1.25;text-align:center;background:var(--soft);
+    border-radius:20px;padding:16px 8px;margin-bottom:12px;letter-spacing:.1em;
+    animation:pop .4s ease;
+  }
+  .pic .op{font-size:2rem;color:#9a94c9;margin:0 .15em}
+  @keyframes pop{from{transform:scale(.8);opacity:0}to{transform:scale(1);opacity:1}}
+  .opts{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .opt{
+    font:inherit;font-weight:700;font-size:1.05rem;border:2px solid #dcd6ff;background:#fff;color:var(--ink);
+    border-radius:16px;padding:14px 8px;cursor:pointer;transition:all .15s;min-height:56px;
+  }
+  .opt:hover{border-color:var(--accent)}
+  .opt.ok{background:var(--ok);border-color:var(--ok);color:#fff;animation:pop .3s}
+  .opt.bad{background:var(--bad);border-color:var(--bad);color:#fff;animation:shake .35s}
+  .opt.gone{visibility:hidden}
+  .opt:disabled{cursor:default}
+  @keyframes shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+  .row{display:flex;gap:10px;margin-top:14px}
+  .row .btn{margin:0}
+  .btn.hint{background:#fff4d1;color:#6b4e00}
+  .btn:disabled{opacity:.45;cursor:default}
+  .msg{min-height:28px;text-align:center;font-weight:700;margin-top:12px}
+  .big{font-size:4rem;text-align:center}
+  .score{font-size:2.6rem;font-weight:900;text-align:center;color:var(--accent)}
+  .stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0}
+  .stats div{background:var(--soft);border-radius:14px;padding:10px;text-align:center}
+  .stats b{display:block;font-size:1.4rem}
+  .hidden{display:none}
+  .confetti{position:fixed;top:-20px;font-size:1.6rem;pointer-events:none;animation:fall 2.2s linear forwards;z-index:9}
+  @keyframes fall{to{transform:translateY(110vh) rotate(540deg);opacity:.8}}
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<script>
+/* ============ بنك الألغاز ============ */
+// ألغاز بالكلام
+const TEXT = [
+  {q:"ما هو الشيء الذي يكتب ولا يقرأ؟", a:"القلم", w:["الكتاب","الورقة","الحبر"]},
+  {q:"له أسنان ولا يعضّ، فما هو؟", a:"المشط", w:["الكلب","المنشار","الثوم"]},
+  {q:"يمشي بلا رجلين ويبكي بلا عينين، فما هو؟", a:"السحاب", w:["النهر","الريح","القمر"]},
+  {q:"شيء كلما أخذت منه كبر، فما هو؟", a:"الحفرة", w:["الجبل","البالون","الكعكة"]},
+  {q:"يسمع بلا أذن ويتكلم بلا لسان، فما هو؟", a:"الصدى", w:["الهاتف","الراديو","الببغاء"]},
+  {q:"له عين ولا يرى، فما هو؟", a:"الإبرة", w:["الباب","النظارة","الكاميرا"]},
+  {q:"ما هو الشيء الذي كلما زاد نقص؟", a:"العمر", w:["المال","الماء","الطعام"]},
+  {q:"أخضر في الأرض، أسود في السوق، أحمر في البيت، فما هو؟", a:"الشاي", w:["القهوة","الفلفل","الزيتون"]},
+  {q:"ما هو الحرف الموجود في وسط باريس؟", a:"الراء", w:["الألف","السين","الياء"]},
+  {q:"يحمل السفن الثقيلة ولا يقدر على حمل مسمار، فما هو؟", a:"البحر", w:["الشاطئ","القارب","الميناء"]},
+  {q:"له رأس ولا عين له، فما هو؟", a:"الدبوس", w:["الثعبان","الكرة","القلم"]},
+  {q:"إذا لمسته صاح، فما هو؟", a:"الجرس", w:["القط","الباب","الطبل"]},
+  {q:"ما هو الشيء الذي يقع ولا ينكسر؟", a:"الليل", w:["الزجاج","الكوب","البيض"]},
+  {q:"ما هو الشيء الذي يملكه غيرك ويستخدمه أكثر منك؟", a:"اسمك", w:["بيتك","هاتفك","سيارتك"]},
+  {q:"ما هو الشيء الذي إذا كسرته لا تستطيع لمسه؟", a:"الوعد", w:["الصخر","الصمت","الظل"]},
+  {q:"يجري ولا يمشي، وله فم ولا يأكل، فما هو؟", a:"النهر", w:["الحصان","المطر","الثلج"]},
+  {q:"ما هو الشيء الذي يكون أمامك ولا تراه؟", a:"المستقبل", w:["الظهر","الهواء","الحائط"]},
+  {q:"ما هو الشيء الذي كلما جفّف بلّل؟", a:"المنشفة", w:["الشمس","المروحة","الصابون"]},
+  {q:"ما هو الشيء الذي له أربعة أرجل ولا يمشي؟", a:"الطاولة", w:["الحصان","الجمل","القطة"]},
+  {q:"شيء تقطعه فتبكي عليه، فما هو؟", a:"البصل", w:["الخبز","الورق","الحبل"]}
+];
+
+// ألغاز بالصور (إيموجي)  pic = رموز، op يعني علامة (+ أو =)
+const PICS = [
+  {pic:["🐪","🏜️","🚢"], q:"أي حيوان يُلقَّب بـ «سفينة الصحراء»؟", a:"الجمل", w:["الحصان","الفيل","الأسد"]},
+  {pic:["☀️","🌻"], q:"ما اسم هذه الزهرة؟", a:"عبّاد الشمس", w:["الوردة","الياسمين","الصبّار"]},
+  {pic:["🌳","👑","🦁"], q:"من هو ملك الغابة؟", a:"الأسد", w:["النمر","الفيل","الذئب"]},
+  {pic:["🐝","🍯"], q:"من يصنع هذا الغذاء اللذيذ؟", a:"النحلة", w:["الفراشة","النملة","الذبابة"]},
+  {pic:["🌙","⭐","🕌"], q:"أي شهر هذا؟", a:"رمضان", w:["شوّال","محرّم","رجب"]},
+  {pic:["🌧️","+","☀️"], q:"ماذا يظهر في السماء عندما يجتمعان؟", a:"قوس قزح", w:["الغيمة","الصاعقة","الهالة"]},
+  {pic:["🐧","🧊","❄️"], q:"من هو هذا الطائر الذي يعيش في القطب؟", a:"البطريق", w:["النورس","النعامة","الببغاء"]},
+  {pic:["🔥","🚒","👨‍🚒"], q:"من هذا البطل؟", a:"رجل الإطفاء", w:["الشرطي","الطبيب","المهندس"]},
+  {pic:["🕰️","=","💰"], q:"أكمل المثل: ...", a:"الوقت من ذهب", w:["العلم نور","الصبر مفتاح الفرج","الجار قبل الدار"]},
+  {pic:["📚","=","💡"], q:"أكمل المثل: ...", a:"العلم نور", w:["الوقت من ذهب","القناعة كنز","الصديق وقت الضيق"]},
+  {pic:["🔑","😌","⏳"], q:"أي مثل يُمثّله هذا؟", a:"الصبر مفتاح الفرج", w:["العلم نور","الوقت من ذهب","من جدّ وجد"]},
+  {pic:["🐦","✋","≻","🌳","🐦🐦🐦"], q:"أي مثل يُمثّله هذا؟", a:"عصفور في اليد خير من عشرة على الشجرة", w:["الطيور على أشكالها تقع","من جدّ وجد","الصبر مفتاح الفرج"]},
+  {pic:["🥛","🐄"], q:"من أين نحصل على هذا المشروب؟", a:"البقرة", w:["الدجاجة","الخروف","الحصان"]},
+  {pic:["⏰","➡️","🏫","🎒"], q:"إلى أين يذهب الطلاب صباحًا؟", a:"المدرسة", w:["المستشفى","السوق","المطار"]},
+  {pic:["✈️","🧳","🌍"], q:"ماذا نفعل بهذه الأشياء؟", a:"نسافر", w:["نطبخ","ننام","نسبح"]},
+  {pic:["🌅","🕌"], q:"أي صلاة تُصلّى في هذا الوقت؟", a:"الفجر", w:["العصر","المغرب","العشاء"]},
+  {pic:["🐘","🧠","❤️"], q:"أي حيوان يُعرف بقوة ذاكرته؟", a:"الفيل", w:["الأرنب","السمكة","الدجاجة"]},
+  {pic:["🍎","➕","🍌","➕","🍊"], q:"ماذا نسمّي هذا الخليط؟", a:"سلطة فواكه", w:["سلطة خضار","عصير ليمون","كعكة"]}
+];
+
+/* ============ أدوات ============ */
+const $ = s => document.querySelector(s);
+const shuffle = a => { a=[...a]; for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]} return a };
+const ROUND = 10, TIME = 20;
+let audioCtx;
+function beep(freq,dur=.12,type="sine",delay=0){
+  try{
+    audioCtx = audioCtx || new (window.AudioContext||window.webkitAudioContext)();
+    const o=audioCtx.createOscillator(), g=audioCtx.createGain();
+    o.type=type;o.frequency.value=freq;o.connect(g);g.connect(audioCtx.destination);
+    const t=audioCtx.currentTime+delay;
+    g.gain.setValueAtTime(.15,t);g.gain.exponentialRampToValueAtTime(.001,t+dur);
+    o.start(t);o.stop(t+dur);
+  }catch(e){}
+}
+const sfx = {
+  ok(){beep(660,.1);beep(880,.15,"sine",.1)},
+  bad(){beep(220,.25,"sawtooth")},
+  tick(){beep(1000,.04,"square")},
+  win(){[523,659,784,1046].forEach((f,i)=>beep(f,.18,"triangle",i*.12))}
+};
+function confetti(){
+  const e=["🎉","⭐","✨","🎊","🌟"];
+  for(let i=0;i<24;i++){
+    const s=document.createElement("span");s.className="confetti";
+    s.textContent=e[i%e.length];s.style.left=Math.random()*100+"vw";
+    s.style.animationDelay=Math.random()*.6+"s";document.body.appendChild(s);
+    setTimeout(()=>s.remove(),3200);
+  }
+}
+const store = {
+  get(k){try{return +localStorage.getItem(k)||0}catch(e){return 0}},
+  set(k,v){try{localStorage.setItem(k,v)}catch(e){}}
+};
+function sanitizePic(p){ return p.map(x=>/^[+=➕≻➡️]$/.test(x)?`<span class="op">${x}</span>`:x).join(" ") }
+
+/* ============ الحالة ============ */
+let S = null, timer = null;
+
+function home(){
+  clearInterval(timer);
+  $("#app").innerHTML = `
+  <div class="card menu">
+    <div class="logo">🧩</div>
+    <h1>لعبة الألغاز العربية</h1>
+    <p class="sub">فكّر جيدًا… واختر الإجابة الصحيحة!</p>
+    <button data-mode="text">📝 ألغاز بالكلام<small>ألغاز تراثية وذكاء لغوي</small></button>
+    <button data-mode="pic">🖼️ ألغاز بالصور<small>خمّن من الرموز والأمثال</small></button>
+    <button data-mode="mix">🎲 مختلط<small>كلام وصور معًا</small></button>
+    <div class="best">🏆 أفضل نتيجة: <b>${store.get("best")}</b> نقطة</div>
+  </div>`;
+  document.querySelectorAll("[data-mode]").forEach(b=>b.onclick=()=>start(b.dataset.mode));
+}
+
+function start(mode){
+  let pool;
+  if(mode==="text") pool = TEXT.map(x=>({...x,kind:"text"}));
+  else if(mode==="pic") pool = PICS.map(x=>({...x,kind:"pic"}));
+  else pool = [...TEXT.map(x=>({...x,kind:"text"})), ...PICS.map(x=>({...x,kind:"pic"}))];
+  // إزالة التكرار في الأسئلة
+  const seen=new Set(); pool = pool.filter(x=>{const k=x.q+x.a; if(seen.has(k))return false; seen.add(k); return true});
+  S = {mode, qs:shuffle(pool).slice(0,ROUND), i:0, score:0, streak:0, bestStreak:0, correct:0, hints:3, locked:false, left:TIME};
+  show();
+}
+
+function show(){
+  const q = S.qs[S.i]; S.locked=false; S.left=TIME; S.hintUsed=false;
+  const opts = shuffle([q.a,...q.w]);
+  $("#app").innerHTML = `
+  <div class="card">
+    <div class="top">
+      <span class="pill">السؤال ${S.i+1}/${S.qs.length}</span>
+      <span class="pill">⭐ ${S.score}</span>
+      <span class="pill">🔥 ${S.streak}</span>
+      <span class="pill" id="tl">⏱ ${TIME}</span>
+    </div>
+    <div class="bar"><i id="bar"></i></div>
+    <div style="text-align:center"><span class="tag">${q.kind==="pic"?"🖼️ لغز بالصور":"📝 لغز بالكلام"}</span></div>
+    ${q.kind==="pic"?`<div class="pic">${sanitizePic(q.pic)}</div>`:""}
+    <div class="q">${q.q}</div>
+    <div class="opts">${opts.map(o=>`<button class="opt" data-v="${o}">${o}</button>`).join("")}</div>
+    <div class="row">
+      <button class="btn hint" id="hint">💡 تلميح (${S.hints})</button>
+      <button class="btn" id="skip">⏭ تخطّي</button>
+    </div>
+    <div class="msg" id="msg"></div>
+  </div>`;
+  document.querySelectorAll(".opt").forEach(b=>b.onclick=()=>answer(b));
+  $("#hint").onclick = useHint;
+  $("#skip").onclick = ()=>finishQ(null,true);
+  $("#hint").disabled = S.hints<=0;
+  clearInterval(timer);
+  timer = setInterval(()=>{
+    S.left--;
+    $("#tl").textContent = "⏱ "+S.left;
+    const b=$("#bar"); b.style.width = (S.left/TIME*100)+"%";
+    if(S.left<=5){b.style.background="var(--bad)"; if(S.left>0) sfx.tick()}
+    if(S.left<=0) finishQ(null,false,true);
+  },1000);
+}
+
+function useHint(){
+  if(S.locked||S.hints<=0||S.hintUsed) return;
+  S.hints--; S.hintUsed=true;
+  const q=S.qs[S.i];
+  const wrong=[...document.querySelectorAll(".opt")].filter(b=>b.dataset.v!==q.a);
+  shuffle(wrong).slice(0,2).forEach(b=>{b.classList.add("gone");b.disabled=true});
+  $("#hint").textContent=`💡 تلميح (${S.hints})`; $("#hint").disabled=true;
+}
+
+function answer(btn){ if(!S.locked) finishQ(btn) }
+
+function finishQ(btn, skipped=false, timeout=false){
+  if(S.locked) return; S.locked=true; clearInterval(timer);
+  const q=S.qs[S.i], msg=$("#msg");
+  const opts=[...document.querySelectorAll(".opt")];
+  opts.forEach(b=>{b.disabled=true; if(b.dataset.v===q.a) b.classList.add("ok")});
+  $("#hint").disabled=true; $("#skip").disabled=true;
+  if(btn && btn.dataset.v===q.a){
+    S.streak++; S.bestStreak=Math.max(S.bestStreak,S.streak); S.correct++;
+    const pts = 10 + Math.ceil(S.left/2) + (S.streak>1?S.streak:0) - (S.hintUsed?3:0);
+    S.score += Math.max(pts,5);
+    msg.style.color="var(--ok)"; msg.textContent=`🎉 أحسنت! +${Math.max(pts,5)} نقطة`; sfx.ok();
+  } else {
+    S.streak=0;
+    if(btn) btn.classList.add("bad");
+    msg.style.color="var(--bad)";
+    msg.textContent = timeout ? `⌛ انتهى الوقت! الإجابة: ${q.a}` : skipped ? `الإجابة: ${q.a}` : `❌ خطأ! الإجابة: ${q.a}`;
+    sfx.bad();
+  }
+  setTimeout(()=>{ S.i++; S.i<S.qs.length ? show() : result() }, 1700);
+}
+
+function result(){
+  const pct=Math.round(S.correct/S.qs.length*100);
+  const best=store.get("best"), isBest=S.score>best;
+  if(isBest) store.set("best",S.score);
+  const [emoji,title] = pct>=90?["🏆","عبقري الألغاز!"]:pct>=70?["🌟","ممتاز! ذكاؤك لافت"]:pct>=40?["👍","جيد، حاول مرة أخرى"]:["💪","لا بأس، التدريب يصنع الفرق"];
+  sfx.win(); if(pct>=40) confetti();
+  $("#app").innerHTML = `
+  <div class="card">
+    <div class="big">${emoji}</div>
+    <h1>${title}</h1>
+    <div class="score">${S.score} نقطة</div>
+    ${isBest?`<p class="sub">🎊 رقم قياسي جديد!</p>`:`<p class="sub">أفضل نتيجة: ${Math.max(best,S.score)}</p>`}
+    <div class="stats">
+      <div><b>${S.correct}/${S.qs.length}</b>إجابات صحيحة</div>
+      <div><b>${S.bestStreak}</b>أطول سلسلة 🔥</div>
+    </div>
+    <button class="btn primary" id="again">🔁 العب مرة أخرى</button>
+    <button class="btn" id="menu">🏠 القائمة الرئيسية</button>
+  </div>`;
+  $("#again").onclick=()=>start(S.mode);
+  $("#menu").onclick=home;
+}
+
+home();
+</script>
+</body>
+</html>
