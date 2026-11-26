@@ -68,6 +68,10 @@
   .stats div{background:var(--soft);border-radius:14px;padding:10px;text-align:center}
   .stats b{display:block;font-size:1.4rem}
   .hidden{display:none}
+  .typed{display:flex;flex-direction:column;gap:10px}
+  .typed input{font:inherit;font-size:1.2rem;font-weight:700;text-align:center;border:2px solid #dcd6ff;border-radius:16px;padding:14px;color:var(--ink)}
+  .typed input:focus{outline:none;border-color:var(--accent)}
+  .typed .btn{margin:0}
   .confetti{position:fixed;top:-20px;font-size:1.6rem;pointer-events:none;animation:fall 2.2s linear forwards;z-index:9}
   @keyframes fall{to{transform:translateY(110vh) rotate(540deg);opacity:.8}}
 </style>
@@ -98,7 +102,16 @@ const TEXT = [
   {q:"ما هو الشيء الذي يكون أمامك ولا تراه؟", a:"المستقبل", w:["الظهر","الهواء","الحائط"]},
   {q:"ما هو الشيء الذي كلما جفّف بلّل؟", a:"المنشفة", w:["الشمس","المروحة","الصابون"]},
   {q:"ما هو الشيء الذي له أربعة أرجل ولا يمشي؟", a:"الطاولة", w:["الحصان","الجمل","القطة"]},
-  {q:"شيء تقطعه فتبكي عليه، فما هو؟", a:"البصل", w:["الخبز","الورق","الحبل"]}
+  {q:"شيء تقطعه فتبكي عليه، فما هو؟", a:"البصل", w:["الخبز","الورق","الحبل"]},
+  {q:"يدور حول العالم وهو ثابت في مكانه، فما هو؟", a:"الطابع البريدي", w:["القمر","الطائرة","الساعة"]},
+  {q:"له مفاتيح كثيرة ولا يفتح بابًا، فما هو؟", a:"البيانو", w:["القفل","الصندوق","الخزنة"]},
+  {q:"له قلب ولا يخفق، فما هو؟", a:"الخس", w:["الجزر","الكوسا","الطماطم"]},
+  {q:"له وجه ويدان وليس له قدمان، فما هو؟", a:"الساعة", w:["الدمية","المرآة","الكرسي"]},
+  {q:"ليس له بداية ولا نهاية، فما هو؟", a:"الدائرة", w:["الخط","المثلث","المسطرة"]},
+  {q:"يقول لك الحقيقة ولا يتكلم، فما هو؟", a:"المرآة", w:["الساعة","الصورة","الظل"]},
+  {q:"ينزل ولا يصعد، فما هو؟", a:"المطر", w:["الدرج","المصعد","الطائر"]},
+  {q:"يخترق الزجاج ولا يكسره، فما هو؟", a:"الضوء", w:["الحجر","الرصاص","الصدى"]},
+  {q:"كلما أخذت منه تركت وراءك، فما هو؟", a:"الخطوات", w:["الأموال","الفتات","الظل"]}
 ];
 
 // ألغاز بالصور (إيموجي)  pic = رموز، op يعني علامة (+ أو =)
@@ -120,13 +133,31 @@ const PICS = [
   {pic:["✈️","🧳","🌍"], q:"ماذا نفعل بهذه الأشياء؟", a:"نسافر", w:["نطبخ","ننام","نسبح"]},
   {pic:["🌅","🕌"], q:"أي صلاة تُصلّى في هذا الوقت؟", a:"الفجر", w:["العصر","المغرب","العشاء"]},
   {pic:["🐘","🧠","❤️"], q:"أي حيوان يُعرف بقوة ذاكرته؟", a:"الفيل", w:["الأرنب","السمكة","الدجاجة"]},
-  {pic:["🍎","➕","🍌","➕","🍊"], q:"ماذا نسمّي هذا الخليط؟", a:"سلطة فواكه", w:["سلطة خضار","عصير ليمون","كعكة"]}
+  {pic:["🍎","➕","🍌","➕","🍊"], q:"ماذا نسمّي هذا الخليط؟", a:"سلطة فواكه", w:["سلطة خضار","عصير ليمون","كعكة"]},
+  {pic:["🚀","🌙","👨‍🚀"], q:"إلى أين ذهب رائد الفضاء؟", a:"القمر", w:["الشمس","البحر","الجبل"]},
+  {pic:["🍞","🥚","☕"], q:"أي وجبة هذه؟", a:"الفطور", w:["الغداء","العشاء","المقبّلات"]},
+  {pic:["🌊","🐋"], q:"ما أكبر حيوان في البحر؟", a:"الحوت", w:["القرش","الدلفين","السلحفاة"]},
+  {pic:["🪥","🦷","✨"], q:"ماذا ننظّف بالفرشاة والمعجون؟", a:"الأسنان", w:["الشعر","الأظافر","الأحذية"]},
+  {pic:["🏥","💊","👨‍⚕️"], q:"من هذا؟", a:"الطبيب", w:["المعلّم","الطيّار","الفلّاح"]},
+  {pic:["☝️","👏","🚫"], q:"أي مثل يُمثّله هذا؟", a:"اليد الواحدة لا تصفّق", w:["الوقت من ذهب","العلم نور","من جدّ وجد"]},
+  {pic:["🐢","🐇","🏁"], q:"من فاز في السباق في القصة المشهورة؟", a:"السلحفاة", w:["الأرنب","الحصان","الثعلب"]},
+  {pic:["🍉","🏖️","☀️"], q:"أي فصل هذا؟", a:"الصيف", w:["الشتاء","الخريف","الربيع"]},
+  {pic:["🕌","🐑","🎁"], q:"أي مناسبة هذه؟", a:"عيد الأضحى", w:["عيد الفطر","رمضان","المولد النبوي"]}
 ];
 
 /* ============ أدوات ============ */
 const $ = s => document.querySelector(s);
 const shuffle = a => { a=[...a]; for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]} return a };
-const ROUND = 10, TIME = 20;
+const ROUND = 10;
+const DIFF = {
+  easy:{name:"سهل",time:30,hints:3},
+  mid:{name:"متوسط",time:20,hints:3},
+  hard:{name:"صعب",time:25,hints:1}
+};
+// تطبيع النص العربي للمقارنة (إزالة التشكيل والألف واللام…)
+const norm = t => t.replace(/[\u064B-\u0652\u0640]/g,"").replace(/[أإآٱ]/g,"ا").replace(/ة/g,"ه").replace(/ى/g,"ي")
+  .replace(/[^\u0621-\u064Aa-z0-9 ]/gi,"").trim().replace(/\s+/g," ").split(" ").map(w=>w.replace(/^ال/,"")).join(" ");
+const typable = q => q.a.trim().split(/\s+/).length<=2;
 let audioCtx;
 function beep(freq,dur=.12,type="sine",delay=0){
   try{
@@ -174,22 +205,37 @@ function home(){
     <button data-mode="mix">🎲 مختلط<small>كلام وصور معًا</small></button>
     <div class="best">🏆 أفضل نتيجة: <b>${store.get("best")}</b> نقطة</div>
   </div>`;
-  document.querySelectorAll("[data-mode]").forEach(b=>b.onclick=()=>start(b.dataset.mode));
+  document.querySelectorAll("[data-mode]").forEach(b=>b.onclick=()=>pickDiff(b.dataset.mode));
 }
 
-function start(mode){
+function pickDiff(mode){
+  $("#app").innerHTML = `
+  <div class="card menu">
+    <div class="logo">🎚️</div>
+    <h1>اختر المستوى</h1>
+    <p class="sub">كلما زادت الصعوبة زاد التحدّي</p>
+    <button data-d="easy">😀 سهل<small>30 ثانية · 3 تلميحات · اختيار من متعدد</small></button>
+    <button data-d="mid">🙂 متوسط<small>20 ثانية · 3 تلميحات · اختيار من متعدد</small></button>
+    <button data-d="hard">🤓 صعب<small>25 ثانية · تلميح واحد · اكتب الإجابة بنفسك</small></button>
+    <button id="back">↩️ رجوع</button>
+  </div>`;
+  document.querySelectorAll("[data-d]").forEach(b=>b.onclick=()=>start(mode,b.dataset.d));
+  $("#back").onclick=home;
+}
+
+function start(mode, diff="mid"){
   let pool;
   if(mode==="text") pool = TEXT.map(x=>({...x,kind:"text"}));
   else if(mode==="pic") pool = PICS.map(x=>({...x,kind:"pic"}));
   else pool = [...TEXT.map(x=>({...x,kind:"text"})), ...PICS.map(x=>({...x,kind:"pic"}))];
   // إزالة التكرار في الأسئلة
   const seen=new Set(); pool = pool.filter(x=>{const k=x.q+x.a; if(seen.has(k))return false; seen.add(k); return true});
-  S = {mode, qs:shuffle(pool).slice(0,ROUND), i:0, score:0, streak:0, bestStreak:0, correct:0, hints:3, locked:false, left:TIME};
+  const D=DIFF[diff]; S = {mode, diff, time:D.time, qs:shuffle(pool).slice(0,ROUND), i:0, score:0, streak:0, bestStreak:0, correct:0, hints:D.hints, locked:false, left:D.time};
   show();
 }
 
 function show(){
-  const q = S.qs[S.i]; S.locked=false; S.left=TIME; S.hintUsed=false;
+  const q = S.qs[S.i]; S.locked=false; S.left=S.time; S.hintUsed=false; const typed=S.diff==="hard"&&typable(q);
   const opts = shuffle([q.a,...q.w]);
   $("#app").innerHTML = `
   <div class="card">
@@ -197,13 +243,14 @@ function show(){
       <span class="pill">السؤال ${S.i+1}/${S.qs.length}</span>
       <span class="pill">⭐ ${S.score}</span>
       <span class="pill">🔥 ${S.streak}</span>
-      <span class="pill" id="tl">⏱ ${TIME}</span>
+      <span class="pill" id="tl">⏱ ${S.time}</span>
     </div>
     <div class="bar"><i id="bar"></i></div>
     <div style="text-align:center"><span class="tag">${q.kind==="pic"?"🖼️ لغز بالصور":"📝 لغز بالكلام"}</span></div>
     ${q.kind==="pic"?`<div class="pic">${sanitizePic(q.pic)}</div>`:""}
     <div class="q">${q.q}</div>
-    <div class="opts">${opts.map(o=>`<button class="opt" data-v="${o}">${o}</button>`).join("")}</div>
+    ${typed?`<form id="tf" class="typed"><input id="ti" autocomplete="off" placeholder="اكتب إجابتك هنا…"><button class="btn primary" type="submit">✔ تأكيد</button></form>`
+      :`<div class="opts">${opts.map(o=>`<button class="opt" data-v="${o}">${o}</button>`).join("")}</div>`}
     <div class="row">
       <button class="btn hint" id="hint">💡 تلميح (${S.hints})</button>
       <button class="btn" id="skip">⏭ تخطّي</button>
@@ -211,6 +258,11 @@ function show(){
     <div class="msg" id="msg"></div>
   </div>`;
   document.querySelectorAll(".opt").forEach(b=>b.onclick=()=>answer(b));
+  if(typed){
+    $("#ti").focus();
+    $("#tf").onsubmit=e=>{e.preventDefault(); const v=norm($("#ti").value); if(!v||S.locked) return;
+      finishQ(null,false,false,v===norm(q.a)); };
+  }
   $("#hint").onclick = useHint;
   $("#skip").onclick = ()=>finishQ(null,true);
   $("#hint").disabled = S.hints<=0;
@@ -218,7 +270,7 @@ function show(){
   timer = setInterval(()=>{
     S.left--;
     $("#tl").textContent = "⏱ "+S.left;
-    const b=$("#bar"); b.style.width = (S.left/TIME*100)+"%";
+    const b=$("#bar"); b.style.width = (S.left/S.time*100)+"%";
     if(S.left<=5){b.style.background="var(--bad)"; if(S.left>0) sfx.tick()}
     if(S.left<=0) finishQ(null,false,true);
   },1000);
@@ -228,6 +280,10 @@ function useHint(){
   if(S.locked||S.hints<=0||S.hintUsed) return;
   S.hints--; S.hintUsed=true;
   const q=S.qs[S.i];
+  if(document.getElementById("ti")){   // وضع الكتابة: نكشف الحرف الأول
+    $("#msg").style.color="var(--accent)"; $("#msg").textContent=`💡 تبدأ بحرف: ${q.a.replace(/^ال/,"")[0]}`;
+    $("#hint").textContent=`💡 تلميح (${S.hints})`; $("#hint").disabled=true; return;
+  }
   const wrong=[...document.querySelectorAll(".opt")].filter(b=>b.dataset.v!==q.a);
   shuffle(wrong).slice(0,2).forEach(b=>{b.classList.add("gone");b.disabled=true});
   $("#hint").textContent=`💡 تلميح (${S.hints})`; $("#hint").disabled=true;
@@ -235,13 +291,14 @@ function useHint(){
 
 function answer(btn){ if(!S.locked) finishQ(btn) }
 
-function finishQ(btn, skipped=false, timeout=false){
+function finishQ(btn, skipped=false, timeout=false, typedOk=false){
   if(S.locked) return; S.locked=true; clearInterval(timer);
   const q=S.qs[S.i], msg=$("#msg");
   const opts=[...document.querySelectorAll(".opt")];
   opts.forEach(b=>{b.disabled=true; if(b.dataset.v===q.a) b.classList.add("ok")});
   $("#hint").disabled=true; $("#skip").disabled=true;
-  if(btn && btn.dataset.v===q.a){
+  const ti=document.getElementById("ti"); if(ti){ti.disabled=true; $("#tf button").disabled=true}
+  if(typedOk || (btn && btn.dataset.v===q.a)){
     S.streak++; S.bestStreak=Math.max(S.bestStreak,S.streak); S.correct++;
     const pts = 10 + Math.ceil(S.left/2) + (S.streak>1?S.streak:0) - (S.hintUsed?3:0);
     S.score += Math.max(pts,5);
@@ -275,7 +332,7 @@ function result(){
     <button class="btn primary" id="again">🔁 العب مرة أخرى</button>
     <button class="btn" id="menu">🏠 القائمة الرئيسية</button>
   </div>`;
-  $("#again").onclick=()=>start(S.mode);
+  $("#again").onclick=()=>start(S.mode,S.diff);
   $("#menu").onclick=home;
 }
 
