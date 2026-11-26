@@ -374,6 +374,7 @@ function teamSetup(){
   clearInterval(timer);
   const names = T ? T.teams.map(t=>t.name) : ["","",""];
   const mode = T ? T.mode : "mix";
+  const o = T ? {n:T.n,time:T.time,pts:T.pts} : {n:15,time:30,pts:10};
   $("#app").innerHTML = `
   <div class="card menu">
     <div class="logo">👥</div>
@@ -386,19 +387,27 @@ function teamSetup(){
       <button class="chip ${mode==="pic"?"on":""}" data-m="pic">🖼️ صور</button>
       <button class="chip ${mode==="mix"?"on":""}" data-m="mix">🎲 مختلط</button>
     </div>
+    <p class="sub" style="margin:8px 0 0">عدد الأسئلة</p>
+    <div class="chips" data-g="n">${[9,15,21].map(v=>`<button class="chip ${o.n===v?"on":""}" data-v="${v}">${v}</button>`).join("")}</div>
+    <p class="sub" style="margin:8px 0 0">وقت السؤال (ثانية)</p>
+    <div class="chips" data-g="time">${[20,30,45].map(v=>`<button class="chip ${o.time===v?"on":""}" data-v="${v}">${v}</button>`).join("")}</div>
+    <p class="sub" style="margin:8px 0 0">نقاط الإجابة الصحيحة</p>
+    <div class="chips" data-g="pts">${[10,20].map(v=>`<button class="chip ${o.pts===v?"on":""}" data-v="${v}">${v}</button>`).join("")}</div>
     <button class="btn primary" id="go">🚀 ابدأ المسابقة</button>
     <button class="btn" id="back">↩️ رجوع</button>
   </div>`;
   let m = mode;
-  document.querySelectorAll(".chip").forEach(c=>c.onclick=()=>{
-    m=c.dataset.m; document.querySelectorAll(".chip").forEach(x=>x.classList.toggle("on",x===c)); });
+  document.querySelectorAll(".chip[data-m]").forEach(c=>c.onclick=()=>{
+    m=c.dataset.m; document.querySelectorAll(".chip[data-m]").forEach(x=>x.classList.toggle("on",x===c)); });
+  document.querySelectorAll(".chips[data-g]").forEach(g=>g.querySelectorAll(".chip").forEach(c=>c.onclick=()=>{
+    o[g.dataset.g]=+c.dataset.v; g.querySelectorAll(".chip").forEach(x=>x.classList.toggle("on",x===c)); }));
   $("#back").onclick=()=>{T=null;home()};
   $("#go").onclick=()=>{
     const teams=[0,1,2].map(i=>({name:$("#tn"+i).value.trim()||`فريق ${i+1}`,score:0,color:TCOL[i]}));
     // أسماء مكررة: أضف رقمًا
     teams.forEach((t,i)=>{ if(teams.findIndex(x=>x.name===t.name)!==i) t.name+=" "+(i+1); });
-    const pool = shuffle(buildPool(m)).slice(0,15);
-    T = {teams, mode:m, qs:pool, res:{}, turn:0, locked:false};
+    const pool = shuffle(buildPool(m));
+    T = {teams, mode:m, n:o.n, time:o.time, pts:o.pts, qs:pool.slice(0,o.n), extra:pool.slice(o.n), res:{}, turn:0, locked:false, winner:null, accepted:false, tbLog:[]};
     sfx.ok(); board();
   };
 }
@@ -428,12 +437,12 @@ function board(){
 }
 
 function teamQ(i){
-  const q=T.qs[i], t=T.teams[T.turn]; T.locked=false; let left=30;
+  const q=T.qs[i], t=T.teams[T.turn]; T.locked=false; let left=T.time;
   const opts=shuffle([q.a,...q.w]);
   $("#app").innerHTML = `
   <div class="card">
     ${scorebar(T.turn)}
-    <div class="top"><span class="pill">السؤال رقم ${i+1}</span><span class="pill" style="background:${t.color};color:#fff">${esc(t.name)}</span><span class="pill" id="tl">⏱ 30</span></div>
+    <div class="top"><span class="pill">السؤال رقم ${i+1}</span><span class="pill" style="background:${t.color};color:#fff">${esc(t.name)}</span><span class="pill" id="tl">⏱ ${T.time}</span></div>
     <div class="bar"><i id="bar"></i></div>
     <div style="text-align:center"><span class="tag">${q.kind==="pic"?"🖼️ لغز بالصور":"📝 لغز بالكلام"}</span></div>
     ${q.kind==="pic"?`<div class="pic">${sanitizePic(q.pic)}</div>`:""}
@@ -448,17 +457,74 @@ function teamQ(i){
     if(btn && !ok) btn.classList.add("bad");
     T.res[i]={team:T.turn,picked,ok};
     const msg=$("#msg");
-    if(ok){ t.score+=10; msg.style.color="var(--ok)"; msg.textContent="🎉 إجابة صحيحة! +10"; sfx.ok(); }
+    if(ok){ t.score+=T.pts; msg.style.color="var(--ok)"; msg.textContent=`🎉 إجابة صحيحة! +${T.pts}`; sfx.ok(); }
     else { msg.style.color="var(--bad)"; msg.textContent = picked===null ? `⌛ انتهى الوقت! الإجابة: ${q.a}` : `❌ خطأ! الإجابة: ${q.a}`; sfx.bad(); }
     setTimeout(()=>{ T.turn=(T.turn+1)%3; board() }, 2000);
   };
   document.querySelectorAll(".opt").forEach(b=>b.onclick=()=>fin(b.dataset.v,b));
   timer=setInterval(()=>{
     left--; $("#tl").textContent="⏱ "+left;
-    const bar=$("#bar"); bar.style.width=(left/30*100)+"%";
+    const bar=$("#bar"); bar.style.width=(left/T.time*100)+"%";
     if(left<=5){bar.style.background="var(--bad)"; if(left>0) sfx.tick()}
     if(left<=0) fin(null,null);
   },1000);
+}
+
+function tieScreen(top){
+  clearInterval(timer);
+  $("#app").innerHTML = `
+  <div class="card menu">
+    <div class="big">🤝</div>
+    <h1>تعادل!</h1>
+    <p class="sub">تعادل ${top.map(t=>`«${esc(t.name)}»`).join(" و ")} بـ ${top[0].score} نقطة</p>
+    ${scorebar(-1)}
+    <button class="btn primary" id="tb">⚔️ سؤال فاصل لتحديد الفائز</button>
+    <button class="btn" id="acc">قبول التعادل وعرض النتائج</button>
+  </div>`;
+  $("#tb").onclick=()=>tbRound(top.map(t=>t.i));
+  $("#acc").onclick=()=>{T.accepted=true; teamResult()};
+}
+
+// سؤال فاصل: كل فريق متعادل يجيب نفس السؤال بالتتابع، ومن يخطئ يخرج
+function tbRound(ids){
+  if(!T.extra.length) T.extra=shuffle(buildPool(T.mode));
+  const q=T.extra.shift(), answers=[];
+  const step=k=>{
+    if(k>=ids.length){
+      T.tbLog.push({q,answers});
+      const ok=answers.filter(a=>a.ok).map(a=>a.team);
+      if(ok.length===1){ T.winner=ok[0]; return teamResult(); }
+      return tbRound(ok.length>1?ok:ids);   // الجميع أصابوا أو أخطأوا: جولة جديدة
+    }
+    tbAsk(q,ids[k],ids.length>1?`سؤال فاصل — الدور ${k+1}/${ids.length}`:"سؤال فاصل",(picked)=>{answers.push({team:ids[k],picked,ok:picked===q.a});step(k+1)});
+  };
+  step(0);
+}
+
+function tbAsk(q,ti,label,cb){
+  clearInterval(timer);
+  const t=T.teams[ti], opts=shuffle([q.a,...q.w]); let left=20, done=false;
+  $("#app").innerHTML = `
+  <div class="card">
+    <div class="top"><span class="pill">⚔️ ${label}</span><span class="pill" style="background:${t.color};color:#fff">${esc(t.name)}</span><span class="pill" id="tl">⏱ 20</span></div>
+    <div class="bar"><i id="bar"></i></div>
+    ${q.kind==="pic"?`<div class="pic">${sanitizePic(q.pic)}</div>`:""}
+    <div class="q">${q.q}</div>
+    <div class="opts">${opts.map(o=>`<button class="opt" data-v="${esc(o)}">${esc(o)}</button>`).join("")}</div>
+    <div class="msg" id="msg"></div>
+  </div>`;
+  const fin=(picked,btn)=>{
+    if(done) return; done=true; clearInterval(timer);
+    document.querySelectorAll(".opt").forEach(b=>{b.disabled=true});
+    // لا نكشف الإجابة الصحيحة قبل أن يجيب الفريق الآخر
+    const ok=picked===q.a; if(btn) btn.style.borderColor=t.color;
+    $("#msg").style.color=ok?"var(--ok)":"var(--bad)";
+    $("#msg").textContent = picked===null?"⌛ انتهى الوقت!":"✔ تم تسجيل الإجابة"; ok?sfx.ok():sfx.bad();
+    setTimeout(()=>cb(picked),1200);
+  };
+  document.querySelectorAll(".opt").forEach(b=>b.onclick=()=>fin(b.dataset.v,b));
+  timer=setInterval(()=>{ left--; $("#tl").textContent="⏱ "+left; $("#bar").style.width=(left/20*100)+"%";
+    if(left<=0) fin(null,null); },1000);
 }
 
 function teamResult(){
@@ -466,13 +532,17 @@ function teamResult(){
   const ranked=T.teams.map((t,i)=>({...t,i,right:Object.values(T.res).filter(r=>r.team===i&&r.ok).length,total:Object.values(T.res).filter(r=>r.team===i).length}))
                       .sort((a,b)=>b.score-a.score);
   const top=ranked.filter(r=>r.score===ranked[0].score);
+  if(top.length>1 && T.winner===null && !T.accepted) return tieScreen(top);
   const medals=["🥇","🥈","🥉"];
+  const win = T.winner!==null ? `🎉 الفريق الفائز بعد السؤال الفاصل: «${esc(T.teams[T.winner].name)}»`
+    : top.length===1 ? `🎉 الفريق الفائز: «${esc(top[0].name)}»`
+    : `🤝 تعادل بين: ${top.map(t=>`«${esc(t.name)}»`).join(" و ")}`;
   sfx.win(); confetti();
   $("#app").innerHTML = `
   <div class="card">
     <div class="big">🏆</div>
     <h1>نتائج المسابقة</h1>
-    <div class="win">${top.length===1 ? `🎉 الفريق الفائز: «${esc(top[0].name)}»` : `🤝 تعادل بين: ${top.map(t=>`«${esc(t.name)}»`).join(" و ")}`}</div>
+    <div class="win">${win}</div>
     ${ranked.map((r,k)=>`<div class="rank" style="background:${r.color}"><span>${medals[k]}</span><span>${esc(r.name)}<br><small>${r.right} صحيحة من ${r.total}</small></span><span class="pts">${r.score}</span></div>`).join("")}
     <h2 style="margin:18px 0 4px;font-size:1.2rem">📋 الأسئلة والإجابات</h2>
     ${T.qs.map((q,i)=>{const r=T.res[i], t=T.teams[r.team];
@@ -481,11 +551,13 @@ function teamResult(){
         ✅ الإجابة: <b>${esc(q.a)}</b><br>
         <span style="color:${t.color};font-weight:700">${esc(t.name)}</span> ${r.picked===null?"⌛ لم يُجب":r.ok?"أجاب صح 🎉":`اختار: ${esc(r.picked)} ❌`}
       </div>`}).join("")}
+    ${T.tbLog.length?`<h2 style="margin:18px 0 4px;font-size:1.2rem">⚔️ الأسئلة الفاصلة</h2>`+T.tbLog.map(L=>`<div class="ans ${L.answers.some(a=>a.ok)?"ok":"no"}">${L.q.kind==="pic"?`<span class="pc">${L.q.pic.join(" ")}</span><br>`:""}${L.q.q}<br>✅ الإجابة: <b>${esc(L.q.a)}</b><br>${L.answers.map(a=>`<span style="color:${T.teams[a.team].color};font-weight:700">${esc(T.teams[a.team].name)}</span>: ${a.picked===null?"⌛ لم يُجب":a.ok?"صح 🎉":`${esc(a.picked)} ❌`}`).join(" · ")}</div>`).join(""):""}
     <button class="btn primary" id="again">🔁 جولة جديدة بنفس الفرق</button>
     <button class="btn" id="menu">🏠 القائمة الرئيسية</button>
   </div>`;
   $("#again").onclick=()=>{ const names=T.teams.map(t=>t.name), m=T.mode;
-    T={teams:names.map((n,i)=>({name:n,score:0,color:TCOL[i]})),mode:m,qs:shuffle(buildPool(m)).slice(0,15),res:{},turn:0,locked:false}; board(); };
+    const pool=shuffle(buildPool(m)), {n,time,pts}=T;
+    T={teams:names.map((nm,i)=>({name:nm,score:0,color:TCOL[i]})),mode:m,n,time,pts,qs:pool.slice(0,n),extra:pool.slice(n),res:{},turn:0,locked:false,winner:null,accepted:false,tbLog:[]}; board(); };
   $("#menu").onclick=()=>{T=null;home()};
 }
 
