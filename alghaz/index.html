@@ -433,7 +433,8 @@ function board(){
     <button class="btn" id="quit" style="margin-top:12px">🏠 إنهاء</button>
   </div>`;
   document.querySelectorAll(".cell[data-i]").forEach(c=>c.onclick=()=>teamQ(+c.dataset.i));
-  $("#quit").onclick=()=>{ if(confirm("إنهاء المسابقة والعودة للقائمة؟")){T=null;home()} };
+  let sure=false;
+  $("#quit").onclick=e=>{ if(sure){T=null;home()} else {sure=true; e.target.textContent="⚠️ اضغط مرة أخرى للتأكيد"} };
 }
 
 function teamQ(i){
